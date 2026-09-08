@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { SearchIcon } from 'lucide-react';

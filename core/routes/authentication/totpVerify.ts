@@ -8,7 +8,7 @@ import { PassSessAuthType, resolveEffectiveAuthedAdmin } from '@modules/WebServe
 import { InitializedCtx } from '@modules/WebServer/ctxTypes';
 import consoleFactory from '@lib/console';
 import { verifyTotpCode, verifyBackupCode } from '@lib/totp';
-import { ApiTotpVerifyResp, ReactAuthDataType } from '@shared/authApiTypes';
+import { ApiTotpVerifyResp } from '@shared/authApiTypes';
 import { totpVerifyBodySchema as bodySchema } from '@shared/authApiSchemas';
 const console = consoleFactory(modulename);
 

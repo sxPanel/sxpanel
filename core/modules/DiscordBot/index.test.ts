@@ -732,16 +732,16 @@ suite('DiscordBot diagnostics reporting', () => {
 suite('DiscordBot startBot', () => {
     it('throws when enabled but the token is missing', async () => {
         const bot = await newBot();
-        expect(() =>
-            bot.startBot({ enabled: true, token: '', guild: 'gid', warningsChannel: null }),
-        ).toThrow('Discord bot enabled while token is not set.');
+        expect(() => bot.startBot({ enabled: true, token: '', guild: 'gid', warningsChannel: null })).toThrow(
+            'Discord bot enabled while token is not set.',
+        );
     });
 
     it('throws when enabled but the guild is missing', async () => {
         const bot = await newBot();
-        expect(() =>
-            bot.startBot({ enabled: true, token: 'tok', guild: '', warningsChannel: null }),
-        ).toThrow('Discord bot enabled while guild id is not set.');
+        expect(() => bot.startBot({ enabled: true, token: 'tok', guild: '', warningsChannel: null })).toThrow(
+            'Discord bot enabled while guild id is not set.',
+        );
     });
 
     it('is a no-op when the bot config is disabled', async () => {

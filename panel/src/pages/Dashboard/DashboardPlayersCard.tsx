@@ -64,7 +64,12 @@ export default function DashboardPlayersCard() {
                 </p>
                 <div className="min-h-0 flex-1">
                     {playerHistory && playerHistory.length > 1 ? (
-                        <Sparkline points={playerHistory.map((p) => p.players)} height={96} strokeClassName="text-info-inline" fillArea />
+                        <Sparkline
+                            points={playerHistory.map((p) => p.players)}
+                            height={96}
+                            strokeClassName="text-info-inline"
+                            fillArea
+                        />
                     ) : (
                         <div className="text-muted-foreground/50 flex size-full items-center justify-center text-center text-xs">
                             Not enough data yet

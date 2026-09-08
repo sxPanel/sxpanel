@@ -598,7 +598,9 @@ suite('FxRunner > stdin command helpers', () => {
         it('sendCommand throws when cmdArgs is not an array', () => {
             const fxRunner = new FxRunner();
             (fxRunner as any).proc = createFakeProc();
-            expect(() => fxRunner.sendCommand('foo', 'bar' as any, SYM_SYSTEM_AUTHOR)).toThrow('cmdArgs is not an array');
+            expect(() => fxRunner.sendCommand('foo', 'bar' as any, SYM_SYSTEM_AUTHOR)).toThrow(
+                'cmdArgs is not an array',
+            );
         });
 
         it('sendEvent delegates to sendCommand with txaEvent', () => {

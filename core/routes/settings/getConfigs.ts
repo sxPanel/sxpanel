@@ -6,7 +6,7 @@ import { GenericApiErrorResp } from '@shared/genericApiTypes';
 import ConfigStore from '@modules/ConfigStore';
 import { PartialTxConfigs, TxConfigs } from '@modules/ConfigStore/schema';
 import { ConfigChangelogEntry } from '@modules/ConfigStore/changelog';
-import { redactApiKeys, redactStartupSecrets } from '@lib/misc';
+import { redactStartupSecrets } from '@lib/misc';
 import { txHostConfig } from '@core/globalData';
 import { getAllPermissionPresets } from '@modules/AdminStore/permissionPresets';
 import type { PermissionPreset } from '@shared/permissions';

@@ -158,9 +158,7 @@ export default function LiveConsoleFilterPanel({ term, bufferVersion, onClose }:
                     </button>
                 </div>
                 {!useRegex && (
-                    <p className="text-muted-foreground/70 mt-1 text-[11px]">
-                        {t('panel.live_console.filter.hint')}
-                    </p>
+                    <p className="text-muted-foreground/70 mt-1 text-[11px]">{t('panel.live_console.filter.hint')}</p>
                 )}
             </div>
 
@@ -215,9 +213,7 @@ export default function LiveConsoleFilterPanel({ term, bufferVersion, onClose }:
                                         : 'border-l-transparent',
                                 )}
                             >
-                                {ts && (
-                                    <span className="text-muted-foreground/70 shrink-0 tabular-nums">{ts}</span>
-                                )}
+                                {ts && <span className="text-muted-foreground/70 shrink-0 tabular-nums">{ts}</span>}
                                 <span className="text-secondary-foreground break-all whitespace-pre-wrap">{rest}</span>
                             </button>
                         );

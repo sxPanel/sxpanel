@@ -32,9 +32,20 @@ type StatTileProps = {
 };
 function StatTile({ label, value, hint, valueClass, className, children, title }: StatTileProps) {
     return (
-        <div className={cn('bg-secondary/25 border-border/40 flex flex-col gap-1 rounded-lg border px-3 py-2.5', className)} title={title}>
+        <div
+            className={cn(
+                'bg-secondary/25 border-border/40 flex flex-col gap-1 rounded-lg border px-3 py-2.5',
+                className,
+            )}
+            title={title}
+        >
             <span className="text-muted-foreground/70 text-[11px] font-medium">{label}</span>
-            <span className={cn('font-mono text-lg leading-tight font-semibold tabular-nums', valueClass ?? 'text-foreground')}>
+            <span
+                className={cn(
+                    'font-mono text-lg leading-tight font-semibold tabular-nums',
+                    valueClass ?? 'text-foreground',
+                )}
+            >
                 {value}
                 {hint && <span className="text-muted-foreground/60 ml-1 text-xs font-normal">{hint}</span>}
             </span>
@@ -46,7 +57,8 @@ function StatTile({ label, value, hint, valueClass, className, children, title }
 /** Live total uptime — the next-restart countdown lives in the Server Controls card instead, where it's actionable. */
 const UptimeTile = memo(() => {
     const status = useAtomValue(globalStatusAtom);
-    const uptimeStr = (status && msToShortDuration(status.server.uptime, { units: ['d', 'h', 'm'], delimiter: ' ' })) || '--';
+    const uptimeStr =
+        (status && msToShortDuration(status.server.uptime, { units: ['d', 'h', 'm'], delimiter: ' ' })) || '--';
     return <StatTile label="Uptime" value={uptimeStr} />;
 });
 

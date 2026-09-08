@@ -1,5 +1,5 @@
 const modulename = 'WebSocket';
-import { Server as SocketIO, Socket, RemoteSocket } from 'socket.io';
+import { Server as SocketIO } from 'socket.io';
 import consoleFactory from '@lib/console';
 import statusRoom from './wsRooms/status';
 import dashboardRoom from './wsRooms/dashboard';

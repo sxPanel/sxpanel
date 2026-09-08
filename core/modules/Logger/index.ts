@@ -1,5 +1,5 @@
 const modulename = 'Logger';
-import type { Options as RfsOptions } from 'rotating-file-stream';
+import type from 'rotating-file-stream';
 import AdminLogger from './handlers/admin';
 import FXServerLogger from './FXServerLogger';
 import ServerLogger from './handlers/server';

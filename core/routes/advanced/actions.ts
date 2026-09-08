@@ -5,7 +5,7 @@ import got from '@lib/got';
 import type { AuthedCtx } from '@modules/WebServer/ctxTypes';
 import consoleFactory from '@lib/console';
 import { SYM_SYSTEM_AUTHOR } from '@lib/symbols';
-import { txDevEnv, txEnv } from '@core/globalData';
+import { txEnv } from '@core/globalData';
 import { emsg } from '@shared/emsg';
 const console = consoleFactory(modulename);
 

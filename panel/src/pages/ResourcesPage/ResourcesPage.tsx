@@ -256,8 +256,7 @@ export default function ResourcesPage() {
     const isFiltering = Boolean(searchQuery.trim()) || statusFilter !== 'all' || selectedFolder !== null;
     // While searching, force-expand every group with matches
     const effectiveCollapsed = searchQuery.trim() ? new Set<string>() : collapsedFolders;
-    const allCollapsed =
-        filteredGroups.length > 0 && filteredGroups.every((g) => effectiveCollapsed.has(g.subPath));
+    const allCollapsed = filteredGroups.length > 0 && filteredGroups.every((g) => effectiveCollapsed.has(g.subPath));
 
     const toggleAllFolders = useCallback(() => {
         setViewState((prev) => {
@@ -281,10 +280,7 @@ export default function ResourcesPage() {
 
     const updatesCount = useMemo(() => {
         if (!liveData) return undefined;
-        return liveData.groups.reduce(
-            (acc, group) => acc + group.resources.filter((r) => !!r.updateNotice).length,
-            0,
-        );
+        return liveData.groups.reduce((acc, group) => acc + group.resources.filter((r) => !!r.updateNotice).length, 0);
     }, [liveData]);
 
     const statusChips: { key: StatusFilter; label: string; count?: number }[] = [
@@ -346,9 +342,7 @@ export default function ResourcesPage() {
                                 {liveData?.groups.map((group) => (
                                     <SelectItem key={group.subPath} value={group.subPath}>
                                         <span>{group.subPath}</span>
-                                        <span className="text-muted-foreground ml-1.5">
-                                            ({group.resources.length})
-                                        </span>
+                                        <span className="text-muted-foreground ml-1.5">({group.resources.length})</span>
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -405,7 +399,9 @@ export default function ResourcesPage() {
                                     )}
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent>{allCollapsed ? 'Expand all folders' : 'Collapse all folders'}</TooltipContent>
+                            <TooltipContent>
+                                {allCollapsed ? 'Expand all folders' : 'Collapse all folders'}
+                            </TooltipContent>
                         </Tooltip>
 
                         {/* Refresh */}
@@ -728,34 +724,30 @@ function ResourceRow({
             {menuPos && (
                 <DropdownMenu open modal={false} onOpenChange={(open) => !open && setMenuPos(null)}>
                     <DropdownMenuTrigger asChild>
-                        <span
-                            aria-hidden="true"
-                            className="fixed size-0"
-                            style={{ left: menuPos.x, top: menuPos.y }}
-                        />
+                        <span aria-hidden="true" className="fixed size-0" style={{ left: menuPos.x, top: menuPos.y }} />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="w-52">
-                <DropdownMenuLabel className="truncate">{resource.name}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {canControl && (
-                    <>
-                        <DropdownMenuItem onClick={() => onAction('restart_res', resource.name)}>
-                            <RotateCwIcon className="mr-2 size-4" />
-                            Restart
-                        </DropdownMenuItem>
-                        {isStarted ? (
-                            <DropdownMenuItem onClick={() => onAction('stop_res', resource.name)}>
-                                <SquareIcon className="mr-2 size-4" />
-                                Stop
-                            </DropdownMenuItem>
-                        ) : (
-                            <DropdownMenuItem onClick={() => onAction('start_res', resource.name)}>
-                                <PlayIcon className="mr-2 size-4" />
-                                Start
-                            </DropdownMenuItem>
+                        <DropdownMenuLabel className="truncate">{resource.name}</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {canControl && (
+                            <>
+                                <DropdownMenuItem onClick={() => onAction('restart_res', resource.name)}>
+                                    <RotateCwIcon className="mr-2 size-4" />
+                                    Restart
+                                </DropdownMenuItem>
+                                {isStarted ? (
+                                    <DropdownMenuItem onClick={() => onAction('stop_res', resource.name)}>
+                                        <SquareIcon className="mr-2 size-4" />
+                                        Stop
+                                    </DropdownMenuItem>
+                                ) : (
+                                    <DropdownMenuItem onClick={() => onAction('start_res', resource.name)}>
+                                        <PlayIcon className="mr-2 size-4" />
+                                        Start
+                                    </DropdownMenuItem>
+                                )}
+                            </>
                         )}
-                    </>
-                )}
                         {canControl && canDownload && <DropdownMenuSeparator />}
                         {canDownload && (
                             <DropdownMenuItem disabled={!csrfToken} onClick={handleDownload}>

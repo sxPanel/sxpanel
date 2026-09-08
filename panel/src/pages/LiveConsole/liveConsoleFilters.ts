@@ -32,7 +32,8 @@ export const CONSOLE_FILTER_PRESETS: ConsoleFilterPreset[] = [
     {
         key: 'players',
         label: 'Players',
-        pattern: /player|deferral|connecting|\bjoined\b|dropped|disconnect|identifier|license[0-9]?:|steam:|discord:|fivem:|\bnetid\b/i,
+        pattern:
+            /player|deferral|connecting|\bjoined\b|dropped|disconnect|identifier|license[0-9]?:|steam:|discord:|fivem:|\bnetid\b/i,
     },
     {
         key: 'chat',
@@ -84,9 +85,7 @@ export function scanConsoleBuffer(term: Terminal, opts: ConsoleScanOptions): Con
     const total = buf.length;
     const matches: ConsoleScanMatch[] = [];
 
-    const presets = opts.activePresetKeys
-        .map((k) => PRESET_BY_KEY.get(k))
-        .filter((p): p is ConsoleFilterPreset => !!p);
+    const presets = opts.activePresetKeys.map((k) => PRESET_BY_KEY.get(k)).filter((p): p is ConsoleFilterPreset => !!p);
 
     const trimmedQuery = opts.query.trim();
     let compiledRegex: RegExp | null = null;

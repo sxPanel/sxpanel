@@ -68,7 +68,6 @@ import type { SaveConfigsReq, SaveConfigsResp } from '@shared/otherTypes';
 import { emsg } from '@shared/emsg';
 import { rasterizeCanvasElements } from '@shared/deferralCardImage';
 import {
-    DEFERRAL_GIF_MAX_BYTES,
     DEFERRAL_PNG_MAX_BYTES,
     DEFERRAL_SVG_MAX_BYTES,
     deferralCustomImageHasPreview,

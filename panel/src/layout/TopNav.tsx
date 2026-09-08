@@ -69,7 +69,11 @@ function TopNavQuickJump({ items }: { items: FlatNavItem[] }) {
 
     return (
         <div ref={containerRef} className="relative">
-            <IconButton label="Jump to page" icon={<SearchIcon />} onClick={() => (open ? setOpen(false) : openMenu())} />
+            <IconButton
+                label="Jump to page"
+                icon={<SearchIcon />}
+                onClick={() => (open ? setOpen(false) : openMenu())}
+            />
             {open && (
                 <div className="bg-popover text-popover-foreground border-border/60 absolute top-full right-0 z-50 mt-2 w-72 rounded-lg border p-2 shadow-lg">
                     <Input
@@ -213,7 +217,9 @@ export default function TopNav() {
         const items =
             section.sectionKey === 'panel.sidebar.section.addons'
                 ? [...staticItems, ...addonSectionItems]
-                : section.sectionKey === 'panel.sidebar.section.system' && import.meta.env.DEV && hasPerm('all_permissions')
+                : section.sectionKey === 'panel.sidebar.section.system' &&
+                    import.meta.env.DEV &&
+                    hasPerm('all_permissions')
                   ? [...staticItems, { href: '/advanced', icon: WrenchIcon, label: t('panel.sidebar.item.advanced') }]
                   : staticItems;
         return { sectionKey: section.sectionKey, label: t(section.sectionKey), items };
@@ -226,7 +232,10 @@ export default function TopNav() {
     return (
         <header className="tx-shell-desktop-topnav border-border/40 bg-background h-14 shrink-0 border-b">
             <div className="flex h-14 items-center gap-1 px-3 sm:px-4">
-                <NavLink href="/" className="mr-2 flex shrink-0 items-center opacity-90 transition-opacity hover:opacity-100">
+                <NavLink
+                    href="/"
+                    className="mr-2 flex shrink-0 items-center opacity-90 transition-opacity hover:opacity-100"
+                >
                     <LogoFullSquareGreen className="h-7" />
                 </NavLink>
 

@@ -3,7 +3,7 @@ import fsp from 'node:fs/promises';
 import throttle from 'lodash-es/throttle.js';
 import consoleFactory from '@lib/console';
 import { txDevEnv, txEnv } from '@core/globalData';
-import type { z, ZodSchema } from 'zod';
+import type from 'zod';
 import type { UpdateConfigKeySet } from './ConfigStore/utils';
 const console = consoleFactory(modulename);
 

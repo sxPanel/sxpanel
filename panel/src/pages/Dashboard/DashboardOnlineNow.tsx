@@ -53,7 +53,9 @@ export default function DashboardOnlineNow() {
                             <button
                                 key={player.netid}
                                 type="button"
-                                onClick={() => serverMutex && openPlayerModal({ mutex: serverMutex, netid: player.netid })}
+                                onClick={() =>
+                                    serverMutex && openPlayerModal({ mutex: serverMutex, netid: player.netid })
+                                }
                                 className="hover:bg-secondary/30 flex items-center gap-3 px-5 py-2.5 text-left transition-colors"
                             >
                                 <Avatar username={player.displayName} className="size-9 shrink-0 rounded-lg text-xs" />

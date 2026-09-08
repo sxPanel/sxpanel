@@ -1,8 +1,6 @@
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DiscordRoleMultiSelect } from '@/components/DiscordRoleMultiSelect';
 import TxAnchor from '@/components/TxAnchor';
-import InlineCode from '@/components/InlineCode';
 import { SettingItem, SettingItemDesc } from '../settingsItems';
 import { RadioGroup } from '@/components/ui/radio-group';
 import BigRadioItem from '@/components/BigRadioItem';

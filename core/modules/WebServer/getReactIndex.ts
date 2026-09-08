@@ -1,6 +1,5 @@
 import crypto from 'node:crypto';
 const modulename = 'WebCtxUtils';
-import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { PANEL_FEATURE_KEYS, type InjectedTxConsts, type PanelFeatureKey, type ThemeType } from '@shared/otherTypes';

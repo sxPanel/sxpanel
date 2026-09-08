@@ -1,4 +1,4 @@
-import { suite, it, expect, vi, beforeEach } from 'vitest';
+import { suite, it, expect, vi } from 'vitest';
 import { intercomAuthMw } from './authMws';
 
 // Mock the isIpAddressLocal module

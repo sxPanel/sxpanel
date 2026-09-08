@@ -3,7 +3,6 @@ import { AuthedCtx } from '@modules/WebServer/ctxTypes';
 import consoleFactory from '@lib/console';
 import { ApiToastResp } from '@shared/genericApiTypes';
 import { msToShortishDuration } from '@lib/misc';
-import ConfigStore from '@modules/ConfigStore';
 const console = consoleFactory(modulename);
 
 /**

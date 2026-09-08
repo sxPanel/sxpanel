@@ -96,7 +96,9 @@ export const handleTicketThreadMessage = (message: BridgeMessage) => {
     try {
         const ticket = txCore.database.tickets.findByDiscordThread(message.threadId);
         if (!ticket) {
-            console.warn(`Received a Discord ticket message for thread ${message.threadId}, but no ticket is linked to that thread/channel ID.`);
+            console.warn(
+                `Received a Discord ticket message for thread ${message.threadId}, but no ticket is linked to that thread/channel ID.`,
+            );
             return;
         }
 
@@ -247,8 +249,7 @@ export const handleTicketCommand = (message: BridgeMessage, deps: TicketCommandD
     }
 
     if (subcommand === 'assign') {
-        const assigneeDiscordId =
-            typeof message.assigneeDiscordId === 'string' ? message.assigneeDiscordId.trim() : '';
+        const assigneeDiscordId = typeof message.assigneeDiscordId === 'string' ? message.assigneeDiscordId.trim() : '';
         if (!assigneeDiscordId.length) {
             return buildDeniedReply('danger', translateTicketCommand('assign_missing_member'), 'invalid_request');
         }

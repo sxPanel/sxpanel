@@ -1,4 +1,3 @@
-import { txEnv } from '@core/globalData';
 import { getFsErrorMdMessage, getPathSubdirs } from '@lib/fs';
 import * as fsp from 'node:fs/promises';
 import * as path from 'node:path';

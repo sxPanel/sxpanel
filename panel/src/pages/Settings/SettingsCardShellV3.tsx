@@ -42,10 +42,7 @@ export default function SettingsCardShellV3({
             ) : null}
 
             <div
-                className={cn(
-                    'relative overflow-x-clip px-8 pb-6 lg:px-10 lg:pb-7',
-                    !isMultiCardTab && 'pt-6 lg:pt-7',
-                )}
+                className={cn('relative overflow-x-clip px-8 pb-6 lg:px-10 lg:pb-7', !isMultiCardTab && 'pt-6 lg:pt-7')}
             >
                 <div className="space-y-6">{children}</div>
                 <CardContentOverlay loading={pageCtx.isLoading} error={pageCtx.swrError} />

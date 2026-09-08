@@ -9,5 +9,4 @@ import type { PanelFeatureKey } from '@shared/otherTypes';
  * NOTE: consumers (sidebar, top-nav, router) only read this on render, so a change
  * needs a full page reload to take effect — the Panel Features card prompts for one.
  */
-export const isPanelFeatureEnabled = (key: PanelFeatureKey): boolean =>
-    window.txConsts.panelFeatures?.[key] !== false;
+export const isPanelFeatureEnabled = (key: PanelFeatureKey): boolean => window.txConsts.panelFeatures?.[key] !== false;

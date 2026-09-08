@@ -8,7 +8,6 @@
  * Usage: router.get('/path', apiAuthMw, wrapRoute('RouteName', handler));
  */
 import consoleFactory from '@lib/console';
-import { AppError } from '@lib/errors';
 import type { InitializedCtx, AuthedCtx } from '@modules/WebServer/ctxTypes';
 
 type AnyCtx = InitializedCtx | AuthedCtx;

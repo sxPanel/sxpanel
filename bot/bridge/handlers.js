@@ -1,4 +1,10 @@
-const { ActivityType, AttachmentBuilder, ChannelType, PermissionFlagsBits, PermissionsBitField } = require('discord.js');
+const {
+    ActivityType,
+    AttachmentBuilder,
+    ChannelType,
+    PermissionFlagsBits,
+    PermissionsBitField,
+} = require('discord.js');
 const { buildCardMessage, normalizeMessageEditPayload, normalizeMessagePayload } = require('../componentsV2');
 const { translateDiscord } = require('../discordLocale');
 

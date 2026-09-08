@@ -1,5 +1,5 @@
 import fsp from 'node:fs/promises';
-import path, { sep } from 'node:path';
+import path from 'node:path';
 import bytes from 'bytes';
 import { txEnv } from '@core/globalData';
 

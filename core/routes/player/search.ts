@@ -16,7 +16,8 @@ const console = consoleFactory(modulename);
 const DEFAULT_LIMIT = 100; //cant override it for now
 const ALLOWED_SORTINGS = ['playTime', 'tsJoined', 'tsLastConnection'] as const;
 type PlayerSortingKey = (typeof ALLOWED_SORTINGS)[number];
-const isAllowedPlayerSorting = (k: string): k is PlayerSortingKey => (ALLOWED_SORTINGS as readonly string[]).includes(k);
+const isAllowedPlayerSorting = (k: string): k is PlayerSortingKey =>
+    (ALLOWED_SORTINGS as readonly string[]).includes(k);
 const SIMPLE_FILTERS = ['isAdmin', 'isOnline', 'isWhitelisted', 'hasNote'];
 const ACTION_FILTERS = ['isBanned', 'hasPreviousBan'];
 

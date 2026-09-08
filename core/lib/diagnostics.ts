@@ -1,6 +1,5 @@
 const modulename = 'WebServer:DiagnosticsFuncs';
 import os from 'node:os';
-import humanizeDuration, { HumanizerOptions } from 'humanize-duration';
 import got from '@lib/got';
 import getOsDistro from '@lib/host/getOsDistro.js';
 import getHostUsage from '@lib/host/getHostUsage';

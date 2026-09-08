@@ -161,8 +161,7 @@ export default function drawFullPerfChart({
         {
             name: 'lagging',
             color: PERF_SERIES_COLORS.lagging,
-            getValue: (snap: PerfSnapType) =>
-                sumBucketRange(snap.weightedPerf, budget2xIdx + 1, boundaries.length - 1),
+            getValue: (snap: PerfSnapType) => sumBucketRange(snap.weightedPerf, budget2xIdx + 1, boundaries.length - 1),
         },
     ];
 

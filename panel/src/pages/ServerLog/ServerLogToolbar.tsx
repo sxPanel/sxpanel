@@ -212,9 +212,7 @@ export default function ServerLogToolbar({
                                             : 'text-muted-foreground/60 hover:border-border border-transparent',
                                     )}
                                 >
-                                    <TerminalIcon
-                                        className={cn('size-3', playerCommandsOnly && 'text-cyan-400')}
-                                    />
+                                    <TerminalIcon className={cn('size-3', playerCommandsOnly && 'text-cyan-400')} />
                                     Commands only
                                 </button>
                             </TooltipTrigger>

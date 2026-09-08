@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { test, expect, suite, it, vitest, vi, beforeEach, afterEach } from 'vitest';
+import { test, expect, suite, it, vi, beforeEach, afterEach } from 'vitest';
 import { prefixMultiline, splitFirstLine, stripLastEol } from './fxsLoggerUtils';
 import ConsoleTransformer, { FORCED_EOL } from './ConsoleTransformer';
 import ConsoleLineEnum from './ConsoleLineEnum';

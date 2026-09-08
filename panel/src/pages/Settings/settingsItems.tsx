@@ -42,7 +42,7 @@ export function SettingItem({
         <div className="flex max-w-4xl flex-col gap-y-2 sm:grid sm:grid-cols-8 sm:items-start sm:gap-4 sm:gap-y-0">
             <div className="min-w-0 sm:col-span-2">
                 <Label
-                    className="text-foreground flex flex-wrap items-center gap-2 text-sm font-semibold leading-6 sm:text-base"
+                    className="text-foreground flex flex-wrap items-center gap-2 text-sm leading-6 font-semibold sm:text-base"
                     htmlFor={htmlFor}
                 >
                     {label}

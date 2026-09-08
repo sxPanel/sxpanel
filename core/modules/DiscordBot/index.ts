@@ -626,7 +626,9 @@ export default class DiscordBot {
 
         const threadId = txCore.database.tickets.getDiscordThreadId(ticketId);
         if (!threadId) {
-            console.verbose.warn(`Not forwarding ticket ${ticketId} message to Discord: ticket has no linked Discord thread/channel.`);
+            console.verbose.warn(
+                `Not forwarding ticket ${ticketId} message to Discord: ticket has no linked Discord thread/channel.`,
+            );
             return;
         }
 

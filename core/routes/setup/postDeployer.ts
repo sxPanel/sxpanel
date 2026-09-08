@@ -3,7 +3,6 @@ import path from 'node:path';
 import slash from 'slash';
 import consoleFactory from '@lib/console';
 import got from '@lib/got';
-import recipeParser from '@core/deployer/recipeParser';
 import { AuthedCtx } from '@modules/WebServer/ctxTypes';
 import { assertSafeRemoteRecipeUrl } from '@lib/remoteRecipeDownloadUrl';
 const console = consoleFactory(modulename);

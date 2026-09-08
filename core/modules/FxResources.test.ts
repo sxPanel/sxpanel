@@ -96,9 +96,7 @@ describe('FxResources console update notices', () => {
 
         fxResources.handleConsoleOutput('[    script:ox_lib] An update is available for ox_lib (current: 3.0.0)\n');
 
-        expect(fxResources.getUpdateNotices().get('ox_lib')).toBe(
-            'An update is available for ox_lib (current: 3.0.0)',
-        );
+        expect(fxResources.getUpdateNotices().get('ox_lib')).toBe('An update is available for ox_lib (current: 3.0.0)');
         expect(buffer).toHaveBeenCalledWith('resources', {
             type: 'update',
             updates: [

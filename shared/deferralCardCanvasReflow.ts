@@ -8,11 +8,7 @@ import {
     DEFERRAL_TXADMIN_WATERMARK_WIDTH_PX,
     DEFERRAL_WATERMARK_INSET_PX,
 } from './deferralCardWatermark';
-import {
-    estimateCanvasElementSize,
-    getCanvasContentWidth,
-    snapDeferralCoord,
-} from './deferralCardCanvasMeasure';
+import { estimateCanvasElementSize, getCanvasContentWidth, snapDeferralCoord } from './deferralCardCanvasMeasure';
 
 const CANVAS_STACK_GAP_PX = 6;
 

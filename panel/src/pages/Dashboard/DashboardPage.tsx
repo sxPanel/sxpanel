@@ -63,7 +63,7 @@ function DashboardPageInner() {
     return (
         <div className="flex min-h-full w-full min-w-0 flex-1 flex-col gap-4">
             {/* Server status & controls: health, players, and stats side-by-side with start/stop/restart + scheduling */}
-            <div className="flex w-full flex-col gap-4 items-stretch sm:flex-row">
+            <div className="flex w-full flex-col items-stretch gap-4 sm:flex-row">
                 <div className="min-w-0 overflow-hidden sm:flex-1">
                     <DashboardServerControls />
                 </div>

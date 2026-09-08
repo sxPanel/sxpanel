@@ -3,7 +3,10 @@ import { useLocation } from 'wouter';
 import { ClipboardListIcon } from 'lucide-react';
 import { cn, getSocket, joinSocketRoom, leaveSocketRoom } from '@/lib/utils';
 import type { SystemLogEntry } from '@shared/systemLogTypes';
-import { ACTION_LOG_CATEGORY_STYLES, ACTION_LOG_DEFAULT_CATEGORY_STYLE } from '@/pages/ActionLog/actionLogCategoryStyles';
+import {
+    ACTION_LOG_CATEGORY_STYLES,
+    ACTION_LOG_DEFAULT_CATEGORY_STYLE,
+} from '@/pages/ActionLog/actionLogCategoryStyles';
 import { useAdminPerms } from '@/hooks/auth';
 import { dashboardCardClass, DashboardCardHeader } from './DashboardCard';
 
@@ -82,7 +85,7 @@ export default function DashboardRecentActions() {
                     No admin actions yet.
                 </div>
             ) : (
-                <div className="flex flex-col divide-y divide-border/30 pb-2">
+                <div className="divide-border/30 flex flex-col divide-y pb-2">
                     {entries.map((event, idx) => (
                         <RecentActionRow
                             key={`${event.ts}-${idx}`}

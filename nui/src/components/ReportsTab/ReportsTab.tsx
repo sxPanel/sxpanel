@@ -325,7 +325,15 @@ const TicketDetailView: React.FC<{
     const isTerminal = ticket.status === 'resolved' || ticket.status === 'closed';
 
     return (
-        <Box display="flex" flexDirection="column" flex={1} minHeight={0} minWidth={0} p={1.5} color={tokens.textPrimary}>
+        <Box
+            display="flex"
+            flexDirection="column"
+            flex={1}
+            minHeight={0}
+            minWidth={0}
+            p={1.5}
+            color={tokens.textPrimary}
+        >
             {/* Header */}
             <Box
                 display="flex"
@@ -444,7 +452,12 @@ const TicketDetailView: React.FC<{
                 <Typography variant="body2" sx={{ color: tokens.textPrimary, ...boundedTextSx }}>
                     {ticket.description}
                 </Typography>
-                <Typography variant="caption" sx={{ color: tokens.textMuted, ...boundedTextSx }} mt={0.5} display="block">
+                <Typography
+                    variant="caption"
+                    sx={{ color: tokens.textMuted, ...boundedTextSx }}
+                    mt={0.5}
+                    display="block"
+                >
                     {t('nui_reports.created_at', { date: formatDate(ticket.tsCreated) })}
                     {ticket.tsResolved ? t('nui_reports.resolved_at', { date: formatDate(ticket.tsResolved) }) : ''}
                     {ticket.resolvedBy ? t('nui_reports.resolved_by', { name: ticket.resolvedBy }) : ''}
@@ -515,11 +528,17 @@ const TicketDetailView: React.FC<{
                                     />
                                 )}
                             </Typography>
-                            <Typography variant="caption" sx={{ color: tokens.textMuted, whiteSpace: 'nowrap', flexShrink: 0 }}>
+                            <Typography
+                                variant="caption"
+                                sx={{ color: tokens.textMuted, whiteSpace: 'nowrap', flexShrink: 0 }}
+                            >
                                 {formatDate(m.ts)}
                             </Typography>
                         </Box>
-                        <Typography variant="body2" sx={{ color: tokens.textPrimary, whiteSpace: 'pre-wrap', ...boundedTextSx }}>
+                        <Typography
+                            variant="body2"
+                            sx={{ color: tokens.textPrimary, whiteSpace: 'pre-wrap', ...boundedTextSx }}
+                        >
                             {m.content}
                         </Typography>
                         {m.imageUrls && m.imageUrls.length > 0 && (
@@ -670,7 +689,9 @@ const TicketSidebarItem: React.FC<{
     const { tokens } = useTheme();
     const statusColor = getStatusAccentColor(ticket.status, tokens);
     const participantLabel =
-        ticket.targetNames.length > 0 ? `${ticket.reporterName} \u2192 ${ticket.targetNames.join(', ')}` : ticket.reporterName;
+        ticket.targetNames.length > 0
+            ? `${ticket.reporterName} \u2192 ${ticket.targetNames.join(', ')}`
+            : ticket.reporterName;
 
     return (
         <Box
@@ -797,7 +818,10 @@ const TicketSidebarItem: React.FC<{
                         </Typography>
                     )}
                     {ticket.claimedBy && (
-                        <Typography variant="caption" sx={{ color: tokens.info, fontSize: '0.68rem', ...ellipsisTextSx }}>
+                        <Typography
+                            variant="caption"
+                            sx={{ color: tokens.info, fontSize: '0.68rem', ...ellipsisTextSx }}
+                        >
                             {ticket.claimedBy}
                         </Typography>
                     )}
@@ -1007,7 +1031,11 @@ export const ReportsTab: React.FC<{ visible: boolean }> = ({ visible }) => {
                     <Typography variant="body2" sx={{ color: tokens.error, ...boundedTextSx }}>
                         {ticketError}
                     </Typography>
-                    <IconButton size="small" onClick={() => setTicketError(null)} sx={{ color: tokens.error, flexShrink: 0 }}>
+                    <IconButton
+                        size="small"
+                        onClick={() => setTicketError(null)}
+                        sx={{ color: tokens.error, flexShrink: 0 }}
+                    >
                         &times;
                     </IconButton>
                 </Box>
@@ -1052,7 +1080,15 @@ export const ReportsTab: React.FC<{ visible: boolean }> = ({ visible }) => {
             )}
 
             {/* Dashboard header */}
-            <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1.25} flexShrink={0} minWidth={0}>
+            <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                gap={1}
+                mb={1.25}
+                flexShrink={0}
+                minWidth={0}
+            >
                 <Typography variant="subtitle1" fontWeight={700} sx={{ color: tokens.textPrimary, ...ellipsisTextSx }}>
                     {t('nui_reports.title_tickets')}
                 </Typography>
@@ -1069,7 +1105,10 @@ export const ReportsTab: React.FC<{ visible: boolean }> = ({ visible }) => {
 
             <Box display="flex" gap={1} mb={1.25} flexShrink={0} minWidth={0}>
                 <StatCard>
-                    <Typography variant="caption" sx={{ color: tokens.warning, fontWeight: 700, fontSize: '0.68rem', ...ellipsisTextSx }}>
+                    <Typography
+                        variant="caption"
+                        sx={{ color: tokens.warning, fontWeight: 700, fontSize: '0.68rem', ...ellipsisTextSx }}
+                    >
                         {t('nui_reports.stat_open')}
                     </Typography>
                     <Typography variant="h6" fontWeight={700} sx={{ color: tokens.textPrimary, lineHeight: 1.2 }}>
@@ -1077,7 +1116,10 @@ export const ReportsTab: React.FC<{ visible: boolean }> = ({ visible }) => {
                     </Typography>
                 </StatCard>
                 <StatCard>
-                    <Typography variant="caption" sx={{ color: tokens.info, fontWeight: 700, fontSize: '0.68rem', ...ellipsisTextSx }}>
+                    <Typography
+                        variant="caption"
+                        sx={{ color: tokens.info, fontWeight: 700, fontSize: '0.68rem', ...ellipsisTextSx }}
+                    >
                         {t('nui_reports.stat_in_review')}
                     </Typography>
                     <Typography variant="h6" fontWeight={700} sx={{ color: tokens.textPrimary, lineHeight: 1.2 }}>
@@ -1152,8 +1194,12 @@ export const ReportsTab: React.FC<{ visible: boolean }> = ({ visible }) => {
                                         '& .MuiSvgIcon-root': { color: tokens.textMuted },
                                     }}
                                 >
-                                    <MenuItem value="all" sx={boundedTextSx}>{t('nui_reports.all')}</MenuItem>
-                                    <MenuItem value="open" sx={boundedTextSx}>{t('discord_bot.tickets.status_labels.open')}</MenuItem>
+                                    <MenuItem value="all" sx={boundedTextSx}>
+                                        {t('nui_reports.all')}
+                                    </MenuItem>
+                                    <MenuItem value="open" sx={boundedTextSx}>
+                                        {t('discord_bot.tickets.status_labels.open')}
+                                    </MenuItem>
                                     <MenuItem value="inReview" sx={boundedTextSx}>
                                         {t('discord_bot.tickets.status_labels.in_review')}
                                     </MenuItem>
@@ -1208,7 +1254,10 @@ export const ReportsTab: React.FC<{ visible: boolean }> = ({ visible }) => {
                             minWidth={0}
                         >
                             <Inbox sx={{ color: tokens.textMuted, fontSize: 40, opacity: 0.5 }} />
-                            <Typography variant="body2" sx={{ color: tokens.textMuted, textAlign: 'center', ...boundedTextSx }}>
+                            <Typography
+                                variant="body2"
+                                sx={{ color: tokens.textMuted, textAlign: 'center', ...boundedTextSx }}
+                            >
                                 {t('nui_reports.select_ticket_hint')}
                             </Typography>
                         </Box>

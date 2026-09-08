@@ -83,8 +83,15 @@ function useLiveConsoleController() {
         hasOlderBlocks: false,
         isLoadingOlder: false,
     });
-    const { isSaveSheetOpen, isConnected, showSearchBar, showFilterPanel, bufferVersion, hasOlderBlocks, isLoadingOlder } =
-        state;
+    const {
+        isSaveSheetOpen,
+        isConnected,
+        showSearchBar,
+        showFilterPanel,
+        bufferVersion,
+        hasOlderBlocks,
+        isLoadingOlder,
+    } = state;
     const termInputRef = useRef<HTMLInputElement>(null);
     const [consoleOptions, setConsoleOptions] = useAtom(liveConsoleOptionsAtom);
     const consoleOptionsRef = useRef(consoleOptions);

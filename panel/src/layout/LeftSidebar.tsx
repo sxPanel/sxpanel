@@ -720,10 +720,4 @@ export function SidebarNavContent() {
 // Re-export so the mobile sheet (and TopNav) can use the same bottom controls.
 // SidebarServerExtraActions is also re-exported so the Dashboard page can surface the same
 // quick schedule/announce/kick-all actions without duplicating the logic.
-export {
-    ServerStatusCard,
-    SidebarServerControls,
-    SidebarServerExtraActions,
-    SidebarUserButton,
-    SidebarCollapsedCtx,
-};
+export { ServerStatusCard, SidebarServerControls, SidebarServerExtraActions, SidebarUserButton, SidebarCollapsedCtx };

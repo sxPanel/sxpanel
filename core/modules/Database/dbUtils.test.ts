@@ -1,4 +1,4 @@
-import { suite, it, expect, vi, beforeEach } from 'vitest';
+import { suite, it, expect } from 'vitest';
 import { genActionID, genWhitelistRequestID, genReportID, DuplicateKeyError } from './dbUtils';
 
 suite('dbUtils', () => {

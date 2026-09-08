@@ -28,8 +28,5 @@ export const PlayerlistDroppedSchema = z.object({
 });
 export type PlayerlistDroppedType = z.infer<typeof PlayerlistDroppedSchema>;
 
-export const PlayerlistEventSchema = z.discriminatedUnion('event', [
-    PlayerlistJoiningSchema,
-    PlayerlistDroppedSchema,
-]);
+export const PlayerlistEventSchema = z.discriminatedUnion('event', [PlayerlistJoiningSchema, PlayerlistDroppedSchema]);
 export type PlayerlistEventType = z.infer<typeof PlayerlistEventSchema>;

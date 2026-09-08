@@ -1,7 +1,7 @@
 import { CalendarRangeIcon, DoorOpenIcon, ShapesIcon, TrendingDownIcon, XIcon, ZapIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { DisplayLodType, DrilldownRangeSelectionType } from '@/pages/PlayerDropsPage/playerDropsTypes';
+import type { DisplayLodType } from '@/pages/PlayerDropsPage/playerDropsTypes';
 
 export type PlayerDropsHeaderStats = {
     totalDrops: number;

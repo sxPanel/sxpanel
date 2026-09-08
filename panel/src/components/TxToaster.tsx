@@ -16,7 +16,7 @@ import {
 
 const MarkdownProse = lazy(() => import('@/components/MarkdownProse'));
 
-import { validToastTypes, type TxToastType } from '@/components/toastTypes';
+import { type TxToastType } from '@/components/toastTypes';
 
 type TxToastData =
     | string

@@ -132,7 +132,10 @@ export function useSettingsPageState() {
             const saveResp = await saveApi({
                 pathParams: { card: source.cardId },
                 data: { resetKeys, changes },
-                timeout: source.cardId === 'discord' || source.cardId === 'discord-bot' ? ApiTimeout.REALLY_REALLY_LONG : ApiTimeout.LONG,
+                timeout:
+                    source.cardId === 'discord' || source.cardId === 'discord-bot'
+                        ? ApiTimeout.REALLY_REALLY_LONG
+                        : ApiTimeout.LONG,
                 toastId,
             });
             if (!saveResp) throw new Error('empty_response');
