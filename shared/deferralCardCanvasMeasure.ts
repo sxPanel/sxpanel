@@ -5,10 +5,7 @@ import {
     DEFERRAL_CARD_PADDING,
     type DeferralCanvasElement,
 } from './deferralCardCanvasSchema';
-import {
-    DEFERRAL_WATERMARK_MAX_HEIGHT_PX,
-    DEFERRAL_WATERMARK_MAX_WIDTH_PX,
-} from './deferralCardWatermark';
+import { DEFERRAL_WATERMARK_MAX_HEIGHT_PX, DEFERRAL_WATERMARK_MAX_WIDTH_PX } from './deferralCardWatermark';
 
 const BR_TAG_SPLIT = /<br\s*\/?>/gi;
 const BR_OR_NL_SPLIT = /<br\s*\/?>|\n/gi;
@@ -92,8 +89,7 @@ export function estimateCanvasElementSize(
             return { width: cardContentWidth, height: el.height ?? 12 };
         case 'heading': {
             const text = stripHtmlForMeasure(el.content ?? 'Title');
-            const width =
-                el.width ?? Math.min(cardContentWidth, Math.max(80, text.length * (fontSize * 0.55)));
+            const width = el.width ?? Math.min(cardContentWidth, Math.max(80, text.length * (fontSize * 0.55)));
             const height = el.height ?? estimateWrappedTextHeight(text, fontSize, width);
             return { width, height };
         }
@@ -105,10 +101,7 @@ export function estimateCanvasElementSize(
             const lineCount = Math.max(1, htmlLines.length || 1);
             const width =
                 el.width ??
-                Math.min(
-                    cardContentWidth,
-                    Math.max(64, Math.ceil((text.length / lineCount) * (fontSize * 0.52))),
-                );
+                Math.min(cardContentWidth, Math.max(64, Math.ceil((text.length / lineCount) * (fontSize * 0.52))));
             const height =
                 el.height ??
                 (htmlLines.length > 1
@@ -151,18 +144,14 @@ export function estimateCanvasElementSize(
                     ),
                 );
             const plain = stripHtmlForMeasure(label);
-            const height =
-                el.height ??
-                estimateWrappedTextHeight(plain, lineFontSize, width);
+            const height = el.height ?? estimateWrappedTextHeight(plain, lineFontSize, width);
             return { width, height };
         }
         case 'ban_reason': {
             const lineFontSize = el.style?.fontSize ?? 16;
             const preview = 'Reason: Example ban reason text';
-            const width =
-                el.width ?? Math.min(cardContentWidth, Math.max(200, preview.length * (lineFontSize * 0.45)));
-            const height =
-                el.height ?? estimateWrappedTextHeight(preview, lineFontSize, width);
+            const width = el.width ?? Math.min(cardContentWidth, Math.max(200, preview.length * (lineFontSize * 0.45)));
+            const height = el.height ?? estimateWrappedTextHeight(preview, lineFontSize, width);
             return { width, height };
         }
         default:

@@ -1,15 +1,8 @@
 const modulename = 'WebServer:MasterActions:Action';
-import {
-    DatabaseActionBanType,
-    DatabaseActionType,
-    DatabaseActionWarnType,
-    DatabasePlayerType,
-} from '@modules/Database/databaseTypes';
 import { now } from '@lib/misc';
 import { GenericApiErrorResp } from '@shared/genericApiTypes';
 import consoleFactory from '@lib/console';
 import { AuthedCtx } from '@modules/WebServer/ctxTypes';
-import { SYM_RESET_CONFIG } from '@lib/symbols';
 const console = consoleFactory(modulename);
 
 const isObjectRecord = (value: unknown): value is Record<string, unknown> =>

@@ -13,6 +13,7 @@ import { ChevronsDownIcon, Loader2Icon } from 'lucide-react';
 import LiveConsoleFooter from './LiveConsoleFooter';
 import LiveConsoleHeader from './LiveConsoleHeader';
 import LiveConsoleSearchBar from './LiveConsoleSearchBar';
+import LiveConsoleFilterPanel from './LiveConsoleFilterPanel';
 import LiveConsoleSaveSheet from './LiveConsoleSaveSheet';
 
 import ScrollDownAddon from './ScrollDownAddon';
@@ -57,6 +58,8 @@ type LiveConsolePageState = {
     isSaveSheetOpen: boolean;
     isConnected: boolean;
     showSearchBar: boolean;
+    showFilterPanel: boolean;
+    bufferVersion: number;
     hasOlderBlocks: boolean;
     isLoadingOlder: boolean;
 };
@@ -75,10 +78,20 @@ function useLiveConsoleController() {
         isSaveSheetOpen: false,
         isConnected: false,
         showSearchBar: false,
+        showFilterPanel: false,
+        bufferVersion: 0,
         hasOlderBlocks: false,
         isLoadingOlder: false,
     });
-    const { isSaveSheetOpen, isConnected, showSearchBar, hasOlderBlocks, isLoadingOlder } = state;
+    const {
+        isSaveSheetOpen,
+        isConnected,
+        showSearchBar,
+        showFilterPanel,
+        bufferVersion,
+        hasOlderBlocks,
+        isLoadingOlder,
+    } = state;
     const termInputRef = useRef<HTMLInputElement>(null);
     const [consoleOptions, setConsoleOptions] = useAtom(liveConsoleOptionsAtom);
     const consoleOptionsRef = useRef(consoleOptions);
@@ -103,6 +116,18 @@ function useLiveConsoleController() {
     const spawnLineNumbersRef = useRef<number[]>([]);
     const hasReceivedDataRef = useRef(false);
     const refreshPage = useContentRefresh();
+
+    // Bumped (throttled) whenever the terminal buffer changes, so the filter
+    // panel knows to re-scan without polling.
+    const bufferVersionRef = useRef(0);
+    const bumpBufferVersion = useMemo(
+        () =>
+            throttle(400, () => {
+                bufferVersionRef.current += 1;
+                dispatch({ bufferVersion: bufferVersionRef.current });
+            }),
+        [],
+    );
 
     /**
      * xterm stuff
@@ -297,7 +322,10 @@ function useLiveConsoleController() {
             }
         } else if (e.code === 'Escape') {
             searchAddon.clearDecorations();
-            dispatch({ showSearchBar: false });
+            dispatch({ showSearchBar: false, showFilterPanel: false });
+        } else if (e.code === 'KeyF' && (e.ctrlKey || e.metaKey) && e.shiftKey) {
+            dispatch({ showFilterPanel: !showFilterPanel });
+            e.preventDefault();
         } else if (e.code === 'KeyF' && (e.ctrlKey || e.metaKey)) {
             if (showSearchBar) {
                 sendSearchKeyEvent('focus');
@@ -434,6 +462,7 @@ function useLiveConsoleController() {
                     hasReceivedDataRef.current = true;
                 }
                 writeToTerminal(data);
+                bumpBufferVersion();
             } else if (data && typeof data === 'object' && 'blocks' in data) {
                 //Initial structured data
                 const initData = data as LiveConsoleInitialData;
@@ -445,6 +474,7 @@ function useLiveConsoleController() {
                     for (const block of initData.blocks) {
                         writeToTerminal(block.data);
                     }
+                    bumpBufferVersion();
                 } else {
                     dispatch({ hasOlderBlocks: false });
                     term.writeln(`\n${ANSI.YELLOW}${t('panel.live_console.waiting_output')}${ANSI.RESET}`);
@@ -502,6 +532,7 @@ function useLiveConsoleController() {
         dispatch({ showSearchBar: false });
         spawnLineNumbersRef.current = [];
         term.write(`${ANSI.YELLOW}${t('panel.live_console.console_cleared')}${ANSI.RESET}\n`);
+        bumpBufferVersion();
         //Persist the clear so reconnects don't restore old data
         if (pageSocket.current) {
             pageSocket.current.emit('consoleClear' as any);
@@ -509,6 +540,9 @@ function useLiveConsoleController() {
     };
     const toggleSearchBar = () => {
         dispatch({ showSearchBar: !showSearchBar });
+    };
+    const toggleFilterPanel = () => {
+        dispatch({ showFilterPanel: !showFilterPanel });
     };
     const toggleSaveSheet = () => {
         dispatch({ isSaveSheetOpen: !isSaveSheetOpen });
@@ -545,6 +579,7 @@ function useLiveConsoleController() {
             oldestLoadedSeqRef.current = resp.blocks[0].seq;
             serverOldestSeqRef.current = resp.oldestSeq;
             dispatch({ hasOlderBlocks: resp.blocks[0].seq > resp.oldestSeq });
+            bumpBufferVersion();
 
             //Restore scroll position (offset by new lines added)
             const addedLines = term.buffer.active.baseY - prevBaseY;
@@ -589,6 +624,9 @@ function useLiveConsoleController() {
         hasOlderBlocks,
         isLoadingOlder,
         showSearchBar,
+        showFilterPanel,
+        bufferVersion,
+        term,
         searchAddon,
         containerRef,
         jumpBottomBtnRef,
@@ -600,11 +638,13 @@ function useLiveConsoleController() {
         inputSuggestions,
         loadOlderBlocks,
         setShowSearchBar: (showSearchBar: boolean) => dispatch({ showSearchBar }),
+        setShowFilterPanel: (showFilterPanel: boolean) => dispatch({ showFilterPanel }),
         scrollToBottom: () => term.scrollToBottom(),
         consoleWrite,
         clearConsole,
         toggleSaveSheet,
         toggleSearchBar,
+        toggleFilterPanel,
         setConsoleOptions,
     };
 }
@@ -663,6 +703,14 @@ export default function LiveConsolePage() {
                     <LiveConsoleSearchBar setShow={controller.setShowSearchBar} searchAddon={controller.searchAddon} />
                 ) : null}
 
+                {controller.showFilterPanel ? (
+                    <LiveConsoleFilterPanel
+                        term={controller.term}
+                        bufferVersion={controller.bufferVersion}
+                        onClose={() => controller.setShowFilterPanel(false)}
+                    />
+                ) : null}
+
                 <button
                     ref={controller.jumpBottomBtnRef}
                     className="absolute right-2 bottom-0 z-10 hidden opacity-75"
@@ -679,6 +727,7 @@ export default function LiveConsolePage() {
                 consoleClear={controller.clearConsole}
                 toggleSaveSheet={controller.toggleSaveSheet}
                 toggleSearchBar={controller.toggleSearchBar}
+                toggleFilterPanel={controller.toggleFilterPanel}
                 consoleOptions={controller.consoleOptions}
                 onOptionsChange={controller.setConsoleOptions}
             />

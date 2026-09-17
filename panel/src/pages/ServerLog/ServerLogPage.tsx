@@ -104,6 +104,7 @@ export default function ServerLogPage() {
                         eventCounts={log.eventCounts}
                         searchText={log.searchText}
                         playerFilter={log.playerFilter}
+                        playerCommandsOnly={log.playerCommandsOnly}
                         soundEnabled={log.soundEnabled}
                         sessions={log.sessions}
                         activeSession={log.activeSession}
@@ -114,6 +115,7 @@ export default function ServerLogPage() {
                         setAllFilters={log.setAllFilters}
                         setSearchText={log.setSearchText}
                         setPlayerFilter={log.setPlayerFilter}
+                        togglePlayerCommandsOnly={log.togglePlayerCommandsOnly}
                         toggleSound={log.toggleSound}
                         jumpToTime={log.jumpToTime}
                     />

@@ -223,7 +223,9 @@ function AvailableUpdateCard({
                             <SparklesIcon className="size-6" />
                         </div>
                         <p className="text-sm font-medium">Could not fetch release information</p>
-                        <p className="text-muted-foreground/70 text-xs">Try refreshing, or check your connection to GitHub.</p>
+                        <p className="text-muted-foreground/70 text-xs">
+                            Try refreshing, or check your connection to GitHub.
+                        </p>
                     </div>
                 </CardContent>
             </Card>
@@ -385,7 +387,8 @@ export default function SelfUpdaterPage() {
     }
 
     const { currentVersion, updateStatus } = data;
-    const isBusy = updateStatus.phase !== 'idle' && updateStatus.phase !== 'error' && updateStatus.phase !== 'extracted';
+    const isBusy =
+        updateStatus.phase !== 'idle' && updateStatus.phase !== 'error' && updateStatus.phase !== 'extracted';
 
     return (
         <div className="mx-auto w-full max-w-5xl space-y-4">

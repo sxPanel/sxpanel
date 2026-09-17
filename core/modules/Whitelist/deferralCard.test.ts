@@ -9,16 +9,24 @@ import {
 } from '@shared/deferralCardTypes';
 import { templateWithCanvas } from '@shared/deferralCardCanvas';
 import { extractPngBufferFromLogoSvg } from '@shared/deferralCardLogo';
+import { txHostConfig } from '@core/globalData';
 
-const LOGO_SVG_PATH = path.join(__dirname, '../../../panel/public/logo.svg');
+const REPO_ROOT = path.join(__dirname, '../../..');
+const LOGO_SVG_PATH = path.join(REPO_ROOT, 'panel/public/logo.svg');
 
-vi.mock('@core/globalData', () => ({
-    txHostConfig: {
-        txaUrl: 'https://panel.example.com',
-        txaPort: 40120,
-        netInterface: null,
-    },
-}));
+vi.mock('@core/globalData', async () => {
+    const nodePath = await import('node:path');
+    const repoRoot = nodePath.join(__dirname, '../../..');
+    return {
+        txHostConfig: {
+            txaUrl: 'https://panel.example.com',
+            txaPort: 40120,
+            netInterface: null,
+        },
+        txDevEnv: { ENABLED: true, SRC_PATH: repoRoot },
+        txEnv: { txaPath: repoRoot },
+    };
+});
 
 describe('renderDeferralCard', () => {
     beforeEach(() => {
@@ -141,6 +149,23 @@ describe('renderDeferralCard', () => {
         expect(html).toContain(`https://panel.example.com${DEFERRAL_CARD_WATERMARK_PATH}`);
         expect(html).not.toContain('/logo.svg');
         expect(html).not.toContain('forum-cfx-re.akamaized.net');
+    });
+
+    it('inlines the watermark as a data URI when no public panel URL is configured', async () => {
+        const originalUrl = txHostConfig.txaUrl;
+        (txHostConfig as { txaUrl?: string }).txaUrl = undefined;
+        try {
+            const html = await renderDeferralCard({
+                scenario: 'ban_permanent',
+                title: 'Banned',
+                body: 'test',
+            });
+            expect(html).toContain('src="data:image/png;base64,');
+            expect(html).not.toContain('127.0.0.1');
+            expect(html).not.toContain(DEFERRAL_CARD_WATERMARK_PATH);
+        } finally {
+            (txHostConfig as { txaUrl?: string }).txaUrl = originalUrl;
+        }
     });
 
     it('pins watermark logo to bottom-right at txAdmin size and opacity', async () => {

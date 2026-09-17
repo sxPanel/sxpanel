@@ -11,7 +11,6 @@ import { UpdateConfigKeySet } from '@modules/ConfigStore/utils';
 import {
     childProcessEventBlackHole,
     getFxSpawnVariables,
-    getMutableConvars,
     getRuntimeConvars,
     isValidChildProcess,
     mutableConvarConfigDependencies,

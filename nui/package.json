@@ -1,6 +1,6 @@
 {
     "name": "sxpanel-nui",
-    "version": "0.6.2-beta",
+    "version": "0.6.3-Beta",
     "description": "The NUI package contains all the in-game interface (menu and warn page) of sxPanel.",
     "main": "index.js",
     "type": "module",

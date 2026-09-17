@@ -72,8 +72,7 @@ describe('deferralCardSvg', () => {
     });
 
     it('strips javascript: hrefs from player-facing SVG markup', () => {
-        const raw =
-            '<svg xmlns="http://www.w3.org/2000/svg"><a href="javascript:alert(1)"><rect/></a></svg>';
+        const raw = '<svg xmlns="http://www.w3.org/2000/svg"><a href="javascript:alert(1)"><rect/></a></svg>';
         const out = sanitizeSvgMarkup(raw);
         expect(out).not.toContain('javascript:');
     });
@@ -108,12 +107,46 @@ describe('deferralCardSvg', () => {
     it('clamps oversized GIF frame delays so the in-game animation animates at a sane speed', async () => {
         // Minimal GIF89a: header + LSD + 2-color GCT + one GCE (delay 200cs) + image desc + trailer.
         const bytes = new Uint8Array([
-            0x47, 0x49, 0x46, 0x38, 0x39, 0x61, // GIF89a
-            0x01, 0x00, 0x01, 0x00, 0x80, 0x00, 0x00, // LSD: 1x1, GCT(2 colors)
-            0x00, 0x00, 0x00, 0xff, 0xff, 0xff, // GCT
-            0x21, 0xf9, 0x04, 0x00, 0xc8, 0x00, 0x00, 0x00, // GCE: delayLo=200, delayHi=0
-            0x2c, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, // Image Descriptor
-            0x02, 0x02, 0x00, // minimal image data sub-blocks
+            0x47,
+            0x49,
+            0x46,
+            0x38,
+            0x39,
+            0x61, // GIF89a
+            0x01,
+            0x00,
+            0x01,
+            0x00,
+            0x80,
+            0x00,
+            0x00, // LSD: 1x1, GCT(2 colors)
+            0x00,
+            0x00,
+            0x00,
+            0xff,
+            0xff,
+            0xff, // GCT
+            0x21,
+            0xf9,
+            0x04,
+            0x00,
+            0xc8,
+            0x00,
+            0x00,
+            0x00, // GCE: delayLo=200, delayHi=0
+            0x2c,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x01,
+            0x00,
+            0x01,
+            0x00,
+            0x00, // Image Descriptor
+            0x02,
+            0x02,
+            0x00, // minimal image data sub-blocks
             0x3b, // trailer
         ]);
         const file = new File([bytes], 'slow.gif', { type: 'image/gif' });

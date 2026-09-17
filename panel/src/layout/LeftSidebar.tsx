@@ -28,6 +28,7 @@ import { useCloseAllSheets } from '@/hooks/sheets';
 import { useAddonLoader } from '@/hooks/addons';
 import { useLocale } from '@/hooks/locale';
 import { SIDEBAR_SECTIONS } from './sidebarConfig';
+import { isPanelFeatureEnabled } from '@/lib/panelFeatures';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -673,11 +674,16 @@ export function SidebarNavContent() {
                 collapsed ? 'px-1' : 'px-2',
             )}
         >
-            {SIDEBAR_SECTIONS.map((section) => (
-                <SidebarSection key={section.sectionKey} label={t(section.sectionKey)}>
-                    {section.items
-                        .filter((item) => !(window.txConsts.hideReportsNav && item.href.startsWith('/reports')))
-                        .map((item) => (
+            {SIDEBAR_SECTIONS.map((section) => {
+                const visibleItems = section.items
+                    .filter((item) => !(window.txConsts.hideReportsNav && item.href.startsWith('/reports')))
+                    .filter((item) => !item.featureFlag || isPanelFeatureEnabled(item.featureFlag));
+                const isAddons = section.sectionKey === 'panel.sidebar.section.addons';
+                const isSystemDev = import.meta.env.DEV && section.sectionKey === 'panel.sidebar.section.system';
+                if (!visibleItems.length && !(isAddons && addonPages.length) && !isSystemDev) return null;
+                return (
+                    <SidebarSection key={section.sectionKey} label={t(section.sectionKey)}>
+                        {visibleItems.map((item) => (
                             <SidebarNavItem
                                 key={item.href}
                                 href={item.href}
@@ -686,26 +692,27 @@ export function SidebarNavContent() {
                                 disabled={item.permission ? !hasPerm(item.permission) : false}
                             />
                         ))}
-                    {section.sectionKey === 'panel.sidebar.section.addons' &&
-                        addonPages.map((page) => (
+                        {isAddons &&
+                            addonPages.map((page) => (
+                                <SidebarNavItem
+                                    key={page.path}
+                                    href={page.path}
+                                    icon={BlocksIcon}
+                                    label={page.title}
+                                    disabled={page.permission ? !hasPerm(page.permission) : false}
+                                />
+                            ))}
+                        {isSystemDev && (
                             <SidebarNavItem
-                                key={page.path}
-                                href={page.path}
-                                icon={BlocksIcon}
-                                label={page.title}
-                                disabled={page.permission ? !hasPerm(page.permission) : false}
+                                href="/advanced"
+                                icon={WrenchIcon}
+                                label={t('panel.sidebar.item.advanced')}
+                                disabled={!hasPerm('all_permissions')}
                             />
-                        ))}
-                    {import.meta.env.DEV && section.sectionKey === 'panel.sidebar.section.system' && (
-                        <SidebarNavItem
-                            href="/advanced"
-                            icon={WrenchIcon}
-                            label={t('panel.sidebar.item.advanced')}
-                            disabled={!hasPerm('all_permissions')}
-                        />
-                    )}
-                </SidebarSection>
-            ))}
+                        )}
+                    </SidebarSection>
+                );
+            })}
         </nav>
     );
 }
@@ -713,10 +720,4 @@ export function SidebarNavContent() {
 // Re-export so the mobile sheet (and TopNav) can use the same bottom controls.
 // SidebarServerExtraActions is also re-exported so the Dashboard page can surface the same
 // quick schedule/announce/kick-all actions without duplicating the logic.
-export {
-    ServerStatusCard,
-    SidebarServerControls,
-    SidebarServerExtraActions,
-    SidebarUserButton,
-    SidebarCollapsedCtx,
-};
+export { ServerStatusCard, SidebarServerControls, SidebarServerExtraActions, SidebarUserButton, SidebarCollapsedCtx };

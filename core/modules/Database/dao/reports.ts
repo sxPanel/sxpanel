@@ -6,7 +6,6 @@ import consoleFactory from '@lib/console';
 import type {
     DatabaseTicketType,
     TicketStatus,
-    TicketPlayerRef,
     TicketMessage,
     TicketLogContext,
     StaffNote,

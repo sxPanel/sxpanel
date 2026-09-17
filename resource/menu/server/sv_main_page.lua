@@ -48,6 +48,38 @@ RegisterNetEvent('txsv:req:sendAnnouncement', function(message)
     end
 end)
 
+--- Restarts the FXServer. Bridged to sxPanel core, which performs the actual
+--- restart (this resource cannot restart the process it's running in).
+RegisterNetEvent('txsv:req:restartServer', function()
+    local src = source
+    local allow = PlayerHasTxPermission(src, 'control.server')
+    TriggerEvent('txsv:logger:menuEvent', src, 'restartServer', allow)
+    if allow then
+        PrintStructuredTrace(json.encode({
+            type = 'txAdminCommandBridge',
+            command = 'restartServer',
+            author = TxAdminActionAuthor(TX_ADMINS[tostring(src)]),
+            reason = 'in-game admin menu',
+        }))
+    end
+end)
+
+--- Stops the FXServer. Bridged to sxPanel core; the server will stay offline
+--- until manually started again from the web panel.
+RegisterNetEvent('txsv:req:stopServer', function()
+    local src = source
+    local allow = PlayerHasTxPermission(src, 'control.server')
+    TriggerEvent('txsv:logger:menuEvent', src, 'stopServer', allow)
+    if allow then
+        PrintStructuredTrace(json.encode({
+            type = 'txAdminCommandBridge',
+            command = 'stopServer',
+            author = TxAdminActionAuthor(TX_ADMINS[tostring(src)]),
+            reason = 'in-game admin menu',
+        }))
+    end
+end)
+
 RegisterNetEvent('txsv:req:clearArea', function(radius)
     local src = source
     local allow = PlayerHasTxPermission(src, 'menu.clear_area')

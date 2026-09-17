@@ -14,6 +14,8 @@ import {
 import { banDurationToShortString, banDurationToString, cn } from '@/lib/utils';
 import { Link, useLocation } from 'wouter';
 import { useBanTemplates } from '@/hooks/banTemplates';
+import { useAdminPerms } from '@/hooks/auth';
+import { txToast } from '@/components/TxToaster';
 
 // Consts
 const reasonTruncateLength = 150;
@@ -44,6 +46,8 @@ type BanFormComponentProps = BanFormProps & {
  */
 export default function BanForm({ disabled, onNavigateAway, ref }: BanFormComponentProps) {
     const { t } = useLocale();
+    const { hasPerm } = useAdminPerms();
+    const canPermaBan = hasPerm('players.ban.permanent');
     const banTemplates = useBanTemplates();
     const reasonRef = useRef<HTMLInputElement>(null);
     const customMultiplierRef = useRef<HTMLInputElement>(null);
@@ -85,6 +89,11 @@ export default function BanForm({ disabled, onNavigateAway, ref }: BanFormCompon
             if (!banTemplates) return;
             const template = banTemplates.find((template) => template.id === value);
             if (!template) return;
+
+            if (template.duration === 'permanent' && !canPermaBan) {
+                txToast.warning(t('panel.player_modal.ban.no_permission_permanent'));
+                return;
+            }
 
             const processedDuration = banDurationToString(template.duration);
             if (defaultDurations.includes(processedDuration)) {
@@ -213,9 +222,11 @@ export default function BanForm({ disabled, onNavigateAway, ref }: BanFormCompon
                             <SelectItem value="2 days">{t('panel.player_modal.ban.duration.days_2')}</SelectItem>
                             <SelectItem value="1 week">{t('panel.player_modal.ban.duration.week_1')}</SelectItem>
                             <SelectItem value="2 weeks">{t('panel.player_modal.ban.duration.weeks_2')}</SelectItem>
-                            <SelectItem value="permanent" className="font-bold">
-                                {t('panel.player_modal.ban.duration.permanent')}
-                            </SelectItem>
+                            {canPermaBan && (
+                                <SelectItem value="permanent" className="font-bold">
+                                    {t('panel.player_modal.ban.duration.permanent')}
+                                </SelectItem>
+                            )}
                         </SelectContent>
                     </Select>
                     <div className="flex flex-row gap-2">

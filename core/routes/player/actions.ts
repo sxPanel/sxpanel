@@ -1,5 +1,4 @@
 const modulename = 'WebServer:PlayerActions';
-import humanizeDuration, { Unit } from 'humanize-duration';
 import playerResolver from '@lib/player/playerResolver';
 import { GenericApiErrorResp, GenericApiResp } from '@shared/genericApiTypes';
 import { PlayerClass, ServerPlayer } from '@lib/player/playerClasses';
@@ -169,6 +168,9 @@ export async function handleBan(ctx: AuthedCtx, player: PlayerClass): Promise<Ge
     //Check permissions
     if (!ctx.admin.testPermission('players.ban', modulename)) {
         return apiError('player_action.no_permission', "You don't have permission to execute this action.");
+    }
+    if (expiration === false && !ctx.admin.testPermission('players.ban.permanent', modulename)) {
+        return apiError('player_action.no_permission', "You don't have permission to apply permanent bans.");
     }
 
     //Validating player - hwids.length can be zero

@@ -10,7 +10,7 @@
         "projectName": "Context Loading...",
         "maxClients": 48,
         "switchPageKey": "Tab",
-        "sxPanelVersion": "0.6.2-beta",
+        "sxPanelVersion": "0.6.3-Beta",
         "alignRight": false,
         "tagDefinitions": [],
         "reportsEnabled": true

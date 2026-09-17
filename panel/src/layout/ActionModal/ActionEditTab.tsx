@@ -55,6 +55,7 @@ export default function ActionEditTab({ action, refreshModalData }: ActionEditTa
     };
 
     const hasBanPerm = hasPerm('players.ban');
+    const canPermaBan = hasPerm('players.ban.permanent');
     const isRevoked = !!action.revocation;
 
     return (
@@ -98,9 +99,11 @@ export default function ActionEditTab({ action, refreshModalData }: ActionEditTa
                                     <SelectItem value="2 weeks">
                                         {t('panel.player_modal.ban.duration.weeks_2')}
                                     </SelectItem>
-                                    <SelectItem value="permanent" className="font-bold">
-                                        {t('panel.player_modal.ban.duration.permanent')}
-                                    </SelectItem>
+                                    {canPermaBan && (
+                                        <SelectItem value="permanent" className="font-bold">
+                                            {t('panel.player_modal.ban.duration.permanent')}
+                                        </SelectItem>
+                                    )}
                                 </SelectContent>
                             </Select>
                             <div className="flex flex-row gap-2">

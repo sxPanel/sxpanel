@@ -1,5 +1,4 @@
 import { playerlistAtom, serverMutexAtom, tagDefinitionsAtom } from '@/hooks/playerlist';
-import cleanPlayerName from '@shared/cleanPlayerName';
 import {
     AUTO_TAG_DEFINITIONS,
     getPrimaryPlayerTag,
@@ -214,7 +213,7 @@ function PlayerlistPlayer({ virtualItem, player, modalOpener, tagLookup }: Playe
 
     return (
         <div
-            className="hover:bg-secondary/30 focus-visible:bg-secondary/30 absolute left-0 top-0 flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 transition-colors focus-visible:outline-hidden"
+            className="hover:bg-secondary/30 focus-visible:bg-secondary/30 absolute top-0 left-0 flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 transition-colors focus-visible:outline-hidden"
             style={{
                 height: `${virtualItem.size}px`,
                 transform: `translateY(${virtualItem.start}px)`,
@@ -232,9 +231,7 @@ function PlayerlistPlayer({ virtualItem, player, modalOpener, tagLookup }: Playe
             <Avatar username={player.displayName} className="size-7 shrink-0 rounded-md text-[10px]" />
             <div className="min-w-0 flex-1 leading-tight">
                 <p className="text-foreground truncate text-sm font-semibold">{player.displayName}</p>
-                <p className="text-muted-foreground/70 mt-0.5 font-mono text-[11px] leading-none">
-                    #{player.netid}
-                </p>
+                <p className="text-muted-foreground/70 mt-0.5 font-mono text-[11px] leading-none">#{player.netid}</p>
             </div>
             {topTagData && (
                 <span

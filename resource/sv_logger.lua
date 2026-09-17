@@ -265,6 +265,10 @@ local function getMenuCommandMeta(action, data)
         return 'menu.viewids', 'menu.viewids'
     elseif action == 'showMapBlips' then
         return 'menu.mapblips', 'menu.mapblips'
+    elseif action == 'restartServer' then
+        return 'control.server.restart', 'control.server'
+    elseif action == 'stopServer' then
+        return 'control.server.stop', 'control.server'
     end
 
     return action, false
@@ -374,6 +378,10 @@ AddEventHandler('txsv:logger:menuEvent', function(source, action, allowed, data)
         else
             message = 'turned map blips off'
         end
+    elseif action == 'restartServer' then
+        message = 'requested a server restart'
+    elseif action == 'stopServer' then
+        message = 'requested a server stop'
 
     --In case of unknown event
     else

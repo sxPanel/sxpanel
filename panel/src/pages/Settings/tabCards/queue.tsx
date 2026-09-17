@@ -1,7 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DiscordRoleMultiSelect } from '@/components/DiscordRoleMultiSelect';
-import { isValidDiscordSnowflake } from '@/lib/discordRoleIds';
 import { Checkbox } from '@/components/ui/checkbox';
 import SwitchText from '@/components/SwitchText';
 import { PlusIcon, TrashIcon } from 'lucide-react';

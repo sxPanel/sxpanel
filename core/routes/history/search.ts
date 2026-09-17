@@ -13,7 +13,8 @@ const console = consoleFactory(modulename);
 const DEFAULT_LIMIT = 100; //cant override it for now
 const ALLOWED_SORTINGS = ['timestamp'] as const;
 type HistorySortingKey = (typeof ALLOWED_SORTINGS)[number];
-const isAllowedHistorySorting = (k: string): k is HistorySortingKey => (ALLOWED_SORTINGS as readonly string[]).includes(k);
+const isAllowedHistorySorting = (k: string): k is HistorySortingKey =>
+    (ALLOWED_SORTINGS as readonly string[]).includes(k);
 
 /**
  * Returns the players stats for the Players page table

@@ -283,6 +283,26 @@
                 "dialog_success": "Clearing area with radius of %{radius}m",
                 "dialog_error": "Invalid radius input. Try again."
             },
+            "server_controls": {
+                "restart": {
+                    "title": "Restart Server",
+                    "label": "Restart the FXServer process. Every player, including you, will be disconnected.",
+                    "dialog_title": "Restart Server",
+                    "dialog_desc": "This will restart the entire FXServer, disconnecting every player (including you). Type RESTART to confirm.",
+                    "dialog_placeholder": "Type RESTART to confirm",
+                    "dialog_error": "Confirmation text did not match. Type RESTART exactly to confirm.",
+                    "dialog_success": "Restarting the server..."
+                },
+                "stop": {
+                    "title": "Stop Server",
+                    "label": "Stop the FXServer process. The server stays offline until started again from the web panel.",
+                    "dialog_title": "Stop Server",
+                    "dialog_desc": "This will shut down the FXServer, taking the server offline until it is manually started again from the web panel. Type STOP to confirm.",
+                    "dialog_placeholder": "Type STOP to confirm",
+                    "dialog_error": "Confirmation text did not match. Type STOP exactly to confirm.",
+                    "dialog_success": "Stopping the server..."
+                }
+            },
             "player_ids": {
                 "title": "Toggle Player IDs",
                 "label": "Toggle showing player IDs (and other info) above the head of all nearby players",
@@ -1088,9 +1108,22 @@
                 "next": "Next",
                 "close": "Close"
             },
+            "filter": {
+                "title": "Filter",
+                "placeholder": "e.g. player command",
+                "hint": "space = match all · -word excludes · \"quoted phrase\"",
+                "empty_hint": "Type terms or pick a category to filter the console.",
+                "no_matches": "No lines match this filter.",
+                "match_count": "%{count} lines",
+                "bad_regex": "Invalid regex",
+                "refresh": "Rescan console",
+                "follow": "Follow new matches",
+                "jump_newest": "Newest"
+            },
             "footer": {
                 "saved": "Saved",
                 "search": "Search",
+                "filter": "Filter",
                 "clear": "Clear",
                 "download": "Download",
                 "options": "Options",
@@ -1789,6 +1822,7 @@
                 "game_menu": "Game Menu",
                 "game_notifications": "Game Notifications",
                 "game_reports": "Game Reports",
+                "panel_features": "Panel Features",
                 "danger_zone": "Danger Zone"
             },
             "cards": {
@@ -1805,6 +1839,19 @@
                 "optional": "Optional",
                 "hidden": "Hidden",
                 "visible": "Visible"
+            },
+            "panel_features": {
+                "blurb": "Turn optional sxPanel pages on or off. A disabled page is hidden from every menu and its link redirects to the dashboard. Changes take effect after the panel reloads.",
+                "item_desc": "When hidden, the %{page} page is removed from all navigation and its URL redirects to the dashboard.",
+                "item_desc_reports": "When hidden, the Reports page is removed from all navigation, the in-game /report command is disabled, the report APIs stop responding, and the Discord report commands are removed.",
+                "group_players": "Players & Moderation",
+                "group_analytics": "Analytics",
+                "group_server": "Server",
+                "group_system": "System",
+                "reload_prompt_title": "Reload to apply?",
+                "reload_prompt_msg": "Navigation and page changes only take effect after the panel reloads.",
+                "reload_now": "Reload now",
+                "reload_later": "Later"
             },
             "appearance": {
                 "theme": {
@@ -2855,6 +2902,7 @@
             },
             "ban": {
                 "no_permission": "You don't have permission to ban players.",
+                "no_permission_permanent": "You don't have permission to apply permanent bans.",
                 "reason_min_length": "The reason must be at least 3 characters long.",
                 "banning": "Banning player…",
                 "banning_btn": "Banning…",
@@ -3213,7 +3261,11 @@
             },
             "players_ban": {
                 "label": "Ban",
-                "description": "Ban players from the server."
+                "description": "Ban players from the server. Only temporary bans, unless \"Ban: Permanent\" is also granted."
+            },
+            "players_ban_permanent": {
+                "label": "Ban: Permanent",
+                "description": "Apply permanent bans, and turn existing temporary bans into permanent ones."
             },
             "players_unban": {
                 "label": "Unban",
@@ -3262,6 +3314,14 @@
             "players_delete": {
                 "label": "Remove Player Data",
                 "description": "Delete bans/warns, players, and player identifiers."
+            },
+            "txadmin_log_view_ips": {
+                "label": "View Login IPs",
+                "description": "View the IP addresses recorded in admin login log entries."
+            },
+            "commands_resources_download": {
+                "label": "Download Resources",
+                "description": "Zip and download a resource folder from the server host."
             }
         },
         "shell": {
@@ -3891,6 +3951,51 @@
             },
             "system_max_clients_corrected": {
                 "label": "Correct Max Clients"
+            },
+            "resource_download": {
+                "label": "Download Resource"
+            },
+            "selfUpdate_apply": {
+                "label": "Apply sxPanel Update"
+            },
+            "selfUpdate_download": {
+                "label": "Download sxPanel Update"
+            },
+            "config_appearance_customThemes": {
+                "label": "Custom Themes"
+            },
+            "config_panelFeatures_whitelistPage": {
+                "label": "Whitelist Page Enabled"
+            },
+            "config_panelFeatures_historyPage": {
+                "label": "History Page Enabled"
+            },
+            "config_panelFeatures_insightsPage": {
+                "label": "Insights Page Enabled"
+            },
+            "config_panelFeatures_playerDropsPage": {
+                "label": "Player Drops Page Enabled"
+            },
+            "config_panelFeatures_reportAnalyticsPage": {
+                "label": "Report Analytics Page Enabled"
+            },
+            "config_panelFeatures_resourcesPage": {
+                "label": "Resources Page Enabled"
+            },
+            "config_panelFeatures_cfgEditorPage": {
+                "label": "CFG Editor Page Enabled"
+            },
+            "config_panelFeatures_serverLogPage": {
+                "label": "Server Log Page Enabled"
+            },
+            "config_panelFeatures_actionLogPage": {
+                "label": "Action Log Page Enabled"
+            },
+            "config_panelFeatures_consoleLogPage": {
+                "label": "Console Log Page Enabled"
+            },
+            "config_panelFeatures_addonsPage": {
+                "label": "Addons Page Enabled"
             }
         },
         "deferral": {

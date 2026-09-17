@@ -1,6 +1,5 @@
 const modulename = 'WebServer:SetupGet';
-import path from 'node:path';
-import { txEnv, txHostConfig } from '@core/globalData';
+import { txHostConfig } from '@core/globalData';
 import { RECIPE_DEPLOYER_VERSION } from '@core/deployer/consts';
 import consoleFactory from '@lib/console';
 import { TxConfigState } from '@shared/enums';

@@ -1,7 +1,7 @@
 const modulename = 'Translator';
 import fs from 'node:fs';
 import Polyglot from 'node-polyglot';
-import { txEnv, txHostConfig } from '@core/globalData';
+import { txHostConfig } from '@core/globalData';
 import localeMap from '@shared/localeMap';
 import consoleFactory from '@lib/console';
 import fatalError from '@lib/fatalError';

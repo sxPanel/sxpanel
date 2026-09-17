@@ -1,6 +1,5 @@
 const modulename = 'FxPlayerlist';
 import { ServerPlayer } from '@lib/player/playerClasses.js';
-import { buildPlayerSessionId } from '@lib/player/playerSessionId.js';
 import { DatabaseActionWarnType, DatabasePlayerType } from '@modules/Database/databaseTypes';
 import consoleFactory from '@lib/console';
 import { now } from '@lib/misc';

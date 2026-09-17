@@ -14,7 +14,12 @@ import { discordMessageFlagIsComponentsV2 } from './componentsV2';
 
 const buildInputs = (embedConfig: Record<string, unknown>, health: PreviewHealth = 'online') => {
     const msg = createPreviewMsgFn();
-    const playerListData = buildPlayerListPlaceholderDataFromPlayers(embedConfig as PlainObject, MOCK_PREVIEW_PLAYERS, msg, 1);
+    const playerListData = buildPlayerListPlaceholderDataFromPlayers(
+        embedConfig as PlainObject,
+        MOCK_PREVIEW_PLAYERS,
+        msg,
+        1,
+    );
     const placeholders = buildMockEmbedPlaceholders(
         embedConfig as PlainObject,
         {

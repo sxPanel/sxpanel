@@ -199,7 +199,10 @@ export default function ThreadPerfCard() {
 
     return (
         <div className={cn(dashboardCardClass, 'flex h-full min-h-80 flex-col')}>
-            <DashboardCardHeader icon={BarChartHorizontalIcon} title={`${cursorThreadLabel ?? selectedThread} Performance`}>
+            <DashboardCardHeader
+                icon={BarChartHorizontalIcon}
+                title={`${cursorThreadLabel ?? selectedThread} Performance`}
+            >
                 {titleTimeIndicator && <span className="text-muted-foreground text-xs">{titleTimeIndicator}</span>}
                 <Select
                     defaultValue={selectedThread}

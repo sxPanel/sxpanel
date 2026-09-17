@@ -304,9 +304,7 @@ export const copyDirectoryIfDifferent = (srcPath: string, destPath: string) => {
 };
 
 export const getDefaultAddonWatchPaths = () => {
-    return (config.defaultAddons ?? [])
-        .map((addon) => addon.source)
-        .filter((sourcePath) => fs.existsSync(sourcePath));
+    return (config.defaultAddons ?? []).map((addon) => addon.source).filter((sourcePath) => fs.existsSync(sourcePath));
 };
 
 export const copyDefaultAddons = (targetPath: string, eventName: string) => {

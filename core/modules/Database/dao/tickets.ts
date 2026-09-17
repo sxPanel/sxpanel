@@ -5,7 +5,6 @@ import { randomUUID } from 'node:crypto';
 import type {
     DatabaseTicketType,
     TicketStatus,
-    TicketPlayerRef,
     TicketMessage,
     TicketLogContext,
     StaffNote,

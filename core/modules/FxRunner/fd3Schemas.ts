@@ -24,9 +24,22 @@ const CommandBridgePunishSchema = z.object({
     duration: z.string().optional(), // only meaningful for bans
 });
 
+/**
+ * Server control bridge payloads (restart / stop), produced from the in-game
+ * admin menu's "Server Controls" section. Requires the `control.server` perm,
+ * which is checked resource-side before this trace is ever printed.
+ */
+const CommandBridgeServerControlSchema = z.object({
+    type: z.literal('txAdminCommandBridge'),
+    command: z.enum(['restartServer', 'stopServer']),
+    author: zAuthor,
+    reason: z.string().optional(),
+});
+
 export const CommandBridgeSchema = z.discriminatedUnion('command', [
     CommandBridgeAnnouncementSchema,
     CommandBridgePunishSchema,
+    CommandBridgeServerControlSchema,
 ]);
 export type CommandBridgeType = z.infer<typeof CommandBridgeSchema>;
 

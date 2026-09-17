@@ -1,7 +1,14 @@
 import { emsg } from '@shared/emsg';
 import { generatePlayerListMessage, generateStatusMessage } from './statusMessage';
 import { resolveAdminPermission } from './bridgePermissions';
-import { buildDeniedReply, buildReply, buildReplyResult, buildSuccessResponse, logDiscordAdminAction, translateBot } from './bridgeReplyHelpers';
+import {
+    buildDeniedReply,
+    buildReply,
+    buildReplyResult,
+    buildSuccessResponse,
+    logDiscordAdminAction,
+    translateBot,
+} from './bridgeReplyHelpers';
 import type { BridgeMessage } from './bridgeServer';
 
 export type PersistentEmbedTarget = 'status' | 'playerList';

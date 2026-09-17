@@ -6,6 +6,7 @@ import consoleFactory, { processStdioWriteRaw } from '@lib/console.js';
 import { LoggerBase } from '../LoggerBase.js';
 import ConsoleTransformer from './ConsoleTransformer.js';
 import ConsoleLineEnum from './ConsoleLineEnum.js';
+import { shouldSkipSystemCommandLog } from './systemCommandFilter.js';
 import { txHostConfig } from '@core/globalData.js';
 import type { ConsoleBlock } from '@shared/consoleBlock';
 const console = consoleFactory(modulename);
@@ -158,7 +159,7 @@ export default class FXServerLogger extends LoggerBase {
      * Writes to the log a system command.
      */
     public logSystemCommand(cmd: string) {
-        if (cmd.startsWith('txaEvent "consoleCommand"')) return;
+        if (shouldSkipSystemCommandLog(cmd)) return;
         // if (/^txaEvent \w+ /.test(cmd)) {
         //     const [event, payload] = cmd.substring(9).split(' ', 2);
         //     cmd = chalk.italic(`<broadcasting txAdmin:events:${event}>`);

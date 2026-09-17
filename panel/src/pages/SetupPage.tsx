@@ -229,9 +229,7 @@ function StepPopularTemplates({
                                 className="border-border hover:border-primary hover:bg-accent flex flex-col gap-1 rounded-lg border p-4 text-left transition-colors disabled:opacity-50"
                             >
                                 <span className="font-semibold">{r.name}</span>
-                                {attribution && (
-                                    <span className="text-muted-foreground text-xs">{attribution}</span>
-                                )}
+                                {attribution && <span className="text-muted-foreground text-xs">{attribution}</span>}
                                 <span className="text-muted-foreground text-sm">{r.description}</span>
                                 <div className="mt-1 flex flex-wrap gap-1">
                                     {incompatible && (

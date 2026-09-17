@@ -9,7 +9,13 @@ type SparklineProps = {
 };
 
 /** Minimal responsive line/area chart — no charting library needed for a simple trend line. */
-export default function Sparkline({ points, height, strokeClassName = 'text-accent', fillArea, className }: SparklineProps) {
+export default function Sparkline({
+    points,
+    height,
+    strokeClassName = 'text-accent',
+    fillArea,
+    className,
+}: SparklineProps) {
     const gradientId = useId();
     if (points.length < 2) return null;
 

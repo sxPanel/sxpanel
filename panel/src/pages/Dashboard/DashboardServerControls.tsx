@@ -1,11 +1,4 @@
-import {
-    MegaphoneIcon,
-    PowerIcon,
-    PowerOffIcon,
-    RotateCcwIcon,
-    CalendarClockIcon,
-    XCircleIcon,
-} from 'lucide-react';
+import { MegaphoneIcon, PowerIcon, PowerOffIcon, RotateCcwIcon, CalendarClockIcon, XCircleIcon } from 'lucide-react';
 import { useAtomValue } from 'jotai';
 import { txConfigStateAtom, globalStatusAtom } from '@/hooks/status';
 import { TxConfigState, FxMonitorHealth } from '@shared/enums';
@@ -22,11 +15,18 @@ function ServerStatusBadge() {
     const isHealthy = status?.server.health === FxMonitorHealth.ONLINE;
     const label = isRunning ? (isHealthy ? 'Online' : 'Degraded') : 'Offline';
     const dotClass = isRunning && isHealthy ? 'bg-success' : isRunning ? 'bg-warning' : 'bg-muted-foreground/50';
-    const textClass = isRunning && isHealthy ? 'text-success-inline' : isRunning ? 'text-warning-inline' : 'text-muted-foreground';
+    const textClass =
+        isRunning && isHealthy ? 'text-success-inline' : isRunning ? 'text-warning-inline' : 'text-muted-foreground';
     const bgClass = isRunning && isHealthy ? 'bg-success/10' : isRunning ? 'bg-warning/10' : 'bg-secondary/50';
 
     return (
-        <span className={cn('flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold', bgClass, textClass)}>
+        <span
+            className={cn(
+                'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
+                bgClass,
+                textClass,
+            )}
+        >
             <span className={cn('size-1.5 shrink-0 rounded-full', dotClass, isRunning && 'animate-pulse')} />
             {label}
         </span>

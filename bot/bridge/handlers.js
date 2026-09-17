@@ -1,4 +1,10 @@
-const { ActivityType, AttachmentBuilder, ChannelType, PermissionFlagsBits, PermissionsBitField } = require('discord.js');
+const {
+    ActivityType,
+    AttachmentBuilder,
+    ChannelType,
+    PermissionFlagsBits,
+    PermissionsBitField,
+} = require('discord.js');
 const { buildCardMessage, normalizeMessageEditPayload, normalizeMessagePayload } = require('../componentsV2');
 const { translateDiscord } = require('../discordLocale');
 
@@ -397,7 +403,12 @@ const createWhitelistReviewThread = async (msg, client) => {
 
 const postTicketMessage = async (msg, client) => {
     const target = await client.channels.fetch(msg.threadId).catch(() => null);
-    if (!isTicketMessageTarget(target) || !target.isTextBased?.()) return;
+    if (!isTicketMessageTarget(target) || !target.isTextBased?.()) {
+        console.warn(
+            `[BotBridge] Could not post ticket message to ${msg.threadId}: channel not found or not a valid ticket message target (type ${target?.type ?? 'unknown'}).`,
+        );
+        return;
+    }
 
     let text = `**${msg.authorName}:** ${String(msg.content ?? '').slice(0, 1900)}`;
     if (Array.isArray(msg.imageUrls) && msg.imageUrls.length > 0) {

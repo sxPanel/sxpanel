@@ -56,7 +56,11 @@ const loadPanelManifest = (rootPath) => {
  */
 const checkFileWhitelist = (manifestFiles, url) => {
     if (!manifestFiles) return true;
-    return manifestFiles.has(url) || !url.startsWith('/.vite');
+    if (manifestFiles.has(url)) return true;
+    // Mirror core/modules/WebServer/middlewares/serveStaticMw.ts: hashed JS/CSS
+    // not in the manifest is a stale artifact, everything else is fine.
+    if (/\.(js|css)$/.test(url)) return false;
+    return true;
 };
 
 /**

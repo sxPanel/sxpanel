@@ -1,10 +1,7 @@
-import InlineCode from '@/components/InlineCode';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import useSWR from 'swr';
-import useSWRImmutable from 'swr/immutable';
-import useSWRMutation from 'swr/mutation';
 
 export default function TmpSwr() {
     const [counter, setCounter] = useState(0);

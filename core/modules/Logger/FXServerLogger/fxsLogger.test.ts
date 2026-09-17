@@ -1,8 +1,9 @@
 //@ts-nocheck
-import { test, expect, suite, it, vitest, vi, beforeEach, afterEach } from 'vitest';
+import { test, expect, suite, it, vi, beforeEach, afterEach } from 'vitest';
 import { prefixMultiline, splitFirstLine, stripLastEol } from './fxsLoggerUtils';
 import ConsoleTransformer, { FORCED_EOL } from './ConsoleTransformer';
 import ConsoleLineEnum from './ConsoleLineEnum';
+import { shouldSkipSystemCommandLog } from './systemCommandFilter';
 
 //MARK: splitFirstLine
 suite('splitFirstLine', () => {
@@ -80,6 +81,24 @@ suite('prefixMultiline', () => {
     it('should handle a string with two full lines', () => {
         const result = prefixMultiline('test\nabcde\n', '!!');
         expect(result).toBe('!!test\n!!abcde\n');
+    });
+});
+
+suite('shouldSkipSystemCommandLog', () => {
+    it('skips internal console command relay events', () => {
+        expect(shouldSkipSystemCommandLog('txaEvent "consoleCommand" "status"')).toBe(true);
+    });
+
+    it('skips initial player data tag sync commands', () => {
+        expect(shouldSkipSystemCommandLog('txaInitialData "{\\"netId\\":16,\\"tags\\":[\\"staff\\"]}"')).toBe(true);
+    });
+
+    it('skips internal resource report requests', () => {
+        expect(shouldSkipSystemCommandLog('txaReportResources ')).toBe(true);
+    });
+
+    it('keeps other system commands visible', () => {
+        expect(shouldSkipSystemCommandLog('restart my-resource')).toBe(false);
     });
 });
 

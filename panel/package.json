@@ -1,6 +1,6 @@
 {
     "name": "sxpanel",
-    "version": "0.6.2-beta",
+    "version": "0.6.3-Beta",
     "description": "The package responsible for the web panel.",
     "author": "snipz",
     "license": "MIT",

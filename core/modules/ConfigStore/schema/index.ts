@@ -9,6 +9,7 @@ import whitelist from './whitelist';
 import queue from './queue';
 import discordBot from './discordBot';
 import gameFeatures from './gameFeatures';
+import panelFeatures from './panelFeatures';
 import webServer from './webServer';
 import logger from './logger';
 import { SYM_RESET_CONFIG } from '@lib/symbols';
@@ -37,6 +38,7 @@ export const ConfigSchemas_v2 = {
     queue,
     discordBot,
     gameFeatures,
+    panelFeatures,
     webServer,
     logger,
 } satisfies ListOf<ConfigScope>;

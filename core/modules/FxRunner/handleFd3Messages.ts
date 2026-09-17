@@ -99,6 +99,36 @@ const handleBridgedCommands = (payload: unknown) => {
     }
 
     const author = data.author;
+
+    if (data.command === 'restartServer' || data.command === 'stopServer') {
+        const reason = (data.reason ?? '').trim() || 'in-game admin menu';
+        try {
+            if (data.command === 'restartServer') {
+                txCore.logger.system.write(author, `Restarting server: ${reason}`, 'command', {
+                    actionId: 'server.restart',
+                });
+                txCore.fxRunner.restartServer(reason, author).catch((error) => {
+                    console.verbose.warn(`In-game restartServer failed: ${emsg(error)}`);
+                });
+            } else {
+                txCore.logger.system.write(author, `Stopping server: ${reason}`, 'command', {
+                    actionId: 'server.stop',
+                });
+                txCore.fxRunner.killServer(reason, author, false).catch((error) => {
+                    console.verbose.warn(`In-game stopServer failed: ${emsg(error)}`);
+                });
+            }
+        } catch (error) {
+            console.verbose.warn(`handleBridgedCommands ${data.command} error:`);
+            console.verbose.dir(error);
+        }
+        return;
+    }
+
+    if (data.command !== 'kick' && data.command !== 'ban' && data.command !== 'warn') {
+        return;
+    }
+
     const targetNetId = data.targetNetId;
     const reason = (data.reason ?? '').trim() || 'no reason provided';
 

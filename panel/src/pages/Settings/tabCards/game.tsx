@@ -59,10 +59,8 @@ export default function ConfigCardGame({ cardCtx, pageCtx }: SettingsCardProps) 
         };
         const defaults = pageCtx.apiData.defaultConfigs as typeof stored;
 
-        const cats =
-            stored?.gameFeatures?.ticketCategories ?? defaults?.gameFeatures?.ticketCategories ?? [];
-        const ret =
-            stored?.gameFeatures?.ticketRetentionDays ?? defaults?.gameFeatures?.ticketRetentionDays ?? 30;
+        const cats = stored?.gameFeatures?.ticketCategories ?? defaults?.gameFeatures?.ticketCategories ?? [];
+        const ret = stored?.gameFeatures?.ticketRetentionDays ?? defaults?.gameFeatures?.ticketRetentionDays ?? 30;
         const chan = stored?.discordBot?.ticketChannelId ?? defaults?.discordBot?.ticketChannelId ?? '';
 
         if (categoriesRef.current) categoriesRef.current.value = cats.join(', ');

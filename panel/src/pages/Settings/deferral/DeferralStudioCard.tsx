@@ -32,11 +32,7 @@ import {
     parseDeferralButtonContent,
     sanitizeDeferralButtonUrl,
 } from '@shared/deferralCardButton';
-import {
-    DEFERRAL_TXADMIN_WATERMARK_HEIGHT_PX,
-    DEFERRAL_TXADMIN_WATERMARK_OPACITY,
-    DEFERRAL_TXADMIN_WATERMARK_WIDTH_PX,
-} from '@shared/deferralCardWatermark';
+import { DEFERRAL_TXADMIN_WATERMARK_OPACITY } from '@shared/deferralCardWatermark';
 import { DEFERRAL_CARD_WATERMARK_PATH } from '@shared/deferralCardLogo';
 
 type CenterGuideState = { vertical: boolean; horizontal: boolean };

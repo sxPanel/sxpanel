@@ -2,7 +2,14 @@ import { now } from '@lib/misc';
 import { emsg } from '@shared/emsg';
 import { approveWhitelistRequest, handleWhitelistThreadReaction } from '@modules/Whitelist/requestActions';
 import { resolveAdminPermission } from './bridgePermissions';
-import { buildDeniedReply, buildFailedReply, buildSuccessResponse, buildReply, logDiscordAdminAction, translateBot } from './bridgeReplyHelpers';
+import {
+    buildDeniedReply,
+    buildFailedReply,
+    buildSuccessResponse,
+    buildReply,
+    logDiscordAdminAction,
+    translateBot,
+} from './bridgeReplyHelpers';
 import type { BridgeMessage } from './bridgeServer';
 
 export const translateWhitelist = (key: string, data: Record<string, unknown> = {}) => {
@@ -47,11 +54,7 @@ export const handleWhitelistCommand = (message: BridgeMessage) => {
     }
 
     if (message.subcommand === 'request' || message.subcommand === 'application') {
-        if (
-            typeof message.requestId !== 'string' ||
-            message.requestId.length !== 5 ||
-            message.requestId[0] !== 'R'
-        ) {
+        if (typeof message.requestId !== 'string' || message.requestId.length !== 5 || message.requestId[0] !== 'R') {
             return buildDeniedReply('danger', translateWhitelist('invalid_request_id'), 'invalid_request');
         }
 

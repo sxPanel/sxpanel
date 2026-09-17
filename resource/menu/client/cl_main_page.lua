@@ -185,6 +185,34 @@ RegisterSecureNuiCallback('sendAnnouncement', function(data, cb)
     cb({})
 end)
 
+RegisterSecureNuiCallback('restartServer', function(_, cb)
+    TriggerServerEvent('txsv:req:restartServer')
+    cb({})
+end)
+RegisterCommand('txAdmin:menu:restartServer', function()
+    if not TX_MENU_ACCESSIBLE then
+        return
+    end
+    if not DoesPlayerHavePerm(TX_MENU_PERMISSIONS, 'control.server') then
+        return SendSnackbarMessage('error', 'nui_menu.misc.no_perms', true)
+    end
+    TriggerServerEvent('txsv:req:restartServer')
+end, false)
+
+RegisterSecureNuiCallback('stopServer', function(_, cb)
+    TriggerServerEvent('txsv:req:stopServer')
+    cb({})
+end)
+RegisterCommand('txAdmin:menu:stopServer', function()
+    if not TX_MENU_ACCESSIBLE then
+        return
+    end
+    if not DoesPlayerHavePerm(TX_MENU_PERMISSIONS, 'control.server') then
+        return SendSnackbarMessage('error', 'nui_menu.misc.no_perms', true)
+    end
+    TriggerServerEvent('txsv:req:stopServer')
+end, false)
+
 --[[ EVENT HANDLERS + FUNCTION LOGIC ]]
 
 local function handleTpNormally(x, y, z)

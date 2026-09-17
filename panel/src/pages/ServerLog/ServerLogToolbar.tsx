@@ -50,6 +50,7 @@ type ServerLogToolbarProps = {
     eventCounts: Record<EventFilterKey, number>;
     searchText: string;
     playerFilter: string | null;
+    playerCommandsOnly: boolean;
     soundEnabled: boolean;
     sessions: SessionFile[];
     activeSession: string | null;
@@ -60,6 +61,7 @@ type ServerLogToolbarProps = {
     setAllFilters: (enabled: boolean) => void;
     setSearchText: (text: string) => void;
     setPlayerFilter: (name: string | null) => void;
+    togglePlayerCommandsOnly: () => void;
     toggleSound: () => void;
     jumpToTime: (ts: number) => void;
 };
@@ -71,6 +73,7 @@ export default function ServerLogToolbar({
     eventCounts,
     searchText,
     playerFilter,
+    playerCommandsOnly,
     soundEnabled,
     sessions,
     activeSession,
@@ -81,6 +84,7 @@ export default function ServerLogToolbar({
     setAllFilters,
     setSearchText,
     setPlayerFilter,
+    togglePlayerCommandsOnly,
     toggleSound,
     jumpToTime,
 }: ServerLogToolbarProps) {
@@ -167,7 +171,8 @@ export default function ServerLogToolbar({
                 <div className="relative max-w-xs min-w-40 flex-1">
                     <SearchIcon className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
                     <Input
-                        placeholder="Search logs..."
+                        placeholder="Search — e.g. player command"
+                        title={'Space-separated terms must all match. Use -word to exclude, "quoted phrase" for exact.'}
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
                         className="h-7 pr-7 pl-8 text-sm"
@@ -185,15 +190,37 @@ export default function ServerLogToolbar({
 
                 {/* Player filter */}
                 {playerFilter && (
-                    <Badge
-                        variant="secondary"
-                        className="hover:bg-destructive/20 cursor-pointer gap-1"
-                        onClick={() => setPlayerFilter(null)}
-                    >
-                        <UserIcon className="size-3" />
-                        {playerFilter}
-                        <XIcon className="size-3" />
-                    </Badge>
+                    <div className="flex items-center gap-1">
+                        <Badge
+                            variant="secondary"
+                            className="hover:bg-destructive/20 cursor-pointer gap-1"
+                            onClick={() => setPlayerFilter(null)}
+                        >
+                            <UserIcon className="size-3" />
+                            {playerFilter}
+                            <XIcon className="size-3" />
+                        </Badge>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    type="button"
+                                    onClick={togglePlayerCommandsOnly}
+                                    className={cn(
+                                        'inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium transition-colors',
+                                        playerCommandsOnly
+                                            ? 'bg-secondary text-secondary-foreground border-border'
+                                            : 'text-muted-foreground/60 hover:border-border border-transparent',
+                                    )}
+                                >
+                                    <TerminalIcon className={cn('size-3', playerCommandsOnly && 'text-cyan-400')} />
+                                    Commands only
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                Show only the commands this player ran (ignores the category chips)
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
                 )}
 
                 {/* Spacer */}

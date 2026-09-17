@@ -83,14 +83,24 @@ export const buildTicketCommandSummaryReply = (
 };
 
 export const handleTicketThreadMessage = (message: BridgeMessage) => {
-    if (typeof message.threadId !== 'string') return;
-    if (typeof message.authorName !== 'string') return;
-    if (typeof message.content !== 'string') return;
-    if (typeof message.ts !== 'number') return;
+    if (
+        typeof message.threadId !== 'string' ||
+        typeof message.authorName !== 'string' ||
+        typeof message.content !== 'string' ||
+        typeof message.ts !== 'number'
+    ) {
+        console.verbose.warn('Dropped ticketThreadMessage bridge push with malformed payload.', message);
+        return;
+    }
 
     try {
         const ticket = txCore.database.tickets.findByDiscordThread(message.threadId);
-        if (!ticket) return;
+        if (!ticket) {
+            console.warn(
+                `Received a Discord ticket message for thread ${message.threadId}, but no ticket is linked to that thread/channel ID.`,
+            );
+            return;
+        }
 
         const ticketMessage = {
             author: message.authorName,
@@ -239,8 +249,7 @@ export const handleTicketCommand = (message: BridgeMessage, deps: TicketCommandD
     }
 
     if (subcommand === 'assign') {
-        const assigneeDiscordId =
-            typeof message.assigneeDiscordId === 'string' ? message.assigneeDiscordId.trim() : '';
+        const assigneeDiscordId = typeof message.assigneeDiscordId === 'string' ? message.assigneeDiscordId.trim() : '';
         if (!assigneeDiscordId.length) {
             return buildDeniedReply('danger', translateTicketCommand('assign_missing_member'), 'invalid_request');
         }

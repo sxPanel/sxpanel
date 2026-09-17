@@ -186,8 +186,17 @@ export default function MainShell() {
                             )}
                         >
                             {pageHeader}
-                            <div className="flex min-h-0 w-full flex-1 flex-row gap-4">
-                                <main className="flex min-h-0 min-w-0 flex-1">
+                            {/*
+                                No min-h-0 here: pages that use a fixed h-contentvh/max-h-contentvh
+                                box are unaffected (their height is a definite var(), not derived from
+                                this row), but pages that flow naturally taller than one screen (e.g.
+                                the dashboard with many cards) need this row's automatic min-height to
+                                grow with that content so the playerlist sidebar (min-h-contentvh)
+                                stretches to match instead of being capped at one screen while the
+                                main column overflows past it.
+                            */}
+                            <div className="flex w-full flex-1 flex-row gap-4">
+                                <main className="flex min-w-0 flex-1">
                                     <MainRouter />
                                 </main>
                                 {window.txConsts.isWebInterface && !isImmersiveEditorRoute ? (

@@ -289,7 +289,10 @@ function AvailableBuildsCard({
 }) {
     return (
         <Card
-            className={cn('border-border/60 bg-background rounded-xl shadow-none', fullWidth ? 'xl:col-span-3' : 'xl:col-span-2')}
+            className={cn(
+                'border-border/60 bg-background rounded-xl shadow-none',
+                fullWidth ? 'xl:col-span-3' : 'xl:col-span-2',
+            )}
         >
             <CardHeader>
                 <CardTitle className="text-lg">Available Builds</CardTitle>

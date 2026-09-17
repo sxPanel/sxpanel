@@ -53,7 +53,6 @@ export function isHostProcessExecPathNodeLike(): boolean {
 function getCitizenRoot(): string | undefined {
     try {
         // Loaded lazily so early boot callers do not depend on globalData init order.
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const { txEnv } = require('@core/globalData') as typeof import('@core/globalData');
         const root = txEnv?.fxsPath;
         return typeof root === 'string' && root.length ? path.resolve(root) : undefined;

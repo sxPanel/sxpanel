@@ -133,17 +133,18 @@ type ApiCallOpts<RespType, ReqType> = {
 };
 
 export const useBackendApi = <RespType = any, ReqType = NonNullable<Object>>(hookOpts: HookOpts) => {
-    const abortController = useRef<AbortController | undefined>(undefined);
-    const currentToastId = useRef<string | undefined>(undefined);
-    const authedFetcher = useAuthedFetcher();
-    const { t } = useLocale();
     //NOTE: destructured to stable primitives (instead of depending on `hookOpts` itself, which
     //is a fresh object literal on every render at most call sites) so the useCallback below
     //actually returns a stable function reference. A caller using this hook's return value as a
     //useEffect dependency (eg. status polling loops) would otherwise have that effect re-run on
     //every render, immediately re-firing requests in a tight loop with no polling delay - this
     //is exactly what caused the deployer status endpoint to be hammered thousands of times/min.
-    const { method, path, abortOnUnmount = false, throwGenericErrors } = hookOpts;
+    const { method, path, abortOnUnmount = false, throwGenericErrors = false } = hookOpts;
+    const abortController = useRef<AbortController | undefined>(undefined);
+    const currentToastId = useRef<string | undefined>(undefined);
+    const authedFetcher = useAuthedFetcher();
+    const { t } = useLocale();
+
     useEffect(() => {
         return () => {
             if (!abortOnUnmount) return;
@@ -304,6 +305,6 @@ export const useBackendApi = <RespType = any, ReqType = NonNullable<Object>>(hoo
                 }
             }
         },
-        [method, path, abortOnUnmount, throwGenericErrors, authedFetcher, t],
+        [authedFetcher, method, path, t, throwGenericErrors],
     );
 };

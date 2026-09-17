@@ -436,7 +436,11 @@ const ListView: React.FC<{
                     }}
                 >
                     <Box display="flex" alignItems="flex-start" justifyContent="space-between" gap={1} minWidth={0}>
-                        <Typography variant="body2" fontWeight={600} sx={{ color: tokens.textPrimary, ...boundedTextSx }}>
+                        <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            sx={{ color: tokens.textPrimary, ...boundedTextSx }}
+                        >
                             {ticket.category}
                         </Typography>
                         <Box
@@ -642,12 +646,19 @@ const DetailView: React.FC<{
                                                 borderColor: tokens.info,
                                                 bgcolor: alpha(tokens.info, 0.15),
                                                 maxWidth: '100%',
-                                                '& .MuiChip-label': { color: tokens.info, overflow: 'hidden', textOverflow: 'ellipsis' },
+                                                '& .MuiChip-label': {
+                                                    color: tokens.info,
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                },
                                             }}
                                         />
                                     )}
                                 </Typography>
-                                <Typography variant="caption" sx={{ color: tokens.textMuted, whiteSpace: 'nowrap', flexShrink: 0 }}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{ color: tokens.textMuted, whiteSpace: 'nowrap', flexShrink: 0 }}
+                                >
                                     {timeAgo(t, m.ts)}
                                 </Typography>
                             </Box>
@@ -1023,7 +1034,13 @@ export const ReportPage: React.FC = () => {
                             <Button
                                 size="small"
                                 onClick={handleBack}
-                                sx={{ minWidth: 0, textTransform: 'none', mr: 0.5, color: tokens.textMuted, flexShrink: 0 }}
+                                sx={{
+                                    minWidth: 0,
+                                    textTransform: 'none',
+                                    mr: 0.5,
+                                    color: tokens.textMuted,
+                                    flexShrink: 0,
+                                }}
                             >
                                 {t('nui_reports.back')}
                             </Button>

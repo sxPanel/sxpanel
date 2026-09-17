@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { LazyMonacoEditor } from '@/components/LazyMonacoEditor';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft, Save, RotateCcw, X, ChevronRight, ChevronLeft, XIcon, Settings2Icon } from 'lucide-react';
+import { ArrowLeft, Save, RotateCcw, ChevronRight, ChevronLeft, XIcon, Settings2Icon } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import TxAnchor from '@/components/TxAnchor';

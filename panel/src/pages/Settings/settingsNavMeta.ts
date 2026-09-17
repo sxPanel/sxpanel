@@ -7,14 +7,16 @@ import {
     ServerIcon,
     Settings2Icon,
     ShieldAlertIcon,
+    SlidersHorizontalIcon,
     TagsIcon,
     UsersIcon,
 } from 'lucide-react';
 
-export type SettingsNavGroupId = 'personal' | 'server' | 'moderation' | 'integrations' | 'gameplay';
+export type SettingsNavGroupId = 'personal' | 'panel' | 'server' | 'moderation' | 'integrations' | 'gameplay';
 
 export const SETTINGS_NAV_GROUP_LABELS: Record<SettingsNavGroupId, string> = {
     personal: 'Personal',
+    panel: 'sxPanel',
     server: 'Server',
     moderation: 'Moderation',
     integrations: 'Integrations',
@@ -23,6 +25,7 @@ export const SETTINGS_NAV_GROUP_LABELS: Record<SettingsNavGroupId, string> = {
 
 export const SETTINGS_NAV_GROUP_ORDER: SettingsNavGroupId[] = [
     'personal',
+    'panel',
     'server',
     'moderation',
     'integrations',
@@ -31,6 +34,7 @@ export const SETTINGS_NAV_GROUP_ORDER: SettingsNavGroupId[] = [
 
 export const SETTINGS_TAB_NAV_META: Record<string, { group: SettingsNavGroupId; icon: LucideIcon }> = {
     'panel.settings.tabs.appearance': { group: 'personal', icon: PaletteIcon },
+    'panel.settings.tabs.panel_features': { group: 'panel', icon: SlidersHorizontalIcon },
     'panel.settings.tabs.general': { group: 'server', icon: Settings2Icon },
     'panel.settings.tabs.fxserver': { group: 'server', icon: ServerIcon },
     'panel.settings.tabs.queue': { group: 'server', icon: UsersIcon },
@@ -44,6 +48,7 @@ export const SETTINGS_TAB_NAV_META: Record<string, { group: SettingsNavGroupId; 
 
 export const settingsTabsBaseNameKeys = [
     'panel.settings.tabs.appearance',
+    'panel.settings.tabs.panel_features',
     'panel.settings.tabs.general',
     'panel.settings.tabs.fxserver',
     'panel.settings.tabs.bans',

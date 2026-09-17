@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { RECIPE_DEPLOYER_VERSION } from './consts';
 import type { Connection } from 'mysql2/promise';
 
 //=============================================================

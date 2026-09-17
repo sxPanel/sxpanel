@@ -10,6 +10,7 @@ import { useTeleportActions } from './actions/useTeleportActions';
 import { useVehicleActions } from './actions/useVehicleActions';
 import { useHealActions } from './actions/useHealActions';
 import { useMiscActions } from './actions/useMiscActions';
+import { useServerActions } from './actions/useServerActions';
 
 const fadeHeight = 16;
 // Sized to comfortably fit all default main-page rows (Player Mode, Teleport,
@@ -92,6 +93,7 @@ export const MainPageList: React.FC = () => {
     const { vehicleMode, serverCtx, isRedm, menuItem: vehicleItem } = useVehicleActions();
     const { healMode, menuItem: healItem } = useHealActions();
     const { menuItems: miscItems } = useMiscActions();
+    const { menuItems: serverItems } = useServerActions();
 
     //useMiscActions returns [announcement, clearArea, toggles] in that order
     const [announcementItem, clearAreaItem, toggleMultiItem] = miscItems;
@@ -104,9 +106,18 @@ export const MainPageList: React.FC = () => {
         () => [
             { label: 'Player', items: [playerModeItem, healItem] },
             { label: 'World', items: [teleportItem, vehicleItem, clearAreaItem] },
-            { label: 'Server', items: [announcementItem, toggleMultiItem] },
+            { label: 'Server', items: [announcementItem, toggleMultiItem, ...serverItems] },
         ],
-        [playerModeItem, healItem, teleportItem, vehicleItem, clearAreaItem, announcementItem, toggleMultiItem],
+        [
+            playerModeItem,
+            healItem,
+            teleportItem,
+            vehicleItem,
+            clearAreaItem,
+            announcementItem,
+            toggleMultiItem,
+            serverItems,
+        ],
     );
 
     const menuListItems = useMemo(() => groups.flatMap((group) => group.items), [groups]);

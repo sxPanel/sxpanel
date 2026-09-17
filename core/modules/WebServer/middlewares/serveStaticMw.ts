@@ -116,8 +116,14 @@ const loadPanelManifest = (rootPath: string): Set<string> | null => {
 const checkFileWhitelist = (manifestFiles: Set<string> | null, url: string) => {
     // No manifest = allow all (non-panel root or dev mode)
     if (!manifestFiles) return true;
-    // Manifest entry (hashed JS/CSS) or public dir file (anything not in .vite/)
-    return manifestFiles.has(url) || !url.startsWith('/.vite');
+    // Current build's manifest entry (hashed JS/CSS or tracked asset)
+    if (manifestFiles.has(url)) return true;
+    // Hashed JS/CSS not in the current manifest is a stale artifact left behind
+    // by a previous build/deploy that overwrote the panel folder without
+    // clearing it first - never serve or count it towards the cache limits.
+    if (/\.(js|css)$/.test(url)) return false;
+    // Everything else (index.html, public dir files, copied fonts) is fine.
+    return true;
 };
 
 //Scans a folder and returns all files processed with size and count limits

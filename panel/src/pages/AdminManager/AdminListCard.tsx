@@ -1,29 +1,48 @@
 import { useState } from 'react';
 import { AdminListItem, AdminStatsEntry } from '@shared/adminApiTypes';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import Avatar from '@/components/Avatar';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-    PencilIcon,
-    TrashIcon,
-    ShieldCheckIcon,
-    KeyIcon,
-    MessageSquareIcon,
-    RotateCcwIcon,
-    MoreVerticalIcon,
-    BarChart3Icon,
-    CrownIcon,
-} from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { DiscordIcon } from '@/components/icons/discord-icon';
+import { PencilIcon, TrashIcon, ShieldCheckIcon, RotateCcwIcon, BarChart3Icon, CrownIcon } from 'lucide-react';
 import AdminStatsDialog from './AdminStatsDialog';
+
+function CardActionButton({
+    label,
+    icon,
+    onClick,
+    destructive,
+}: {
+    label: string;
+    icon: React.ReactNode;
+    onClick: () => void;
+    destructive?: boolean;
+}) {
+    return (
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={label}
+                    className={cn(
+                        'text-muted-foreground/70 hover:text-foreground size-7 shrink-0',
+                        destructive && 'hover:text-destructive hover:bg-destructive/10',
+                    )}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onClick();
+                    }}
+                >
+                    {icon}
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent>{label}</TooltipContent>
+        </Tooltip>
+    );
+}
 
 type AdminListCardBaseProps = {
     admin: AdminListItem;
@@ -69,7 +88,7 @@ export default function AdminListCard({
           : `${displayPermissions.length} permission${displayPermissions.length !== 1 ? 's' : ''}`;
 
     const showManageActions = canManage && !admin.isYou && !admin.isMaster;
-    const showMenu = !selectMode;
+    const showActions = !selectMode;
     const canSelect = !!selectMode && !admin.isMaster && !admin.isYou;
     const selectableCardProps = canSelect
         ? {
@@ -97,7 +116,7 @@ export default function AdminListCard({
             )}
             {...selectableCardProps}
         >
-            {/* ── Top row: avatar + name + menu ── */}
+            {/* ── Top row: avatar + name + linked identities ── */}
             <div className="flex items-start gap-3">
                 {/* Selection checkbox (replaces online dot indicator) */}
                 {selectMode && (
@@ -154,74 +173,58 @@ export default function AdminListCard({
                     </div>
                 </div>
 
-                {/* Action menu */}
-                {showMenu && (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-muted-foreground/60 hover:text-foreground -mt-1 -mr-1 size-7 shrink-0"
-                                onClick={(e) => e.stopPropagation()}
+                {/* Linked identities */}
+                {(admin.hasCitizenFx || admin.hasDiscord) && (
+                    <div className="flex shrink-0 items-center gap-1.5">
+                        {admin.hasCitizenFx && (
+                            <span
+                                title="Cfx.re account linked"
+                                aria-label="Cfx.re account linked"
+                                className="border-border/50 bg-background/40 flex size-8 items-center justify-center rounded-md border text-sm leading-none font-bold text-[#F40552]"
                             >
-                                <MoreVerticalIcon className="size-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setShowStats(true)} className="gap-2">
-                                <BarChart3Icon className="size-3.5" />
-                                Stats
-                            </DropdownMenuItem>
-                            {showManageActions && (
-                                <>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={onEdit} className="gap-2">
-                                        <PencilIcon className="size-3.5" />
-                                        Edit
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={onResetPassword} className="gap-2">
-                                        <RotateCcwIcon className="size-3.5" />
-                                        Reset Password
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                        onClick={onDelete}
-                                        className="text-destructive focus:text-destructive gap-2"
-                                    >
-                                        <TrashIcon className="size-3.5" />
-                                        Delete
-                                    </DropdownMenuItem>
-                                </>
-                            )}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                                cfx
+                            </span>
+                        )}
+                        {admin.hasDiscord && (
+                            <span
+                                title="Discord account linked"
+                                aria-label="Discord account linked"
+                                className="border-border/50 bg-background/40 flex size-8 items-center justify-center rounded-md border text-[#5865F2]"
+                            >
+                                <DiscordIcon className="size-5" />
+                            </span>
+                        )}
+                    </div>
                 )}
             </div>
 
-            {/* ── Linked identities ── */}
-            <div className="flex flex-wrap items-center gap-1.5">
-                {admin.hasCitizenFx && (
-                    <Badge
-                        variant="outline"
-                        className="border-border/60 bg-background/40 text-muted-foreground gap-1 text-[10px] font-medium"
-                    >
-                        <KeyIcon className="size-3" />
-                        Cfx.re
-                    </Badge>
-                )}
-                {admin.hasDiscord && (
-                    <Badge
-                        variant="outline"
-                        className="border-border/60 bg-background/40 text-muted-foreground gap-1 text-[10px] font-medium"
-                    >
-                        <MessageSquareIcon className="size-3" />
-                        Discord
-                    </Badge>
-                )}
-                {!admin.hasCitizenFx && !admin.hasDiscord && (
-                    <span className="text-muted-foreground/50 text-[10px] italic">No identities linked</span>
-                )}
-            </div>
+            {/* ── Actions ── */}
+            {showActions && (
+                <div className="border-border/40 mt-auto flex items-center gap-1 border-t pt-2.5">
+                    <CardActionButton
+                        label="Stats"
+                        icon={<BarChart3Icon className="size-4" />}
+                        onClick={() => setShowStats(true)}
+                    />
+                    {showManageActions && (
+                        <>
+                            <CardActionButton label="Edit" icon={<PencilIcon className="size-4" />} onClick={onEdit} />
+                            <CardActionButton
+                                label="Reset Password"
+                                icon={<RotateCcwIcon className="size-4" />}
+                                onClick={onResetPassword}
+                            />
+                            <div className="flex-1" />
+                            <CardActionButton
+                                label="Delete"
+                                icon={<TrashIcon className="size-4" />}
+                                onClick={onDelete}
+                                destructive
+                            />
+                        </>
+                    )}
+                </div>
+            )}
 
             {/* Stats modal */}
             <AdminStatsDialog

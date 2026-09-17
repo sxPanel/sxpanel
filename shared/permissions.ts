@@ -203,8 +203,15 @@ export const registeredPermissions: PermissionDefinition[] = [
     {
         id: 'players.ban',
         label: 'Ban',
-        description: 'Ban players from the server.',
+        description: 'Ban players from the server. Only temporary bans, unless "Ban: Permanent" is also granted.',
         category: 'players',
+    },
+    {
+        id: 'players.ban.permanent',
+        label: 'Ban: Permanent',
+        description: 'Apply permanent bans, and turn existing temporary bans into permanent ones.',
+        category: 'players',
+        dangerous: true,
     },
     {
         id: 'players.unban',

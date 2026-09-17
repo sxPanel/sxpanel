@@ -1,9 +1,8 @@
 import crypto from 'node:crypto';
 const modulename = 'WebCtxUtils';
-import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
-import type { InjectedTxConsts, ThemeType } from '@shared/otherTypes';
+import { PANEL_FEATURE_KEYS, type InjectedTxConsts, type PanelFeatureKey, type ThemeType } from '@shared/otherTypes';
 import { txEnv, txDevEnv, txHostConfig } from '@core/globalData';
 import { AuthedCtx, CtxWithVars } from './ctxTypes';
 import consts from '@shared/consts';
@@ -417,6 +416,9 @@ export default async function getReactIndex(ctx: CtxWithVars | AuthedCtx) {
         discordOAuthEnabled: !!(txConfig.discordBot.oauthClientId && txConfig.discordBot.oauthClientSecret),
         reportsEnabled: txConfig.gameFeatures.reportsEnabled,
         hideReportsNav: !ctx.txVars.isWebInterface || !txConfig.gameFeatures.reportsEnabled,
+        panelFeatures: Object.fromEntries(
+            PANEL_FEATURE_KEYS.map((key) => [key, txConfig.panelFeatures?.[key] ?? true]),
+        ) as Record<PanelFeatureKey, boolean>,
 
         //addon permissions
         addonPermissions: txCore.adminStore.getAddonPermissions(),

@@ -21,6 +21,6 @@ module.exports = {
     extends: ['@commitlint/config-conventional'],
     rules: {
         'type-enum': [2, 'always', types],
-        'body-max-line-length': [2, 'always', 220],
+        'body-max-line-length': [2, 'always', 320],
     },
 };

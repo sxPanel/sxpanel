@@ -95,6 +95,26 @@ export type ThemeType = {
     style: { [key: string]: string };
 };
 
+/**
+ * sxPanel optional-page toggle keys. Must stay in sync with the `panelFeatures`
+ * config scope (core/modules/ConfigStore/schema/panelFeatures.ts) and the
+ * `featureFlag` tags in panel/src/layout/sidebarConfig.ts + MainRouter.tsx.
+ */
+export const PANEL_FEATURE_KEYS = [
+    'whitelistPage',
+    'historyPage',
+    'insightsPage',
+    'playerDropsPage',
+    'reportAnalyticsPage',
+    'resourcesPage',
+    'cfgEditorPage',
+    'serverLogPage',
+    'actionLogPage',
+    'consoleLogPage',
+    'addonsPage',
+] as const;
+export type PanelFeatureKey = (typeof PANEL_FEATURE_KEYS)[number];
+
 export type InjectedTxConsts = {
     //Env
     fxsVersion: string;
@@ -129,6 +149,8 @@ export type InjectedTxConsts = {
     reportsEnabled: boolean;
     /** Hide Reports + Report Analytics sidebar items (NUI always; web when reports are disabled). */
     hideReportsNav: boolean;
+    /** sxPanel optional-page toggles from `txConfig.panelFeatures`; a missing key means enabled. */
+    panelFeatures: Record<PanelFeatureKey, boolean>;
 
     //Addon permissions (dynamic, registered by running addons)
     addonPermissions: PermissionDefinition[];

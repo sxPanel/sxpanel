@@ -3,7 +3,11 @@ import { InitializedCtx } from '@modules/WebServer/ctxTypes';
 import { ApiOauthCallbackErrorResp } from '@shared/authApiTypes';
 import { randomUUID } from 'node:crypto';
 import consoleFactory from '@lib/console';
-import { getCitizenFXAuthUrl, getCitizenFXUserInfo, CitizenFXUserInfoType } from '@modules/AdminStore/providers/CitizenFX';
+import {
+    getCitizenFXAuthUrl,
+    getCitizenFXUserInfo,
+    CitizenFXUserInfoType,
+} from '@modules/AdminStore/providers/CitizenFX';
 const console = consoleFactory(modulename);
 
 /**

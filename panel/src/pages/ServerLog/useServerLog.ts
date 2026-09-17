@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useReducer } from 'react';
 import { getSocket, joinSocketRoom, leaveSocketRoom } from '@/lib/utils';
+import { parseFilterQuery, matchesFilterQuery } from '@/lib/textFilter';
 import { useBackendApi } from '@/hooks/fetch';
 import type { ServerLogEvent, EventFiltersState, EventFilterKey } from './serverLogTypes';
 import { EVENT_FILTERS, DEFAULT_FILTERS, LOCALSTORAGE_FILTERS_KEY, LOCALSTORAGE_SOUND_KEY } from './serverLogTypes';
@@ -105,6 +106,7 @@ export default function useServerLog() {
     const [filters, setFilters] = useState<EventFiltersState>(loadFilters);
     const [searchText, setSearchText] = useState('');
     const [playerFilter, setPlayerFilter] = useState<string | null>(null);
+    const [playerCommandsOnly, setPlayerCommandsOnly] = useState(false);
     const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem(LOCALSTORAGE_SOUND_KEY) === 'true');
     const [sessions, setSessions] = useState<SessionFile[]>([]);
     const [activeSession, setActiveSession] = useState<string | null>(null);
@@ -328,16 +330,31 @@ export default function useServerLog() {
         });
     }, []);
 
+    const handleSetPlayerFilter = useCallback((name: string | null) => {
+        setPlayerFilter(name);
+        if (!name) setPlayerCommandsOnly(false);
+    }, []);
+
+    const togglePlayerCommandsOnly = useCallback(() => {
+        setPlayerCommandsOnly((prev) => !prev);
+    }, []);
+
     // ── Filtered & searched events ──
     const visibleTypes = getVisibleTypes(filters);
-    const searchLower = searchText.toLowerCase();
+    const parsedSearch = parseFilterQuery(searchText);
+    const commandsOnly = !!playerFilter && playerCommandsOnly;
 
     const filteredEvents = events.filter((e) => {
-        if (!visibleTypes.has(e.type)) return false;
+        if (commandsOnly) {
+            // "player + their commands" view overrides the category chips
+            if (e.type !== 'CommandExecuted') return false;
+        } else if (!visibleTypes.has(e.type)) {
+            return false;
+        }
         if (playerFilter && e.src.name !== playerFilter) return false;
-        if (searchLower) {
+        if (!parsedSearch.isEmpty) {
             const haystack = `${e.src.name} ${e.msg}`.toLowerCase();
-            if (!haystack.includes(searchLower)) return false;
+            if (!matchesFilterQuery(haystack, parsedSearch)) return false;
         }
         return true;
     });
@@ -374,6 +391,7 @@ export default function useServerLog() {
         filters,
         searchText,
         playerFilter,
+        playerCommandsOnly: commandsOnly,
         soundEnabled,
         sessions,
         activeSession,
@@ -385,7 +403,8 @@ export default function useServerLog() {
         toggleFilter,
         setAllFilters,
         setSearchText,
-        setPlayerFilter,
+        setPlayerFilter: handleSetPlayerFilter,
+        togglePlayerCommandsOnly,
         toggleSound,
     };
 }

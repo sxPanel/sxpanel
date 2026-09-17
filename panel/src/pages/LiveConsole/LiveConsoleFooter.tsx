@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { cn, submitAuthedDownload } from '@/lib/utils';
-import { BookMarkedIcon, FileDownIcon, SearchIcon, Trash2Icon } from 'lucide-react';
+import { BookMarkedIcon, FileDownIcon, ListFilterIcon, SearchIcon, Trash2Icon } from 'lucide-react';
 import { useAdminPerms, useCsrfToken } from '@/hooks/auth';
 import { useLiveConsoleHistory } from '@/pages/LiveConsole/liveConsoleHooks';
 import { useAtomValue } from 'jotai';
@@ -42,6 +42,7 @@ type LiveConsoleFooterProps = {
     consoleClear: () => void;
     toggleSaveSheet: () => void;
     toggleSearchBar: () => void;
+    toggleFilterPanel: () => void;
     termInputRef: React.RefObject<HTMLInputElement | null>;
     consoleOptions: LiveConsoleOptions;
     onOptionsChange: (options: LiveConsoleOptions) => void;
@@ -169,6 +170,12 @@ export default function LiveConsoleFooter(props: LiveConsoleFooterProps) {
                     title={t('panel.live_console.footer.search')}
                     disabled={!props.isConnected}
                     onClick={props.toggleSearchBar}
+                />
+                <ConsoleFooterButton
+                    icon={ListFilterIcon}
+                    title={t('panel.live_console.footer.filter')}
+                    disabled={!props.isConnected}
+                    onClick={props.toggleFilterPanel}
                 />
                 <ConsoleFooterButton
                     icon={Trash2Icon}

@@ -3,7 +3,6 @@ import type { SvRtPerfCountsType } from './perfSchemas';
 import got from '@lib/got';
 import { parseRawPerf } from './perfParser';
 import { PERF_DATA_BUCKET_COUNT } from './config';
-import { txEnv } from '@core/globalData';
 
 //Consts
 const perfDataRawThreadsTemplate: SvRtPerfCountsType = {

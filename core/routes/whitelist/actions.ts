@@ -1,6 +1,5 @@
 const modulename = 'WebServer:WhitelistActions';
 import { GenericApiResp } from '@shared/genericApiTypes';
-import { DuplicateKeyError } from '@modules/Database/dbUtils';
 import { now } from '@lib/misc';
 import { parsePlayerId } from '@lib/player/idUtils';
 import { DatabaseWhitelistRequestsType } from '@modules/Database/databaseTypes';

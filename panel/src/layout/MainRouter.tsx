@@ -33,6 +33,8 @@ import { useAddonLoader, type AddonPageRoute } from '@/hooks/addons';
 import { useLocale } from '@/hooks/locale';
 import { isEmbeddedInNuiMenu } from '@/lib/nuiEmbed';
 import { openExternalLink } from '@/lib/navigation';
+import { isPanelFeatureEnabled } from '@/lib/panelFeatures';
+import type { PanelFeatureKey } from '@shared/otherTypes';
 import { Button } from '@/components/ui/button';
 import { GlobeIcon } from 'lucide-react';
 
@@ -104,6 +106,8 @@ type RouteType = {
     path: string;
     titleKey: string;
     permission?: string;
+    /** Optional sxPanel page toggle (Settings → sxPanel → Panel Features). Redirects to "/" when disabled. */
+    featureFlag?: PanelFeatureKey;
     Page: ComponentType | ReactElement;
 };
 
@@ -117,6 +121,7 @@ const allRoutes: RouteType[] = [
     {
         path: '/history',
         titleKey: 'panel.routes.history',
+        featureFlag: 'historyPage',
         Page: HistoryPage,
     },
     {
@@ -129,21 +134,25 @@ const allRoutes: RouteType[] = [
         path: '/reports/analytics',
         titleKey: 'panel.routes.report_analytics',
         permission: 'players.reports',
+        featureFlag: 'reportAnalyticsPage',
         Page: AnalyticsPage,
     },
     {
         path: '/insights',
         titleKey: 'panel.routes.insights',
+        featureFlag: 'insightsPage',
         Page: InsightsPage,
     },
     {
         path: '/server/player-drops',
         titleKey: 'panel.routes.player_drops',
+        featureFlag: 'playerDropsPage',
         Page: PlayerDropsPage,
     },
     {
         path: '/whitelist',
         titleKey: 'panel.routes.whitelist',
+        featureFlag: 'whitelistPage',
         Page: WhitelistPage,
     },
     {
@@ -162,6 +171,7 @@ const allRoutes: RouteType[] = [
         path: '/addons',
         titleKey: 'panel.routes.addons',
         permission: 'all_permissions',
+        featureFlag: 'addonsPage',
         Page: AddonsManagerPage,
     },
     {
@@ -192,12 +202,14 @@ const allRoutes: RouteType[] = [
         path: '/system/console-log',
         titleKey: 'panel.routes.console_log',
         permission: 'txadmin.log.view',
+        featureFlag: 'consoleLogPage',
         Page: ConsoleSystemLogPage,
     },
     {
         path: '/system/action-log',
         titleKey: 'panel.routes.action_log',
         permission: 'txadmin.log.view',
+        featureFlag: 'actionLogPage',
         Page: ActionLogPage,
     },
 
@@ -216,18 +228,21 @@ const allRoutes: RouteType[] = [
     {
         path: '/server/resources',
         titleKey: 'panel.routes.resources',
+        featureFlag: 'resourcesPage',
         Page: ResourcesPage,
     },
     {
         path: '/server/server-log',
         titleKey: 'panel.routes.server_log',
         permission: 'server.log.view',
+        featureFlag: 'serverLogPage',
         Page: ServerLogPage,
     },
     {
         path: '/server/cfg-editor',
         titleKey: 'panel.routes.cfg_editor',
         permission: 'server.cfg.editor',
+        featureFlag: 'cfgEditorPage',
         Page: CfgEditorPage,
     },
     {
@@ -336,6 +351,10 @@ function RouteContent({ route }: { route: RouteType }) {
     }, [pageTitle, setPageTitle]);
 
     if (route.path.startsWith('/reports') && !window.txConsts.reportsEnabled) {
+        return <Redirect to="/" replace />;
+    }
+
+    if (route.featureFlag && !isPanelFeatureEnabled(route.featureFlag)) {
         return <Redirect to="/" replace />;
     }
 

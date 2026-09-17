@@ -941,6 +941,12 @@ export default class AdminStore {
                     admin.permissions.push('players.unban');
                     hasMigration = true;
                 }
+                //players.ban used to allow permanent bans – grant players.ban.permanent to existing admins
+                //so this new restriction doesn't silently take away capability they already had
+                if (admin.permissions.includes('players.ban') && !admin.permissions.includes('players.ban.permanent')) {
+                    admin.permissions.push('players.ban.permanent');
+                    hasMigration = true;
+                }
             }
         }
 

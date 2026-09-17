@@ -619,10 +619,18 @@ export default class DiscordBot {
         content: string,
         imageUrls?: string[],
     ): Promise<void> {
-        if (!this.#bridgeServer?.isReady) return;
+        if (!this.#bridgeServer?.isReady) {
+            console.verbose.warn(`Not forwarding ticket ${ticketId} message to Discord: bridge is not ready.`);
+            return;
+        }
 
         const threadId = txCore.database.tickets.getDiscordThreadId(ticketId);
-        if (!threadId) return;
+        if (!threadId) {
+            console.verbose.warn(
+                `Not forwarding ticket ${ticketId} message to Discord: ticket has no linked Discord thread/channel.`,
+            );
+            return;
+        }
 
         this.#bridgeServer.send({
             type: 'postTicketMessage',

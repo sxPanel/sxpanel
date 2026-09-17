@@ -1,6 +1,6 @@
 {
     "name": "sxpanel-core",
-    "version": "0.6.2-beta",
+    "version": "0.6.3-Beta",
     "description": "The core package is the backend of sxPanel and handles running fxserver and the web server and every other internal backend stuff.",
     "type": "module",
     "scripts": {

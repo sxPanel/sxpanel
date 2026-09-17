@@ -57,6 +57,7 @@ const cardNamesMap = {
     'game-notifications': 'Game Notifications',
     'game-reports': 'Game Reports',
     'player-tags': 'Player Tags',
+    'panel-features': 'Panel Features',
 } as const;
 const validCardIds = Object.keys(cardNamesMap) as [keyof typeof cardNamesMap];
 

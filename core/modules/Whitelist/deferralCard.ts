@@ -21,6 +21,7 @@ import {
     type RenderDeferralCardInput,
 } from '@shared/deferralCardRender';
 import { syncLegacyFieldsFromLayout, templateHasVisualLayout } from '@shared/deferralCardLayout';
+import { getDeferralWatermarkDataUri } from '@lib/deferralWatermark';
 import { txHostConfig } from '@core/globalData';
 
 export type { DeferralCardTokens, RenderDeferralCardInput };
@@ -125,11 +126,24 @@ export async function renderDeferralCard(input: RenderDeferralCardInput): Promis
     const serverName = input.serverName ?? txConfig.general?.serverName ?? '';
     const showLogo = resolveDeferralScenarioShowLogo(template, config.skin);
 
-    const logoSrc = resolveDeferralLogoUrl({
-        txaUrl: txHostConfig.txaUrl,
-        txaPort: txHostConfig.txaPort,
-        netInterface: txHostConfig.netInterface,
-    });
+    const assetBaseUrl =
+        input.assetBaseUrl ??
+        resolveDeferralAssetBaseUrl({
+            txaUrl: txHostConfig.txaUrl,
+            txaPort: txHostConfig.txaPort,
+            netInterface: txHostConfig.netInterface,
+        });
+
+    // No reachable panel endpoint in-game (no TXHOST_TXA_URL / interface): inline the
+    // watermark as a data URI, matching the custom-image fallback — the HTTP route
+    // would resolve to loopback and 404 on the connecting client.
+    const logoSrc =
+        (assetBaseUrl === null ? getDeferralWatermarkDataUri() : null) ??
+        resolveDeferralLogoUrl({
+            txaUrl: txHostConfig.txaUrl,
+            txaPort: txHostConfig.txaPort,
+            netInterface: txHostConfig.netInterface,
+        });
 
     let body = input.body ?? '';
     if (template.showRequestId && input.requestId && !templateHasVisualLayout(template)) {
@@ -171,14 +185,6 @@ export async function renderDeferralCard(input: RenderDeferralCardInput): Promis
         banDate: input.banDate,
         banAuthor: input.banAuthor,
     };
-
-    const assetBaseUrl =
-        input.assetBaseUrl ??
-        resolveDeferralAssetBaseUrl({
-            txaUrl: txHostConfig.txaUrl,
-            txaPort: txHostConfig.txaPort,
-            netInterface: txHostConfig.netInterface,
-        });
 
     const applyWithDynamic = (tpl: string, tok: DeferralCardTokens, custom: typeof template.customPlaceholders) =>
         applyDeferralTokens(tpl, tok, custom, dynamicValues);

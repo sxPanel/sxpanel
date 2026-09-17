@@ -7,7 +7,6 @@ import { randomUUID } from 'node:crypto';
 import { Worker } from 'node:worker_threads';
 import consoleFactory from '@lib/console';
 import { getEnvValueWithLegacy, getFxChildNodeRuntimeResolution } from '@lib/resolveFxChildNode';
-import { txEnv } from '@core/globalData';
 import { AddonStorageScope } from './addonStorage';
 import { isPathInside } from './addonUtils';
 import { applyPlayerTagChange } from '@lib/player/playerTags';

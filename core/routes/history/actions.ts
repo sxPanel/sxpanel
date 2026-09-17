@@ -3,7 +3,6 @@ import { GenericApiOkResp } from '@shared/genericApiTypes';
 import { DatabaseActionType } from '@modules/Database/databaseTypes';
 import { calcExpirationFromDuration } from '@lib/misc';
 import consts from '@shared/consts';
-import humanizeDuration, { Unit } from 'humanize-duration';
 import consoleFactory from '@lib/console';
 import { AuthedCtx } from '@modules/WebServer/ctxTypes';
 import {
@@ -76,6 +75,9 @@ async function handleBandIds(ctx: AuthedCtx): Promise<GenericApiOkResp> {
     //Check permissions
     if (!ctx.admin.testPermission('players.ban', modulename)) {
         return { error: "You don't have permission to execute this action." };
+    }
+    if (expiration === false && !ctx.admin.testPermission('players.ban.permanent', modulename)) {
+        return { error: "You don't have permission to apply permanent bans." };
     }
 
     //Register action
@@ -199,6 +201,9 @@ async function handleChangeBanDuration(ctx: AuthedCtx): Promise<GenericApiOkResp
         newExpiration = calcResults.expiration;
     } catch (error) {
         return { error: emsg(error) };
+    }
+    if (newExpiration === false && !ctx.admin.testPermission('players.ban.permanent', modulename)) {
+        return { error: "You don't have permission to apply permanent bans." };
     }
 
     //Update the ban

@@ -1,4 +1,3 @@
-import { txDevEnv } from '@core/globalData';
 import consoleFactory from '@lib/console';
 import fatalError from '@lib/fatalError';
 const console = consoleFactory('GlobalPlaceholder');
