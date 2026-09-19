@@ -24,7 +24,8 @@
         "license:list": "node scripts/list-licenses.js",
         "license:distfile": "generate-license-file --ci --no-spinner --overwrite --config generate-license-file.config.json --input package.json --output monitor/THIRD-PARTY-LICENSES.txt",
         "openapi:generate": "npx tsx scripts/generate-openapi.ts",
-        "package:zip": "node scripts/package-monitor.js"
+        "package:zip": "node scripts/package-monitor.js",
+        "release": "npm run build && npm run package:zip"
     },
     "repository": {
         "type": "git",
