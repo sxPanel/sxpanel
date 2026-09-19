@@ -25,16 +25,46 @@ const getNoReplyPayloadError = (source, commandName) => {
     return new Error(translateBot(source, 'common.no_reply_payload', { command: commandName }));
 };
 
+const isEphemeralPayload = (payload) => {
+    const flags = Number(payload?.flags);
+    return Number.isInteger(flags) && Boolean(flags & MessageFlags.Ephemeral);
+};
+
+// Commands are deferred as soon as they're dispatched (see interactionCreate.js) so a slow
+// bridge round-trip never blows Discord's 3s ack window. Since the deferred reply's visibility
+// is locked in at defer time, a final reply whose ephemeral flag doesn't match it is delivered
+// as a follow-up (with the placeholder deferred reply removed) instead of an edit.
+const sendInteractionReply = async (interaction, payload) => {
+    if (interaction.replied) {
+        await interaction.followUp(payload);
+        return;
+    }
+
+    if (interaction.deferred) {
+        if (isEphemeralPayload(payload) === Boolean(interaction.ephemeral)) {
+            await interaction.editReply(payload);
+            return;
+        }
+
+        await interaction.deleteReply().catch(() => {});
+        await interaction.followUp(payload);
+        return;
+    }
+
+    await interaction.reply(payload);
+};
+
 const resolveBridgeReply = async (interaction, response) => {
     if (!response?.reply) return false;
 
-    await interaction.reply(normalizeMessagePayload(response.reply));
+    await sendInteractionReply(interaction, normalizeMessagePayload(response.reply));
     return true;
 };
 
 const sendBridgeError = async (interaction, action, error) => {
     const message = error instanceof Error ? error.message : String(error);
-    await interaction.reply(
+    await sendInteractionReply(
+        interaction,
         buildReply('danger', translateBot(interaction, 'common.command_failed', { action, message }), true),
     );
 };
@@ -100,5 +130,6 @@ module.exports = {
     resolveBridgeReply,
     resolveSearchId,
     sendBridgeError,
+    sendInteractionReply,
     translateBot,
 };

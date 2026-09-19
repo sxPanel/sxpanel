@@ -1,4 +1,4 @@
-const { ActionRowBuilder, UserSelectMenuBuilder } = require('discord.js');
+const { ActionRowBuilder, MessageFlags, UserSelectMenuBuilder } = require('discord.js');
 const {
     normalizeInteractionUpdatePayload,
     normalizeMessageEditPayload,
@@ -566,6 +566,13 @@ module.exports = {
                 type: 'botCommandUsage',
                 commandName: interaction.commandName,
             });
+
+            // Ack immediately so a slow bridge/database round-trip inside command.execute()
+            // can never blow Discord's 3s interaction window ("The application did not respond").
+            // Command reply helpers (sendInteractionReply) know how to turn this into the
+            // right final message regardless of its eventual public/ephemeral visibility.
+            await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
             await runWithCommandTelemetry(telemetryContext, async () => {
                 await command.execute(interaction, bridge);
             });

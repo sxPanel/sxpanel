@@ -6,6 +6,7 @@ const {
     getRequesterPayload,
     resolveBridgeReply,
     sendBridgeError,
+    sendInteractionReply,
     translateBot,
 } = require('./common');
 
@@ -111,7 +112,8 @@ module.exports = {
             ) {
                 response = await request('ticketCommand', basePayload);
             } else {
-                await interaction.reply(
+                await sendInteractionReply(
+                    interaction,
                     buildReply(
                         'danger',
                         translateBot(interaction, 'common.subcommand_not_found', { subcommand }),
