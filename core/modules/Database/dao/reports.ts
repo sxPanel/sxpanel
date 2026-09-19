@@ -88,8 +88,24 @@ export default class TicketsDao {
             status: 'open',
             category: data.category,
             priority: data.priority,
-            reporter: { license: data.reporter.license, name: data.reporter.name, netid: data.reporter.netid },
-            targets: (data.targets ?? []).map((t) => ({ license: t.license, name: t.name, netid: t.netid })),
+            reporter: {
+                license: data.reporter.license,
+                discord: data.reporter.discord,
+                name: data.reporter.name,
+                netid: data.reporter.netid,
+            },
+            targets: (data.targets ?? []).map((t) => ({
+                license: t.license,
+                discord: t.discord,
+                name: t.name,
+                netid: t.netid,
+            })),
+            nearbyPlayers: (data.nearbyPlayers ?? []).map((p) => ({
+                license: p.license,
+                discord: p.discord,
+                name: p.name,
+                netid: p.netid,
+            })),
             description: data.description,
             screenshotUrl: undefined, // will be set after screenshot upload (if any)
             messages: [],

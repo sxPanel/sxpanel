@@ -5,6 +5,7 @@ import {
     Button,
     Chip,
     FormControl,
+    FormHelperText,
     IconButton,
     InputLabel,
     MenuItem,
@@ -336,6 +337,7 @@ const CreateView: React.FC<{
                             </MenuItem>
                         ))}
                     </Select>
+                    <FormHelperText>{t('nui_reports.nearby_players_notice')}</FormHelperText>
                 </FormControl>
             )}
 

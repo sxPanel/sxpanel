@@ -31,17 +31,32 @@ local function intercomRequest(scope, payload, callback)
     end, 'POST', json.encode(payload), { ['Content-Type'] = 'application/json' })
 end
 
---- Gets the player license from identifiers
+--- Gets a specific identifier (by prefix) from a player's identifiers
 ---@param src number
+---@param prefix string
 ---@return string|nil
-local function getPlayerLicense(src)
+local function getPlayerIdentifierByPrefix(src, prefix)
     local identifiers = GetPlayerIdentifiers(src)
     for _, id in ipairs(identifiers) do
-        if string.sub(id, 1, 8) == 'license:' then
+        if string.sub(id, 1, #prefix) == prefix then
             return id
         end
     end
     return nil
+end
+
+--- Gets the player license from identifiers
+---@param src number
+---@return string|nil
+local function getPlayerLicense(src)
+    return getPlayerIdentifierByPrefix(src, 'license:')
+end
+
+--- Gets the player discord identifier from identifiers
+---@param src number
+---@return string|nil
+local function getPlayerDiscord(src)
+    return getPlayerIdentifierByPrefix(src, 'discord:')
 end
 
 -- Rate limit for ticket submissions (per player, cleared on disconnect)
@@ -92,6 +107,48 @@ local function getTicketCategories()
         end
     end
     return categories
+end
+
+--- Checks whether a ticket category is a player-vs-player style report
+---@param category string
+---@return boolean
+local function isPlayerReportCategory(category)
+    return string.find(category:lower(), 'player', 1, true) ~= nil
+end
+
+local NEARBY_PLAYERS_MAX = 10
+
+--- Finds players near the reporter at submission time (used for player reports)
+---@param src number
+---@param excludeNetIds table<number, boolean>
+---@return table
+local function findNearbyPlayers(src, excludeNetIds)
+    local nearby = {}
+    local srcPed = GetPlayerPed(src)
+    if not srcPed or srcPed == 0 then return nearby end
+
+    local srcCoords = GetEntityCoords(srcPed)
+    local radius = GetConvarInt('txAdmin-ticketNearbyDistance', 20)
+
+    for _, serverId in ipairs(GetPlayers()) do
+        local sid = tonumber(serverId)
+        if sid and sid ~= src and not excludeNetIds[sid] then
+            local targetPed = GetPlayerPed(serverId)
+            if targetPed and targetPed ~= 0 then
+                local dist = #(srcCoords - GetEntityCoords(targetPed))
+                if dist <= radius then
+                    table.insert(nearby, {
+                        license = getPlayerLicense(sid) or 'unknown',
+                        discord = getPlayerDiscord(sid),
+                        name = GetPlayerName(sid) or 'Unknown',
+                        netid = sid,
+                    })
+                    if #nearby >= NEARBY_PLAYERS_MAX then break end
+                end
+            end
+        end
+    end
+    return nearby
 end
 
 --- Build the full player list (excluding caller)
@@ -175,28 +232,38 @@ RegisterNetEvent('txsv:ticketCreate', function(data)
 
     local reporter = {
         license = license,
+        discord = getPlayerDiscord(src),
         name = GetPlayerName(src) or 'Unknown',
         netid = src,
     }
 
     -- Resolve targets (only when submitting a player report)
     local targets = {}
+    local excludeNetIds = { [src] = true }
     if type(data.targetIds) == 'table' then
         for _, tid in ipairs(data.targetIds) do
             if type(tid) == 'number' and DoesPlayerExist(tid) then
-                local targetLicense = getPlayerLicense(tid)
                 table.insert(targets, {
-                    license = targetLicense or 'unknown',
+                    license = getPlayerLicense(tid) or 'unknown',
+                    discord = getPlayerDiscord(tid),
                     name = GetPlayerName(tid) or 'Unknown',
                     netid = tid,
                 })
+                excludeNetIds[tid] = true
             end
         end
+    end
+
+    -- Automatically capture nearby players' IDs for player-vs-player reports, to help staff investigate
+    local nearbyPlayers = {}
+    if isPlayerReportCategory(data.category) then
+        nearbyPlayers = findNearbyPlayers(src, excludeNetIds)
     end
 
     local payload = {
         reporter = reporter,
         targets = targets,
+        nearbyPlayers = nearbyPlayers,
         category = data.category,
         description = data.description:sub(1, 2048),
     }

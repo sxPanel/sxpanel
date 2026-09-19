@@ -16,6 +16,7 @@ const ticketFixture: DatabaseTicketType = {
     priority: 'high',
     reporter: { license: 'license:reporter', name: 'Reporter_Name', netid: 42 },
     targets: [{ license: 'license:target', name: 'Target User', netid: 7 }],
+    nearbyPlayers: [],
     description: 'This is a test ticket description.',
     screenshotUrl: '/reports/screenshot/example.png',
     messages: [{ id: 'm1', author: 'Admin', authorType: 'admin', content: 'hello', ts: 100 }],
