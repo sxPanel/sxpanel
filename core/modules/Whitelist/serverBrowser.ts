@@ -65,6 +65,9 @@ export function getCfxAllowlistConvars(): CfxAllowlistConvarTuple[] {
     if (appear) {
         const instructions = resolveServerBrowserInstructions(txConfig.whitelist.serverBrowserInstructions);
         convars.push(['set', 'sv_allowlistInstructions', instructions]);
+    } else {
+        //Clear stale instructions when the whitelist is disabled at runtime
+        convars.push(['set', 'sv_allowlistInstructions', '']);
     }
 
     return convars;

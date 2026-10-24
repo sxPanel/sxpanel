@@ -56,6 +56,9 @@ describe('serverBrowser', () => {
         txConfig.whitelist.enabled = false;
         txConfig.whitelist.appearInServerBrowser = true;
         const convars = getCfxAllowlistConvars();
-        expect(convars).toEqual([['set', 'sv_appearAllowlisted', 'false']]);
+        expect(convars).toEqual([
+            ['set', 'sv_appearAllowlisted', 'false'],
+            ['set', 'sv_allowlistInstructions', ''],
+        ]);
     });
 });

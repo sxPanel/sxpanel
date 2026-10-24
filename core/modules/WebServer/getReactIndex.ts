@@ -327,17 +327,26 @@ const buildFaviconLinkTag = (iconDataUrl: string | undefined, iconFilename: stri
     return `<link rel="icon" type="image/svg+xml" href="./favicon_default.svg" id="favicon" />`;
 };
 
+//Only safe CSS identifier chars, so theme ids/var names can't break out of <style> or class=""
+const sanitizeCssToken = (value: string) => value.replace(/[^A-Za-z0-9_-]/g, '');
+
 //NOTE: not cached - customThemes can change at runtime via the settings API
 const getCustomThemesCss = (customThemes: ThemeType[]): string | null => {
     if (!customThemes.length) return null;
     const cssThemes = [];
     for (const theme of customThemes) {
+        const safeThemeId = sanitizeCssToken(theme.id);
+        if (!safeThemeId) continue;
         const cssVars = [];
         for (const [name, value] of Object.entries(theme.style)) {
-            cssVars.push(`--${name}: ${value};`);
+            const safeName = sanitizeCssToken(name);
+            const safeValue = String(value).replace(/[<>&]/g, '');
+            if (!safeName || !safeValue) continue;
+            cssVars.push(`--${safeName}: ${safeValue};`);
         }
-        cssThemes.push(`.theme-${theme.id} { ${cssVars.join(' ')} }`);
+        cssThemes.push(`.theme-${safeThemeId} { ${cssVars.join(' ')} }`);
     }
+    if (!cssThemes.length) return null;
     return cssThemes.join('\n');
 };
 
@@ -485,7 +494,7 @@ export default async function getReactIndex(ctx: CtxWithVars | AuthedCtx) {
                 replacers.htmlClasses = tmpDefaultTheme;
             } else {
                 const lightDarkSelector = selectedCustomTheme.isDark ? 'dark' : 'light';
-                replacers.htmlClasses = `${lightDarkSelector} theme-${selectedCustomTheme.id}`;
+                replacers.htmlClasses = `${lightDarkSelector} theme-${sanitizeCssToken(selectedCustomTheme.id)}`;
             }
         }
     } else {
