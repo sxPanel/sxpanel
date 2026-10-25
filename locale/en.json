@@ -111,7 +111,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Toggle Invisibility",
+            "toggle_coords_hud": "Dev Tools: Coords HUD",
+            "toggle_inspector": "Dev Tools: Entity Inspector",
+            "cleanup_vehicles": "Clean Up Vehicles",
+            "staff_chat": "Staff Chat"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -129,7 +134,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Send a message only visible to online staff.",
+            "staffchat_arg_help": "The message to send to online staff."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -322,6 +329,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Self",
+                "teleport": "Teleport",
+                "vehicle": "Vehicle",
+                "world": "World",
+                "staff": "Staff Tools",
+                "server": "Server"
+            },
+            "hints": {
+                "navigate": "Navigate",
+                "options": "Options",
+                "select": "Select",
+                "pages": "Pages"
+            },
+            "status": {
+                "none": "No active modes",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Super Jump",
+                "invisible": "Invisible",
+                "player_ids": "IDs",
+                "map_blips": "Blips",
+                "coords_hud": "Coords",
+                "inspector": "Inspector"
+            },
+            "toggle_state": {
+                "on": "ON",
+                "off": "OFF"
+            },
+            "invisible": {
+                "title": "Invisibility",
+                "label": "Hide yourself from other players. You can still see yourself.",
+                "alert_on": "You are invisible to other players."
+            },
+            "cleanup_vehicles": {
+                "title": "Clean Up Vehicles",
+                "label": "Delete every unoccupied vehicle within a radius around you",
+                "dialog_desc": "Enter the radius (1-300) to delete unoccupied vehicles in. Vehicles with a player inside are never deleted, but parked player vehicles are.",
+                "dialog_error": "Invalid radius. Must be between 1 and 300.",
+                "success": "Deleted %{count} unoccupied vehicle(s) within %{radius}m."
+            },
+            "dev_tools": {
+                "title": "Dev Tools",
+                "coords_hud": "Coords HUD",
+                "coords_hud_label": "Show your live coordinates and heading on screen",
+                "inspector": "Inspector",
+                "inspector_label": "Show details about the entity you are aiming at, press DELETE to remove it"
+            },
+            "staff_chat": {
+                "title": "Staff Chat",
+                "label": "Send a message that only online staff can see",
+                "dialog_desc": "This message will only be shown to online staff members with the Staff Chat permission.",
+                "dialog_placeholder": "Message to staff..."
             }
         },
         "page_players": {
@@ -419,6 +480,19 @@
                         "fire": "Set Fire",
                         "wild_attack": "Wild attack"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Return",
+                        "disarm": "Disarm"
+                    },
+                    "notifications": {
+                        "return_player": "Sent the player back.",
+                        "return_none": "This player has no location to return to. Bring them first.",
+                        "disarm_player": "Removed all weapons from the player.",
+                        "disarmed_by_staff": "Your weapons were removed by a staff member."
+                    }
                 }
             },
             "info": {
@@ -474,6 +548,43 @@
                 "custom": "Custom",
                 "helper_text": "Please select a duration",
                 "submit": "Apply ban"
+            }
+        },
+        "staff_chat": {
+            "title": "Staff Chat",
+            "usage": "Usage: /staffchat [message]",
+            "rate_limited": "You are sending staff messages too fast."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Position",
+                "heading": "Heading"
+            },
+            "inspector": {
+                "title": "Entity Inspector",
+                "no_target": "Aim at a ped, vehicle or object to inspect it.",
+                "type": "Type",
+                "model": "Model",
+                "net_id": "Net ID",
+                "not_networked": "Not networked",
+                "owner": "Owner",
+                "player": "Player",
+                "health": "Health",
+                "distance": "Distance",
+                "coords": "Coords",
+                "delete_hint": "Delete entity",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Vehicle",
+                    "object": "Object"
+                },
+                "delete_success": "Entity deleted.",
+                "delete_no_target": "You are not aiming at an entity.",
+                "delete_not_found": "That entity no longer exists.",
+                "delete_player": "You cannot delete a player.",
+                "delete_occupied": "That vehicle is occupied by a player.",
+                "delete_too_far": "That entity is too far away.",
+                "delete_not_networked": "Map objects that are not networked cannot be deleted."
             }
         }
     },

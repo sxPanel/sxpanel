@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
     CustomCommand,
@@ -81,6 +82,13 @@ describe('menu action catalog', () => {
         const permIds = new Set(registeredPermissions.map((p) => p.id));
         for (const action of customCommandMenuActions) {
             if (action.permission) expect(permIds.has(action.permission), action.id).toBe(true);
+        }
+    });
+
+    it('has a client runner for every action', () => {
+        const luaSource = fs.readFileSync(new URL('../resource/cl_custom_commands.lua', import.meta.url), 'utf8');
+        for (const action of customCommandMenuActions) {
+            expect(luaSource, action.id).toMatch(new RegExp(`^\\s+${action.id} = function`, 'm'));
         }
     });
 

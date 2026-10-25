@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Я",
+                "teleport": "Телепорт",
+                "vehicle": "Транспорт",
+                "world": "Світ",
+                "staff": "Інструменти персоналу",
+                "server": "Сервер"
+            },
+            "hints": {
+                "navigate": "Навігація",
+                "options": "Опції",
+                "select": "Вибрати",
+                "pages": "Сторінки"
+            },
+            "status": {
+                "none": "Немає активних режимів",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Суперстрибок",
+                "invisible": "Невидимий",
+                "player_ids": "ID",
+                "map_blips": "Мітки",
+                "coords_hud": "Коорд.",
+                "inspector": "Інспектор"
+            },
+            "toggle_state": {
+                "on": "УВІМК",
+                "off": "ВИМК"
+            },
+            "invisible": {
+                "title": "Невидимість",
+                "label": "Сховати себе від інших гравців. Ви все одно бачите себе.",
+                "alert_on": "Ви невидимі для інших гравців."
+            },
+            "cleanup_vehicles": {
+                "title": "Очистити транспорт",
+                "label": "Видалити весь порожній транспорт у радіусі навколо вас",
+                "dialog_desc": "Введіть радіус (1-300) для видалення порожнього транспорту. Транспорт із гравцем всередині ніколи не видаляється, але припаркований транспорт гравців видаляється.",
+                "dialog_error": "Неправильний радіус. Має бути від 1 до 300.",
+                "success": "Видалено порожнього транспорту: %{count} у радіусі %{radius} м."
+            },
+            "dev_tools": {
+                "title": "Dev Tools",
+                "coords_hud": "HUD координат",
+                "coords_hud_label": "Показувати на екрані ваші координати та напрямок у реальному часі",
+                "inspector": "Інспектор",
+                "inspector_label": "Показує дані про сутність, на яку ви цілитеся; натисніть DELETE, щоб видалити її"
+            },
+            "staff_chat": {
+                "title": "Чат персоналу",
+                "label": "Надіслати повідомлення, видиме лише персоналу онлайн",
+                "dialog_desc": "Це повідомлення побачать лише учасники персоналу онлайн із правом на Чат персоналу.",
+                "dialog_placeholder": "Повідомлення персоналу..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Підпалити",
                         "wild_attack": "Напад звірів"
                     }
+                },
+                "staff": {
+                    "title": "Персонал",
+                    "options": {
+                        "return": "Повернути",
+                        "disarm": "Роззброїти"
+                    },
+                    "notifications": {
+                        "return_player": "Гравця повернуто.",
+                        "return_none": "У цього гравця немає місця для повернення. Спочатку телепортуйте його до себе.",
+                        "disarm_player": "Усю зброю гравця видалено.",
+                        "disarmed_by_staff": "Вашу зброю видалив співробітник персоналу."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Перемкнути невидимість",
+            "toggle_coords_hud": "Dev Tools: HUD координат",
+            "toggle_inspector": "Dev Tools: Інспектор сутностей",
+            "cleanup_vehicles": "Очистити транспорт",
+            "staff_chat": "Чат персоналу"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Надіслати повідомлення, видиме лише персоналу онлайн.",
+            "staffchat_arg_help": "Повідомлення для персоналу онлайн."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Чат персоналу",
+            "usage": "Використання: /staffchat [повідомлення]",
+            "rate_limited": "Ви надто часто надсилаєте повідомлення персоналу."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Позиція",
+                "heading": "Напрямок"
+            },
+            "inspector": {
+                "title": "Інспектор сутностей",
+                "no_target": "Наведіться на педа, транспорт або об'єкт, щоб оглянути його.",
+                "type": "Тип",
+                "model": "Модель",
+                "net_id": "Net ID",
+                "not_networked": "Не в мережі",
+                "owner": "Власник",
+                "player": "Гравець",
+                "health": "Здоров'я",
+                "distance": "Відстань",
+                "coords": "Коорд.",
+                "delete_hint": "Видалити сутність",
+                "types": {
+                    "ped": "Пед",
+                    "vehicle": "Транспорт",
+                    "object": "Об'єкт"
+                },
+                "delete_success": "Сутність видалено.",
+                "delete_no_target": "Ви не цілитеся в сутність.",
+                "delete_not_found": "Ця сутність більше не існує.",
+                "delete_player": "Не можна видалити гравця.",
+                "delete_occupied": "Цей транспорт зайнятий гравцем.",
+                "delete_too_far": "Ця сутність надто далеко.",
+                "delete_not_networked": "Об'єкти карти без мережевої синхронізації не можна видалити."
+            }
         }
     },
     "screenshot_messages": {

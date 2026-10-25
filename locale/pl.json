@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Ja",
+                "teleport": "Teleport",
+                "vehicle": "Pojazd",
+                "world": "Świat",
+                "staff": "Narzędzia staffu",
+                "server": "Serwer"
+            },
+            "hints": {
+                "navigate": "Nawigacja",
+                "options": "Opcje",
+                "select": "Wybierz",
+                "pages": "Strony"
+            },
+            "status": {
+                "none": "Brak aktywnych trybów",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Super skok",
+                "invisible": "Niewidzialny",
+                "player_ids": "ID",
+                "map_blips": "Blipy",
+                "coords_hud": "Współrz.",
+                "inspector": "Inspektor"
+            },
+            "toggle_state": {
+                "on": "WŁ",
+                "off": "WYŁ"
+            },
+            "invisible": {
+                "title": "Niewidzialność",
+                "label": "Ukryj się przed innymi graczami. Nadal widzisz siebie.",
+                "alert_on": "Jesteś niewidzialny dla innych graczy."
+            },
+            "cleanup_vehicles": {
+                "title": "Wyczyść pojazdy",
+                "label": "Usuń wszystkie puste pojazdy w promieniu wokół siebie",
+                "dialog_desc": "Podaj promień (1-300), w którym usunąć puste pojazdy. Pojazdy z graczem w środku nigdy nie są usuwane, ale zaparkowane pojazdy graczy tak.",
+                "dialog_error": "Nieprawidłowy promień. Musi być od 1 do 300.",
+                "success": "Usunięto puste pojazdy: %{count} w promieniu %{radius} m."
+            },
+            "dev_tools": {
+                "title": "Narzędzia dev",
+                "coords_hud": "HUD współrzędnych",
+                "coords_hud_label": "Pokaż na ekranie swoje współrzędne i kierunek na żywo",
+                "inspector": "Inspektor",
+                "inspector_label": "Pokaż szczegóły encji, na którą celujesz, naciśnij DELETE aby ją usunąć"
+            },
+            "staff_chat": {
+                "title": "Czat staffu",
+                "label": "Wyślij wiadomość widoczną tylko dla staffu online",
+                "dialog_desc": "Ta wiadomość będzie widoczna tylko dla członków staffu online z uprawnieniem do czatu staffu.",
+                "dialog_placeholder": "Wiadomość do staffu..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Podpal",
                         "wild_attack": "Dziki atak"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Cofnij",
+                        "disarm": "Rozbrój"
+                    },
+                    "notifications": {
+                        "return_player": "Gracz został cofnięty.",
+                        "return_none": "Ten gracz nie ma lokalizacji do powrotu. Najpierw go przyciągnij.",
+                        "disarm_player": "Usunięto graczowi całą broń.",
+                        "disarmed_by_staff": "Członek staffu zabrał ci broń."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Przełącz niewidzialność",
+            "toggle_coords_hud": "Narzędzia dev: HUD współrzędnych",
+            "toggle_inspector": "Narzędzia dev: Inspektor encji",
+            "cleanup_vehicles": "Wyczyść pojazdy",
+            "staff_chat": "Czat staffu"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Wyślij wiadomość widoczną tylko dla staffu online.",
+            "staffchat_arg_help": "Wiadomość do staffu online."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Czat staffu",
+            "usage": "Użycie: /staffchat [wiadomość]",
+            "rate_limited": "Wysyłasz wiadomości staffu zbyt szybko."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Pozycja",
+                "heading": "Kierunek"
+            },
+            "inspector": {
+                "title": "Inspektor encji",
+                "no_target": "Wyceluj w peda, pojazd lub obiekt, aby go sprawdzić.",
+                "type": "Typ",
+                "model": "Model",
+                "net_id": "Net ID",
+                "not_networked": "Brak w sieci",
+                "owner": "Właściciel",
+                "player": "Gracz",
+                "health": "Zdrowie",
+                "distance": "Dystans",
+                "coords": "Współrz.",
+                "delete_hint": "Usuń encję",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Pojazd",
+                    "object": "Obiekt"
+                },
+                "delete_success": "Encja usunięta.",
+                "delete_no_target": "Nie celujesz w żadną encję.",
+                "delete_not_found": "Ta encja już nie istnieje.",
+                "delete_player": "Nie możesz usunąć gracza.",
+                "delete_occupied": "Ten pojazd jest zajęty przez gracza.",
+                "delete_too_far": "Ta encja jest zbyt daleko.",
+                "delete_not_networked": "Obiektów mapy spoza sieci nie można usunąć."
+            }
         }
     },
     "screenshot_messages": {

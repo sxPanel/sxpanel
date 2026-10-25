@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Өөрөө",
+                "teleport": "Телепорт",
+                "vehicle": "Тээвэр",
+                "world": "Ертөнц",
+                "staff": "Staff хэрэгсэл",
+                "server": "Сервер"
+            },
+            "hints": {
+                "navigate": "Шилжих",
+                "options": "Сонголт",
+                "select": "Сонгох",
+                "pages": "Хуудас"
+            },
+            "status": {
+                "none": "Идэвхтэй горим алга",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Супер үсрэлт",
+                "invisible": "Үл үзэгдэх",
+                "player_ids": "ID",
+                "map_blips": "Тэмдэг",
+                "coords_hud": "Коорд.",
+                "inspector": "Шалгагч"
+            },
+            "toggle_state": {
+                "on": "ON",
+                "off": "OFF"
+            },
+            "invisible": {
+                "title": "Үл үзэгдэх",
+                "label": "Бусад тоглогчоос өөрийгөө нуу. Та өөрийгөө харсаар байна.",
+                "alert_on": "Та бусад тоглогчдод харагдахгүй байна."
+            },
+            "cleanup_vehicles": {
+                "title": "Тээвэр цэвэрлэх",
+                "label": "Эргэн тойрныхоо радиус доторх хоосон тээврийн хэрэгслийг бүгдийг устгах",
+                "dialog_desc": "Хоосон тээврийн хэрэгсэл устгах радиусыг (1-300) оруулна уу. Тоглогчтой тээврийг хэзээ ч устгадаггүй, харин зогсоолд байгаа тоглогчийн тээврийг устгана.",
+                "dialog_error": "Радиус буруу байна. 1-300 хооронд байх ёстой.",
+                "success": "%{radius}м доторх %{count} хоосон тээврийг устгалаа."
+            },
+            "dev_tools": {
+                "title": "Dev хэрэгсэл",
+                "coords_hud": "Координат HUD",
+                "coords_hud_label": "Таны координат болон чиглэлийг дэлгэц дээр шууд харуулах",
+                "inspector": "Шалгагч",
+                "inspector_label": "Онилсон объектын мэдээллийг харуулах, DELETE дарж устгана"
+            },
+            "staff_chat": {
+                "title": "Staff чат",
+                "label": "Зөвхөн онлайн staff харах мессеж илгээх",
+                "dialog_desc": "Энэ мессежийг зөвхөн Staff чатын эрхтэй онлайн staff гишүүд харна.",
+                "dialog_placeholder": "Staff-д мессеж..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Шатаах",
                         "wild_attack": "Мичин гарагийн бослого"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Буцаах",
+                        "disarm": "Зэвсэггүй болгох"
+                    },
+                    "notifications": {
+                        "return_player": "Тоглогчийг буцаалаа.",
+                        "return_none": "Энэ тоглогчид буцах байршил алга. Эхлээд дуудна уу.",
+                        "disarm_player": "Тоглогчийн бүх зэвсгийг хаслаа.",
+                        "disarmed_by_staff": "Таны зэвсгийг staff гишүүн хаслаа."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Үл үзэгдэх горим солих",
+            "toggle_coords_hud": "Dev хэрэгсэл: Координат HUD",
+            "toggle_inspector": "Dev хэрэгсэл: Объект шалгагч",
+            "cleanup_vehicles": "Тээврийн хэрэгсэл цэвэрлэх",
+            "staff_chat": "Staff чат"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Зөвхөн онлайн staff-д харагдах мессеж илгээх.",
+            "staffchat_arg_help": "Онлайн staff-д илгээх мессеж."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staff чат",
+            "usage": "Хэрэглээ: /staffchat [мессеж]",
+            "rate_limited": "Та staff мессежийг хэт хурдан илгээж байна."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Байршил",
+                "heading": "Чиглэл"
+            },
+            "inspector": {
+                "title": "Объект шалгагч",
+                "no_target": "Шалгахын тулд ped, тээвэр эсвэл объект руу онилно уу.",
+                "type": "Төрөл",
+                "model": "Загвар",
+                "net_id": "Net ID",
+                "not_networked": "Сүлжээнд биш",
+                "owner": "Эзэмшигч",
+                "player": "Тоглогч",
+                "health": "Эрүүл мэнд",
+                "distance": "Зай",
+                "coords": "Коорд.",
+                "delete_hint": "Объект устгах",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Тээвэр",
+                    "object": "Объект"
+                },
+                "delete_success": "Объект устгагдлаа.",
+                "delete_no_target": "Та объект руу онилоогүй байна.",
+                "delete_not_found": "Тэр объект байхгүй болсон.",
+                "delete_player": "Тоглогчийг устгаж болохгүй.",
+                "delete_occupied": "Тэр тээвэрт тоглогч байна.",
+                "delete_too_far": "Тэр объект хэт хол байна.",
+                "delete_not_networked": "Сүлжээнд биш газрын зургийн объектыг устгах боломжгүй."
+            }
         }
     },
     "screenshot_messages": {

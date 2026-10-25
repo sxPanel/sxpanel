@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Aš",
+                "teleport": "Teleportas",
+                "vehicle": "Transportas",
+                "world": "Pasaulis",
+                "staff": "Staff įrankiai",
+                "server": "Serveris"
+            },
+            "hints": {
+                "navigate": "Naršyti",
+                "options": "Parinktys",
+                "select": "Pasirinkti",
+                "pages": "Puslapiai"
+            },
+            "status": {
+                "none": "Aktyvių režimų nėra",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Super šuolis",
+                "invisible": "Nematomas",
+                "player_ids": "ID",
+                "map_blips": "Žymos",
+                "coords_hud": "Koord.",
+                "inspector": "Tikrintuvas"
+            },
+            "toggle_state": {
+                "on": "ĮJ",
+                "off": "IŠJ"
+            },
+            "invisible": {
+                "title": "Nematomumas",
+                "label": "Paslėpk save nuo kitų žaidėjų. Pats save vis tiek matai.",
+                "alert_on": "Esi nematomas kitiems žaidėjams."
+            },
+            "cleanup_vehicles": {
+                "title": "Išvalyti transportą",
+                "label": "Ištrinti visą tuščią transportą aplink tave nurodytu spinduliu",
+                "dialog_desc": "Įvesk spindulį (1-300) tuščiam transportui ištrinti. Transportas su žaidėju niekada netrinamas, bet užparkuotas žaidėjų transportas trinamas.",
+                "dialog_error": "Neteisingas spindulys. Turi būti nuo 1 iki 300.",
+                "success": "Ištrinta tuščio transporto: %{count} (spindulys %{radius} m)."
+            },
+            "dev_tools": {
+                "title": "Dev įrankiai",
+                "coords_hud": "Koordinačių HUD",
+                "coords_hud_label": "Rodyti tiesiogines koordinates ir kryptį ekrane",
+                "inspector": "Tikrintuvas",
+                "inspector_label": "Rodyti taikomo objekto informaciją, paspausk DELETE jam pašalinti"
+            },
+            "staff_chat": {
+                "title": "Staff pokalbis",
+                "label": "Siųsti žinutę, matomą tik prisijungusiems staff nariams",
+                "dialog_desc": "Ši žinutė bus rodoma tik prisijungusiems staff nariams su Staff pokalbio leidimu.",
+                "dialog_placeholder": "Žinutė staff nariams..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Padegti",
                         "wild_attack": "Laukinių gyvūnų užpuolimas"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Grąžinti",
+                        "disarm": "Nuginkluoti"
+                    },
+                    "notifications": {
+                        "return_player": "Žaidėjas grąžintas.",
+                        "return_none": "Šis žaidėjas neturi vietos, kur grįžti. Pirmiausia pasikviesk jį.",
+                        "disarm_player": "Žaidėjui pašalinti visi ginklai.",
+                        "disarmed_by_staff": "Staff narys pašalino tavo ginklus."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Įjungti/išjungti nematomumą",
+            "toggle_coords_hud": "Dev įrankiai: koordinačių HUD",
+            "toggle_inspector": "Dev įrankiai: objekto tikrintuvas",
+            "cleanup_vehicles": "Išvalyti transportą",
+            "staff_chat": "Staff pokalbis"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Siųsti žinutę, matomą tik prisijungusiems staff nariams.",
+            "staffchat_arg_help": "Žinutė prisijungusiems staff nariams."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staff pokalbis",
+            "usage": "Naudojimas: /staffchat [žinutė]",
+            "rate_limited": "Staff žinutes siunti per greitai."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Pozicija",
+                "heading": "Kryptis"
+            },
+            "inspector": {
+                "title": "Objekto tikrintuvas",
+                "no_target": "Pataikyk į pedą, transportą ar objektą, kad jį patikrintum.",
+                "type": "Tipas",
+                "model": "Modelis",
+                "net_id": "Net ID",
+                "not_networked": "Ne tinkle",
+                "owner": "Savininkas",
+                "player": "Žaidėjas",
+                "health": "Gyvybės",
+                "distance": "Atstumas",
+                "coords": "Koord.",
+                "delete_hint": "Ištrinti objektą",
+                "types": {
+                    "ped": "Pedas",
+                    "vehicle": "Transportas",
+                    "object": "Objektas"
+                },
+                "delete_success": "Objektas ištrintas.",
+                "delete_no_target": "Netaikai į objektą.",
+                "delete_not_found": "Šio objekto nebėra.",
+                "delete_player": "Negali ištrinti žaidėjo.",
+                "delete_occupied": "Tame transporte yra žaidėjas.",
+                "delete_too_far": "Objektas per toli.",
+                "delete_not_networked": "Ne tinkle esančių žemėlapio objektų ištrinti negalima."
+            }
         }
     },
     "screenshot_messages": {

@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "أنت",
+                "teleport": "انتقال",
+                "vehicle": "مركبة",
+                "world": "العالم",
+                "staff": "أدوات الطاقم",
+                "server": "الخادم"
+            },
+            "hints": {
+                "navigate": "تنقل",
+                "options": "خيارات",
+                "select": "اختيار",
+                "pages": "الصفحات"
+            },
+            "status": {
+                "none": "لا توجد أوضاع نشطة",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "قفز خارق",
+                "invisible": "مخفي",
+                "player_ids": "المعرفات",
+                "map_blips": "العلامات",
+                "coords_hud": "الإحداثيات",
+                "inspector": "الفاحص"
+            },
+            "toggle_state": {
+                "on": "تشغيل",
+                "off": "إيقاف"
+            },
+            "invisible": {
+                "title": "الاختفاء",
+                "label": "أخفِ نفسك عن اللاعبين الآخرين. لا يزال بإمكانك رؤية نفسك.",
+                "alert_on": "أنت مخفي عن اللاعبين الآخرين."
+            },
+            "cleanup_vehicles": {
+                "title": "تنظيف المركبات",
+                "label": "احذف كل مركبة فارغة ضمن نطاق حولك",
+                "dialog_desc": "أدخل نصف القطر (1-300) لحذف المركبات الفارغة ضمنه. المركبات التي بداخلها لاعب لا تُحذف أبدًا، لكن مركبات اللاعبين المركونة تُحذف.",
+                "dialog_error": "نصف قطر غير صالح. يجب أن يكون بين 1 و300.",
+                "success": "تم حذف %{count} مركبة فارغة ضمن %{radius}م."
+            },
+            "dev_tools": {
+                "title": "أدوات المطور",
+                "coords_hud": "HUD الإحداثيات",
+                "coords_hud_label": "اعرض إحداثياتك واتجاهك مباشرة على الشاشة",
+                "inspector": "الفاحص",
+                "inspector_label": "اعرض تفاصيل الكيان الذي تصوب عليه، اضغط DELETE لحذفه"
+            },
+            "staff_chat": {
+                "title": "دردشة الطاقم",
+                "label": "أرسل رسالة يراها الطاقم المتصل فقط",
+                "dialog_desc": "ستظهر هذه الرسالة فقط لأعضاء الطاقم المتصلين الذين لديهم صلاحية دردشة الطاقم.",
+                "dialog_placeholder": "رسالة إلى الطاقم..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "قم بإحراق اللاعب",
                         "wild_attack": "قم بإطلاق هجوم بري على اللاعب"
                     }
+                },
+                "staff": {
+                    "title": "الطاقم",
+                    "options": {
+                        "return": "إعادة",
+                        "disarm": "نزع السلاح"
+                    },
+                    "notifications": {
+                        "return_player": "تمت إعادة اللاعب.",
+                        "return_none": "لا يوجد موقع لإعادة هذا اللاعب إليه. اجلبه أولاً.",
+                        "disarm_player": "تمت إزالة جميع أسلحة اللاعب.",
+                        "disarmed_by_staff": "تمت إزالة أسلحتك بواسطة أحد أعضاء الطاقم."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "تبديل الاختفاء",
+            "toggle_coords_hud": "أدوات المطور: HUD الإحداثيات",
+            "toggle_inspector": "أدوات المطور: فاحص الكيانات",
+            "cleanup_vehicles": "تنظيف المركبات",
+            "staff_chat": "دردشة الطاقم"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "أرسل رسالة تظهر فقط للطاقم المتصل.",
+            "staffchat_arg_help": "الرسالة المراد إرسالها للطاقم المتصل."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "دردشة الطاقم",
+            "usage": "الاستخدام: /staffchat [الرسالة]",
+            "rate_limited": "أنت ترسل رسائل الطاقم بسرعة كبيرة."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "الموقع",
+                "heading": "الاتجاه"
+            },
+            "inspector": {
+                "title": "فاحص الكيانات",
+                "no_target": "صوّب على شخصية أو مركبة أو كائن لفحصه.",
+                "type": "النوع",
+                "model": "الموديل",
+                "net_id": "Net ID",
+                "not_networked": "غير متصل بالشبكة",
+                "owner": "المالك",
+                "player": "اللاعب",
+                "health": "الصحة",
+                "distance": "المسافة",
+                "coords": "الإحداثيات",
+                "delete_hint": "حذف الكيان",
+                "types": {
+                    "ped": "شخصية",
+                    "vehicle": "مركبة",
+                    "object": "كائن"
+                },
+                "delete_success": "تم حذف الكيان.",
+                "delete_no_target": "أنت لا تصوب على أي كيان.",
+                "delete_not_found": "هذا الكيان لم يعد موجودًا.",
+                "delete_player": "لا يمكنك حذف لاعب.",
+                "delete_occupied": "هذه المركبة يشغلها لاعب.",
+                "delete_too_far": "هذا الكيان بعيد جدًا.",
+                "delete_not_networked": "لا يمكن حذف كائنات الخريطة غير المتصلة بالشبكة."
+            }
         }
     },
     "screenshot_messages": {

@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "自身",
+                "teleport": "传送",
+                "vehicle": "载具",
+                "world": "世界",
+                "staff": "管理工具",
+                "server": "服务器"
+            },
+            "hints": {
+                "navigate": "导航",
+                "options": "选项",
+                "select": "选择",
+                "pages": "页面"
+            },
+            "status": {
+                "none": "没有启用的模式",
+                "noclip": "NoClip",
+                "godmode": "无敌",
+                "superjump": "超级跳",
+                "invisible": "隐身",
+                "player_ids": "ID",
+                "map_blips": "标记",
+                "coords_hud": "坐标",
+                "inspector": "检查器"
+            },
+            "toggle_state": {
+                "on": "开",
+                "off": "关"
+            },
+            "invisible": {
+                "title": "隐身",
+                "label": "对其他玩家隐身,你仍能看到自己。",
+                "alert_on": "你对其他玩家不可见。"
+            },
+            "cleanup_vehicles": {
+                "title": "清理载具",
+                "label": "删除你周围一定半径内所有无人载具",
+                "dialog_desc": "输入半径(1-300)以删除无人载具。有玩家在内的载具不会被删除,但停放的玩家载具会被删除。",
+                "dialog_error": "半径无效,必须在 1 到 300 之间。",
+                "success": "已删除 %{radius} 米范围内的 %{count} 辆无人载具。"
+            },
+            "dev_tools": {
+                "title": "开发工具",
+                "coords_hud": "坐标 HUD",
+                "coords_hud_label": "在屏幕上显示你的实时坐标和朝向",
+                "inspector": "检查器",
+                "inspector_label": "显示你瞄准的实体的详情,按 DELETE 删除它"
+            },
+            "staff_chat": {
+                "title": "管理员聊天",
+                "label": "发送仅在线管理员可见的消息",
+                "dialog_desc": "此消息仅对拥有管理员聊天权限的在线管理员显示。",
+                "dialog_placeholder": "发送给管理员的消息..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "着火",
                         "wild_attack": "动物攻击"
                     }
+                },
+                "staff": {
+                    "title": "管理员",
+                    "options": {
+                        "return": "送回",
+                        "disarm": "缴械"
+                    },
+                    "notifications": {
+                        "return_player": "已将玩家送回。",
+                        "return_none": "该玩家没有可返回的位置,请先将其传送过来。",
+                        "disarm_player": "已移除该玩家的所有武器。",
+                        "disarmed_by_staff": "你的武器已被管理员移除。"
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "切换隐身",
+            "toggle_coords_hud": "开发工具:坐标 HUD",
+            "toggle_inspector": "开发工具:实体检查器",
+            "cleanup_vehicles": "清理载具",
+            "staff_chat": "管理员聊天"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "发送仅在线管理员可见的消息。",
+            "staffchat_arg_help": "要发送给在线管理员的消息。"
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "管理员聊天",
+            "usage": "用法:/staffchat [消息]",
+            "rate_limited": "你发送管理员消息过于频繁。"
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "位置",
+                "heading": "朝向"
+            },
+            "inspector": {
+                "title": "实体检查器",
+                "no_target": "瞄准行人、载具或物体即可检查。",
+                "type": "类型",
+                "model": "模型",
+                "net_id": "Net ID",
+                "not_networked": "未联网",
+                "owner": "所有者",
+                "player": "玩家",
+                "health": "生命值",
+                "distance": "距离",
+                "coords": "坐标",
+                "delete_hint": "删除实体",
+                "types": {
+                    "ped": "行人",
+                    "vehicle": "载具",
+                    "object": "物体"
+                },
+                "delete_success": "实体已删除。",
+                "delete_no_target": "你没有瞄准任何实体。",
+                "delete_not_found": "该实体已不存在。",
+                "delete_player": "你不能删除玩家。",
+                "delete_occupied": "该载具被玩家占用。",
+                "delete_too_far": "该实体太远了。",
+                "delete_not_networked": "未联网的地图物体无法删除。"
+            }
         }
     },
     "screenshot_messages": {

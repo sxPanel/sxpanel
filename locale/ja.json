@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "自分",
+                "teleport": "テレポート",
+                "vehicle": "車両",
+                "world": "ワールド",
+                "staff": "スタッフツール",
+                "server": "サーバー"
+            },
+            "hints": {
+                "navigate": "移動",
+                "options": "オプション",
+                "select": "選択",
+                "pages": "ページ"
+            },
+            "status": {
+                "none": "有効なモードなし",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "スーパージャンプ",
+                "invisible": "透明",
+                "player_ids": "ID",
+                "map_blips": "ブリップ",
+                "coords_hud": "座標",
+                "inspector": "検査"
+            },
+            "toggle_state": {
+                "on": "ON",
+                "off": "OFF"
+            },
+            "invisible": {
+                "title": "透明化",
+                "label": "他のプレイヤーから姿を隠します。自分には見えます。",
+                "alert_on": "他のプレイヤーから見えなくなりました。"
+            },
+            "cleanup_vehicles": {
+                "title": "車両クリーンアップ",
+                "label": "周囲の半径内にある無人の車両をすべて削除",
+                "dialog_desc": "無人車両を削除する半径(1-300)を入力してください。プレイヤーが乗っている車両は削除されませんが、駐車中のプレイヤー車両は削除されます。",
+                "dialog_error": "半径が無効です。1〜300で指定してください。",
+                "success": "半径%{radius}m内の無人車両%{count}台を削除しました。"
+            },
+            "dev_tools": {
+                "title": "開発ツール",
+                "coords_hud": "座標HUD",
+                "coords_hud_label": "現在の座標と向きを画面に表示",
+                "inspector": "検査",
+                "inspector_label": "狙っているエンティティの詳細を表示、DELETEで削除"
+            },
+            "staff_chat": {
+                "title": "スタッフチャット",
+                "label": "オンラインのスタッフにのみ見えるメッセージを送信",
+                "dialog_desc": "このメッセージは、スタッフチャット権限を持つオンラインのスタッフにのみ表示されます。",
+                "dialog_placeholder": "スタッフへのメッセージ..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "火をつける",
                         "wild_attack": "野生動物の襲来"
                     }
+                },
+                "staff": {
+                    "title": "スタッフ",
+                    "options": {
+                        "return": "戻す",
+                        "disarm": "武装解除"
+                    },
+                    "notifications": {
+                        "return_player": "プレイヤーを元の場所に戻しました。",
+                        "return_none": "このプレイヤーには戻る場所がありません。先に呼び寄せてください。",
+                        "disarm_player": "プレイヤーの武器をすべて削除しました。",
+                        "disarmed_by_staff": "スタッフによって武器が削除されました。"
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "透明化の切り替え",
+            "toggle_coords_hud": "開発ツール: 座標HUD",
+            "toggle_inspector": "開発ツール: エンティティ検査",
+            "cleanup_vehicles": "車両クリーンアップ",
+            "staff_chat": "スタッフチャット"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "オンラインのスタッフにのみ表示されるメッセージを送信します。",
+            "staffchat_arg_help": "オンラインのスタッフに送るメッセージ。"
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "スタッフチャット",
+            "usage": "使い方: /staffchat [メッセージ]",
+            "rate_limited": "スタッフメッセージの送信が速すぎます。"
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "位置",
+                "heading": "向き"
+            },
+            "inspector": {
+                "title": "エンティティ検査",
+                "no_target": "ped、車両、オブジェクトを狙うと検査できます。",
+                "type": "種類",
+                "model": "モデル",
+                "net_id": "Net ID",
+                "not_networked": "ネットワーク非同期",
+                "owner": "所有者",
+                "player": "プレイヤー",
+                "health": "体力",
+                "distance": "距離",
+                "coords": "座標",
+                "delete_hint": "エンティティを削除",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "車両",
+                    "object": "オブジェクト"
+                },
+                "delete_success": "エンティティを削除しました。",
+                "delete_no_target": "エンティティを狙っていません。",
+                "delete_not_found": "そのエンティティは既に存在しません。",
+                "delete_player": "プレイヤーは削除できません。",
+                "delete_occupied": "その車両にはプレイヤーが乗っています。",
+                "delete_too_far": "そのエンティティは遠すぎます。",
+                "delete_not_networked": "ネットワーク化されていないマップオブジェクトは削除できません。"
+            }
         }
     },
     "screenshot_messages": {

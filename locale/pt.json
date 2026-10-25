@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Eu",
+                "teleport": "Teleporte",
+                "vehicle": "Veículo",
+                "world": "Mundo",
+                "staff": "Ferramentas da staff",
+                "server": "Servidor"
+            },
+            "hints": {
+                "navigate": "Navegar",
+                "options": "Opções",
+                "select": "Selecionar",
+                "pages": "Páginas"
+            },
+            "status": {
+                "none": "Nenhum modo ativo",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Super salto",
+                "invisible": "Invisível",
+                "player_ids": "IDs",
+                "map_blips": "Blips",
+                "coords_hud": "Coords",
+                "inspector": "Inspetor"
+            },
+            "toggle_state": {
+                "on": "ON",
+                "off": "OFF"
+            },
+            "invisible": {
+                "title": "Invisibilidade",
+                "label": "Esconda-se dos outros jogadores. Você ainda se vê.",
+                "alert_on": "Você está invisível para os outros jogadores."
+            },
+            "cleanup_vehicles": {
+                "title": "Limpar veículos",
+                "label": "Apagar todos os veículos desocupados num raio ao seu redor",
+                "dialog_desc": "Digite o raio (1-300) para apagar veículos desocupados. Veículos com jogador dentro nunca são apagados, mas veículos de jogadores estacionados são.",
+                "dialog_error": "Raio inválido. Deve estar entre 1 e 300.",
+                "success": "%{count} veículo(s) desocupado(s) apagado(s) em %{radius}m."
+            },
+            "dev_tools": {
+                "title": "Dev Tools",
+                "coords_hud": "HUD de coordenadas",
+                "coords_hud_label": "Mostra suas coordenadas e direção em tempo real no ecrã",
+                "inspector": "Inspetor",
+                "inspector_label": "Mostra detalhes da entidade para a qual você mira, pressione DELETE para removê-la"
+            },
+            "staff_chat": {
+                "title": "Chat da staff",
+                "label": "Envie uma mensagem que só a staff online pode ver",
+                "dialog_desc": "Esta mensagem só será mostrada aos membros da staff online com a permissão de Chat da staff.",
+                "dialog_placeholder": "Mensagem para a staff..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Atear Fogo",
                         "wild_attack": "Ataque Selvagem"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Devolver",
+                        "disarm": "Desarmar"
+                    },
+                    "notifications": {
+                        "return_player": "Jogador devolvido.",
+                        "return_none": "Este jogador não tem local para onde voltar. Traga-o primeiro.",
+                        "disarm_player": "Todas as armas do jogador foram removidas.",
+                        "disarmed_by_staff": "Suas armas foram removidas por um membro da staff."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Alternar invisibilidade",
+            "toggle_coords_hud": "Dev Tools: HUD de coordenadas",
+            "toggle_inspector": "Dev Tools: Inspetor de entidades",
+            "cleanup_vehicles": "Limpar veículos",
+            "staff_chat": "Chat da staff"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Envie uma mensagem visível apenas para a staff online.",
+            "staffchat_arg_help": "A mensagem a enviar à staff online."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Chat da staff",
+            "usage": "Uso: /staffchat [mensagem]",
+            "rate_limited": "Você está enviando mensagens à staff rápido demais."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Posição",
+                "heading": "Direção"
+            },
+            "inspector": {
+                "title": "Inspetor de entidades",
+                "no_target": "Mire num ped, veículo ou objeto para inspecioná-lo.",
+                "type": "Tipo",
+                "model": "Modelo",
+                "net_id": "Net ID",
+                "not_networked": "Não sincronizado",
+                "owner": "Dono",
+                "player": "Jogador",
+                "health": "Vida",
+                "distance": "Distância",
+                "coords": "Coords",
+                "delete_hint": "Apagar entidade",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Veículo",
+                    "object": "Objeto"
+                },
+                "delete_success": "Entidade apagada.",
+                "delete_no_target": "Você não está mirando numa entidade.",
+                "delete_not_found": "Essa entidade já não existe.",
+                "delete_player": "Você não pode apagar um jogador.",
+                "delete_occupied": "Esse veículo está ocupado por um jogador.",
+                "delete_too_far": "Essa entidade está longe demais.",
+                "delete_not_networked": "Objetos do mapa não sincronizados não podem ser apagados."
+            }
         }
     },
     "screenshot_messages": {

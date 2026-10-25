@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Εγώ",
+                "teleport": "Τηλεμεταφορά",
+                "vehicle": "Όχημα",
+                "world": "Κόσμος",
+                "staff": "Staff εργαλεία",
+                "server": "Server"
+            },
+            "hints": {
+                "navigate": "Πλοήγηση",
+                "options": "Επιλογές",
+                "select": "Επιλογή",
+                "pages": "Σελίδες"
+            },
+            "status": {
+                "none": "Κανένας ενεργός τρόπος",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Σούπερ άλμα",
+                "invisible": "Αόρατος",
+                "player_ids": "IDs",
+                "map_blips": "Blips",
+                "coords_hud": "Συντ/νες",
+                "inspector": "Επιθεωρητής"
+            },
+            "toggle_state": {
+                "on": "ON",
+                "off": "OFF"
+            },
+            "invisible": {
+                "title": "Αορατότητα",
+                "label": "Κρύψου από τους άλλους παίκτες. Εσύ εξακολουθείς να βλέπεις τον εαυτό σου.",
+                "alert_on": "Είσαι αόρατος στους άλλους παίκτες."
+            },
+            "cleanup_vehicles": {
+                "title": "Εκκαθάριση οχημάτων",
+                "label": "Διαγραφή όλων των άδειων οχημάτων σε ακτίνα γύρω σου",
+                "dialog_desc": "Δώσε την ακτίνα (1-300) για τη διαγραφή άδειων οχημάτων. Τα οχήματα με παίκτη μέσα δεν διαγράφονται ποτέ, αλλά τα παρκαρισμένα οχήματα παικτών διαγράφονται.",
+                "dialog_error": "Μη έγκυρη ακτίνα. Πρέπει να είναι μεταξύ 1 και 300.",
+                "success": "Διαγράφηκαν %{count} άδεια οχήματα σε ακτίνα %{radius}μ."
+            },
+            "dev_tools": {
+                "title": "Dev εργαλεία",
+                "coords_hud": "HUD συντεταγμένων",
+                "coords_hud_label": "Εμφάνιση των συντεταγμένων και της κατεύθυνσής σου ζωντανά στην οθόνη",
+                "inspector": "Επιθεωρητής",
+                "inspector_label": "Εμφάνιση στοιχείων για την οντότητα που στοχεύεις, πάτα DELETE για αφαίρεση"
+            },
+            "staff_chat": {
+                "title": "Staff chat",
+                "label": "Στείλε μήνυμα που βλέπει μόνο το staff που είναι online",
+                "dialog_desc": "Αυτό το μήνυμα θα εμφανιστεί μόνο σε μέλη του staff που είναι online και έχουν το δικαίωμα Staff chat.",
+                "dialog_placeholder": "Μήνυμα προς το staff..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Βάλ'του φωτία",
                         "wild_attack": "Επίθεση από άγρια ζώα"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Επιστροφή",
+                        "disarm": "Αφοπλισμός"
+                    },
+                    "notifications": {
+                        "return_player": "Ο παίκτης στάλθηκε πίσω.",
+                        "return_none": "Αυτός ο παίκτης δεν έχει θέση για επιστροφή. Φέρ' τον πρώτα.",
+                        "disarm_player": "Αφαιρέθηκαν όλα τα όπλα του παίκτη.",
+                        "disarmed_by_staff": "Τα όπλα σου αφαιρέθηκαν από μέλος του staff."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Εναλλαγή αορατότητας",
+            "toggle_coords_hud": "Dev εργαλεία: HUD συντεταγμένων",
+            "toggle_inspector": "Dev εργαλεία: Επιθεωρητής οντοτήτων",
+            "cleanup_vehicles": "Εκκαθάριση οχημάτων",
+            "staff_chat": "Staff chat"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Στείλε μήνυμα ορατό μόνο στο staff που είναι online.",
+            "staffchat_arg_help": "Το μήνυμα προς το staff που είναι online."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staff chat",
+            "usage": "Χρήση: /staffchat [μήνυμα]",
+            "rate_limited": "Στέλνεις μηνύματα στο staff πολύ γρήγορα."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Θέση",
+                "heading": "Κατεύθυνση"
+            },
+            "inspector": {
+                "title": "Επιθεωρητής οντοτήτων",
+                "no_target": "Στόχευσε ένα ped, όχημα ή αντικείμενο για να το επιθεωρήσεις.",
+                "type": "Τύπος",
+                "model": "Μοντέλο",
+                "net_id": "Net ID",
+                "not_networked": "Εκτός δικτύου",
+                "owner": "Ιδιοκτήτης",
+                "player": "Παίκτης",
+                "health": "Υγεία",
+                "distance": "Απόσταση",
+                "coords": "Συντ/νες",
+                "delete_hint": "Διαγραφή οντότητας",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Όχημα",
+                    "object": "Αντικείμενο"
+                },
+                "delete_success": "Η οντότητα διαγράφηκε.",
+                "delete_no_target": "Δεν στοχεύεις καμία οντότητα.",
+                "delete_not_found": "Αυτή η οντότητα δεν υπάρχει πια.",
+                "delete_player": "Δεν μπορείς να διαγράψεις παίκτη.",
+                "delete_occupied": "Αυτό το όχημα είναι κατειλημμένο από παίκτη.",
+                "delete_too_far": "Αυτή η οντότητα είναι πολύ μακριά.",
+                "delete_not_networked": "Τα αντικείμενα του χάρτη που δεν είναι στο δίκτυο δεν μπορούν να διαγραφούν."
+            }
         }
     },
     "screenshot_messages": {

@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Já",
+                "teleport": "Teleport",
+                "vehicle": "Vozidlo",
+                "world": "Svět",
+                "staff": "Staff nástroje",
+                "server": "Server"
+            },
+            "hints": {
+                "navigate": "Navigace",
+                "options": "Možnosti",
+                "select": "Vybrat",
+                "pages": "Stránky"
+            },
+            "status": {
+                "none": "Žádné aktivní režimy",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Super skok",
+                "invisible": "Neviditelný",
+                "player_ids": "ID",
+                "map_blips": "Blipy",
+                "coords_hud": "Souřadnice",
+                "inspector": "Inspektor"
+            },
+            "toggle_state": {
+                "on": "ZAP",
+                "off": "VYP"
+            },
+            "invisible": {
+                "title": "Neviditelnost",
+                "label": "Skryj se před ostatními hráči. Sám sebe stále vidíš.",
+                "alert_on": "Jsi neviditelný pro ostatní hráče."
+            },
+            "cleanup_vehicles": {
+                "title": "Uklidit vozidla",
+                "label": "Smazat všechna neobsazená vozidla v okruhu kolem tebe",
+                "dialog_desc": "Zadej poloměr (1-300), ve kterém se mají smazat neobsazená vozidla. Vozidla s hráčem uvnitř se nikdy nemažou, ale zaparkovaná vozidla hráčů ano.",
+                "dialog_error": "Neplatný poloměr. Musí být mezi 1 a 300.",
+                "success": "Smazáno %{count} neobsazených vozidel v okruhu %{radius} m."
+            },
+            "dev_tools": {
+                "title": "Dev nástroje",
+                "coords_hud": "HUD souřadnic",
+                "coords_hud_label": "Zobrazit na obrazovce tvé aktuální souřadnice a směr",
+                "inspector": "Inspektor",
+                "inspector_label": "Zobrazit údaje o entitě, na kterou míříš, stisknutím DELETE ji odstraníš"
+            },
+            "staff_chat": {
+                "title": "Staff chat",
+                "label": "Odeslat zprávu, kterou uvidí jen online staff",
+                "dialog_desc": "Tato zpráva se zobrazí jen online členům staffu s oprávněním Staff chat.",
+                "dialog_placeholder": "Zpráva pro staff..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Zapálit",
                         "wild_attack": "Zaútočit zvířaty"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Vrátit",
+                        "disarm": "Odzbrojit"
+                    },
+                    "notifications": {
+                        "return_player": "Hráč byl vrácen.",
+                        "return_none": "Tento hráč nemá místo, kam by se vrátil. Nejdřív ho přiveď.",
+                        "disarm_player": "Hráči byly odebrány všechny zbraně.",
+                        "disarmed_by_staff": "Člen staffu ti odebral zbraně."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Přepnout neviditelnost",
+            "toggle_coords_hud": "Dev nástroje: HUD souřadnic",
+            "toggle_inspector": "Dev nástroje: Inspektor entit",
+            "cleanup_vehicles": "Uklidit vozidla",
+            "staff_chat": "Staff chat"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Odeslat zprávu viditelnou jen online staffu.",
+            "staffchat_arg_help": "Zpráva pro online staff."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staff chat",
+            "usage": "Použití: /staffchat [zpráva]",
+            "rate_limited": "Posíláš zprávy staffu příliš rychle."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Pozice",
+                "heading": "Směr"
+            },
+            "inspector": {
+                "title": "Inspektor entit",
+                "no_target": "Zamiř na pedu, vozidlo nebo objekt pro jeho prozkoumání.",
+                "type": "Typ",
+                "model": "Model",
+                "net_id": "Net ID",
+                "not_networked": "Není v síti",
+                "owner": "Vlastník",
+                "player": "Hráč",
+                "health": "Zdraví",
+                "distance": "Vzdálenost",
+                "coords": "Souřadnice",
+                "delete_hint": "Smazat entitu",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Vozidlo",
+                    "object": "Objekt"
+                },
+                "delete_success": "Entita smazána.",
+                "delete_no_target": "Nemíříš na žádnou entitu.",
+                "delete_not_found": "Tato entita už neexistuje.",
+                "delete_player": "Hráče nelze smazat.",
+                "delete_occupied": "Toto vozidlo je obsazené hráčem.",
+                "delete_too_far": "Tato entita je příliš daleko.",
+                "delete_not_networked": "Objekty mapy, které nejsou v síti, nelze smazat."
+            }
         }
     },
     "screenshot_messages": {

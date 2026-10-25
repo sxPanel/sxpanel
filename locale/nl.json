@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Zelf",
+                "teleport": "Teleport",
+                "vehicle": "Voertuig",
+                "world": "Wereld",
+                "staff": "Staff-tools",
+                "server": "Server"
+            },
+            "hints": {
+                "navigate": "Navigeren",
+                "options": "Opties",
+                "select": "Selecteren",
+                "pages": "Pagina's"
+            },
+            "status": {
+                "none": "Geen actieve modi",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Superspring",
+                "invisible": "Onzichtbaar",
+                "player_ids": "ID's",
+                "map_blips": "Blips",
+                "coords_hud": "Coörd.",
+                "inspector": "Inspecteur"
+            },
+            "toggle_state": {
+                "on": "AAN",
+                "off": "UIT"
+            },
+            "invisible": {
+                "title": "Onzichtbaarheid",
+                "label": "Verberg jezelf voor andere spelers. Je kunt jezelf nog wel zien.",
+                "alert_on": "Je bent onzichtbaar voor andere spelers."
+            },
+            "cleanup_vehicles": {
+                "title": "Voertuigen opruimen",
+                "label": "Verwijder alle lege voertuigen binnen een straal om je heen",
+                "dialog_desc": "Voer de straal (1-300) in waarbinnen lege voertuigen worden verwijderd. Voertuigen met een speler erin worden nooit verwijderd, geparkeerde spelersvoertuigen wel.",
+                "dialog_error": "Ongeldige straal. Moet tussen 1 en 300 liggen.",
+                "success": "%{count} lege voertuig(en) verwijderd binnen %{radius}m."
+            },
+            "dev_tools": {
+                "title": "Dev Tools",
+                "coords_hud": "Coördinaten-HUD",
+                "coords_hud_label": "Toon je live coördinaten en richting op het scherm",
+                "inspector": "Inspecteur",
+                "inspector_label": "Toon details van de entiteit waarop je richt, druk op DELETE om te verwijderen"
+            },
+            "staff_chat": {
+                "title": "Staffchat",
+                "label": "Stuur een bericht dat alleen online staff kan zien",
+                "dialog_desc": "Dit bericht wordt alleen getoond aan online staffleden met de Staffchat-permissie.",
+                "dialog_placeholder": "Bericht aan staff..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Zet in Vuur",
                         "wild_attack": "Wilde Dieren aanval"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Terugsturen",
+                        "disarm": "Ontwapenen"
+                    },
+                    "notifications": {
+                        "return_player": "Speler teruggestuurd.",
+                        "return_none": "Deze speler heeft geen locatie om naar terug te keren. Haal hem eerst op.",
+                        "disarm_player": "Alle wapens van de speler zijn verwijderd.",
+                        "disarmed_by_staff": "Je wapens zijn verwijderd door een staflid."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Onzichtbaarheid aan/uit",
+            "toggle_coords_hud": "Dev Tools: Coördinaten-HUD",
+            "toggle_inspector": "Dev Tools: Entiteitinspecteur",
+            "cleanup_vehicles": "Voertuigen opruimen",
+            "staff_chat": "Staffchat"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Stuur een bericht dat alleen online staff kan zien.",
+            "staffchat_arg_help": "Het bericht voor online staff."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staffchat",
+            "usage": "Gebruik: /staffchat [bericht]",
+            "rate_limited": "Je verstuurt staffberichten te snel."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Positie",
+                "heading": "Richting"
+            },
+            "inspector": {
+                "title": "Entiteitinspecteur",
+                "no_target": "Richt op een ped, voertuig of object om het te inspecteren.",
+                "type": "Type",
+                "model": "Model",
+                "net_id": "Net ID",
+                "not_networked": "Niet genetwerkt",
+                "owner": "Eigenaar",
+                "player": "Speler",
+                "health": "Gezondheid",
+                "distance": "Afstand",
+                "coords": "Coörd.",
+                "delete_hint": "Entiteit verwijderen",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Voertuig",
+                    "object": "Object"
+                },
+                "delete_success": "Entiteit verwijderd.",
+                "delete_no_target": "Je richt niet op een entiteit.",
+                "delete_not_found": "Die entiteit bestaat niet meer.",
+                "delete_player": "Je kunt geen speler verwijderen.",
+                "delete_occupied": "Dat voertuig wordt bestuurd door een speler.",
+                "delete_too_far": "Die entiteit is te ver weg.",
+                "delete_not_networked": "Kaartobjecten die niet genetwerkt zijn, kunnen niet worden verwijderd."
+            }
         }
     },
     "screenshot_messages": {

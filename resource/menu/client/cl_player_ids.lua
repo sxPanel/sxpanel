@@ -149,12 +149,11 @@ local function getPlayerTopTag(serverId)
         return 'staff'
     end
     if tags == nil then return nil end
-    local tagSet = {}
-    for _, t in ipairs(tags) do
-        tagSet[t] = true
-    end
-    for _, t in ipairs(tagPriority) do
-        if tagSet[t] then return t end
+    -- Both lists are tiny, a nested loop avoids allocating a set every tick
+    for _, p in ipairs(tagPriority) do
+        for _, t in ipairs(tags) do
+            if t == p then return p end
+        end
     end
     return tags[1]
 end
@@ -191,8 +190,7 @@ local function setGamerTagFivem(targetTag, pid, cached)
     SetMpGamerTagVisibility(targetTag, fivemGamerTagCompsEnum.HealthArmour, 1)
 
     -- Determine name color based on tag or talking state
-    local serverId = GetPlayerServerId(pid)
-    local topTag = getPlayerTopTag(serverId)
+    local topTag = cached and cached.topTag
     local tagHudColor = topTag and tagDisplayConfig[topTag] and tagDisplayConfig[topTag].hudColor or nil
 
     -- Setup AudioIcon
@@ -246,6 +244,7 @@ local clearGamerTagFunc = IS_FIVEM and clearGamerTagFivem or clearGamerTagRedm
 local function showGamerTags()
     local curCoords = GetEntityCoords(PlayerPedId())
     local allActivePlayers = GetActivePlayers()
+    local localPid = PlayerId()
 
     for _, pid in ipairs(allActivePlayers) do
         local targetPed = GetPlayerPed(pid)
@@ -259,53 +258,59 @@ local function showGamerTags()
             end
             playerGamerTags[pid] = nil
         else
-            local serverId = GetPlayerServerId(pid)
-            local topTag = getPlayerTopTag(serverId)
-            local tagPrefix = topTag and resolveTagPrefixForId(topTag) or ''
             local targetPedCoords = GetEntityCoords(targetPed)
             local distanceM = math.floor(#(targetPedCoords - curCoords))
-            local isSelf = pid == PlayerId()
-            local distStr = formatDistanceStr(distanceM, isSelf)
-            local playerName = string.sub(GetPlayerName(pid) or 'unknown', 1, 75)
-            local label = buildPlayerLabel(tagPrefix, serverId, playerName, distStr)
-
             local cached = playerGamerTags[pid]
-            if
-                not cached
-                or cached.ped ~= targetPed
-                or not IsMpGamerTagActive(cached.gamerTag)
-                or cached.topTag ~= topTag
-                or cached.playerName ~= playerName
-            then
-                if cached and IsMpGamerTagActive(cached.gamerTag) then
-                    if IS_FIVEM then
-                        RemoveMpGamerTag(cached.gamerTag)
-                    else
-                        Citizen.InvokeNative(0x839BFD7D7E49FE09, Citizen.PointerValueIntInitialized(cached.gamerTag))
+
+            if distanceM > distanceToCheck then
+                -- Out of range: hide the tag once and skip building its label
+                if cached and not cached.hidden then
+                    if IsMpGamerTagActive(cached.gamerTag) then
+                        clearGamerTagFunc(cached.gamerTag)
                     end
+                    cached.hidden = true
                 end
-                playerGamerTags[pid] = {
-                    ---@diagnostic disable-next-line: param-type-mismatch
-                    gamerTag = CreateFakeMpGamerTag(targetPed, label, false, false, nil, 0),
-                    ped = targetPed,
-                    topTag = topTag,
-                    playerName = playerName,
-                    label = label,
-                }
             else
-                cached.label = label
-            end
+                local serverId = GetPlayerServerId(pid)
+                local topTag = getPlayerTopTag(serverId)
+                local tagPrefix = topTag and resolveTagPrefixForId(topTag) or ''
+                local distStr = formatDistanceStr(distanceM, pid == localPid)
+                local playerName = string.sub(GetPlayerName(pid) or 'unknown', 1, 75)
+                local label = buildPlayerLabel(tagPrefix, serverId, playerName, distStr)
 
-            local targetTag = playerGamerTags[pid].gamerTag
-
-            if distanceM <= distanceToCheck then
-                if IS_FIVEM then
-                    setGamerTagFunc(targetTag, pid, playerGamerTags[pid])
+                if
+                    not cached
+                    or cached.ped ~= targetPed
+                    or not IsMpGamerTagActive(cached.gamerTag)
+                    or cached.topTag ~= topTag
+                    or cached.playerName ~= playerName
+                then
+                    if cached and IsMpGamerTagActive(cached.gamerTag) then
+                        if IS_FIVEM then
+                            RemoveMpGamerTag(cached.gamerTag)
+                        else
+                            Citizen.InvokeNative(0x839BFD7D7E49FE09, Citizen.PointerValueIntInitialized(cached.gamerTag))
+                        end
+                    end
+                    cached = {
+                        ---@diagnostic disable-next-line: param-type-mismatch
+                        gamerTag = CreateFakeMpGamerTag(targetPed, label, false, false, nil, 0),
+                        ped = targetPed,
+                        topTag = topTag,
+                        playerName = playerName,
+                        label = label,
+                    }
+                    playerGamerTags[pid] = cached
                 else
-                    setGamerTagFunc(targetTag, pid)
+                    cached.label = label
                 end
-            else
-                clearGamerTagFunc(targetTag)
+
+                cached.hidden = false
+                if IS_FIVEM then
+                    setGamerTagFunc(cached.gamerTag, pid, cached)
+                else
+                    setGamerTagFunc(cached.gamerTag, pid)
+                end
             end
         end
     end
@@ -341,6 +346,7 @@ function toggleShowPlayerIDs(enabled, showNotification)
     end
 
     isPlayerIdsEnabled = enabled
+    SetStaffStatus('playerIds', isPlayerIdsEnabled)
     local snackMessage
     if isPlayerIdsEnabled then
         snackMessage = 'nui_menu.page_main.player_ids.alert_show'

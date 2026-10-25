@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Jaz",
+                "teleport": "Teleport",
+                "vehicle": "Vozilo",
+                "world": "Svet",
+                "staff": "Orodja osebja",
+                "server": "Strežnik"
+            },
+            "hints": {
+                "navigate": "Pomikanje",
+                "options": "Možnosti",
+                "select": "Izberi",
+                "pages": "Strani"
+            },
+            "status": {
+                "none": "Ni aktivnih načinov",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Super skok",
+                "invisible": "Nevidno",
+                "player_ids": "ID-ji",
+                "map_blips": "Oznake",
+                "coords_hud": "Koord.",
+                "inspector": "Pregledovalnik"
+            },
+            "toggle_state": {
+                "on": "VKLOP",
+                "off": "IZKLOP"
+            },
+            "invisible": {
+                "title": "Nevidnost",
+                "label": "Skrij se pred drugimi igralci. Sebe še vedno vidiš.",
+                "alert_on": "Za druge igralce si nevidni."
+            },
+            "cleanup_vehicles": {
+                "title": "Počisti vozila",
+                "label": "Izbriši vsa nezasedena vozila v polmeru okoli sebe",
+                "dialog_desc": "Vnesi polmer (1-300) za brisanje nezasedenih vozil. Vozila z igralcem znotraj se nikoli ne izbrišejo, parkirana vozila igralcev pa se.",
+                "dialog_error": "Neveljaven polmer. Mora biti med 1 in 300.",
+                "success": "Izbrisana nezasedena vozila: %{count} v polmeru %{radius} m."
+            },
+            "dev_tools": {
+                "title": "Dev Tools",
+                "coords_hud": "HUD koordinat",
+                "coords_hud_label": "Prikaži svoje koordinate in smer v živo na zaslonu",
+                "inspector": "Pregledovalnik",
+                "inspector_label": "Prikaži podrobnosti o entiteti, v katero ciljaš, pritisni DELETE za odstranitev"
+            },
+            "staff_chat": {
+                "title": "Klepet osebja",
+                "label": "Pošlji sporočilo, ki ga vidi samo osebje na spletu",
+                "dialog_desc": "To sporočilo bo prikazano samo članom osebja na spletu s pravico Klepet osebja.",
+                "dialog_placeholder": "Sporočilo osebju..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Ogenj",
                         "wild_attack": "Divji napad"
                     }
+                },
+                "staff": {
+                    "title": "Osebje",
+                    "options": {
+                        "return": "Vrni",
+                        "disarm": "Razoroži"
+                    },
+                    "notifications": {
+                        "return_player": "Igralec je bil vrnjen.",
+                        "return_none": "Ta igralec nima lokacije za vrnitev. Najprej ga pripelji.",
+                        "disarm_player": "Igralcu so bila odstranjena vsa orožja.",
+                        "disarmed_by_staff": "Član osebja ti je odstranil orožje."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Preklopi nevidnost",
+            "toggle_coords_hud": "Dev Tools: HUD koordinat",
+            "toggle_inspector": "Dev Tools: Pregledovalnik entitet",
+            "cleanup_vehicles": "Počisti vozila",
+            "staff_chat": "Klepet osebja"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Pošlji sporočilo, vidno samo osebju na spletu.",
+            "staffchat_arg_help": "Sporočilo za osebje na spletu."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Klepet osebja",
+            "usage": "Uporaba: /staffchat [sporočilo]",
+            "rate_limited": "Osebju pošiljaš sporočila prehitro."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Položaj",
+                "heading": "Smer"
+            },
+            "inspector": {
+                "title": "Pregledovalnik entitet",
+                "no_target": "Cilja v peda, vozilo ali objekt, da ga pregledaš.",
+                "type": "Tip",
+                "model": "Model",
+                "net_id": "Net ID",
+                "not_networked": "Ni v omrežju",
+                "owner": "Lastnik",
+                "player": "Igralec",
+                "health": "Zdravje",
+                "distance": "Razdalja",
+                "coords": "Koord.",
+                "delete_hint": "Izbriši entiteto",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Vozilo",
+                    "object": "Objekt"
+                },
+                "delete_success": "Entiteta izbrisana.",
+                "delete_no_target": "Ne ciljaš v entiteto.",
+                "delete_not_found": "Ta entiteta ne obstaja več.",
+                "delete_player": "Igralca ni mogoče izbrisati.",
+                "delete_occupied": "To vozilo je zasedeno z igralcem.",
+                "delete_too_far": "Ta entiteta je predaleč.",
+                "delete_not_networked": "Objektov zemljevida, ki niso v omrežju, ni mogoče izbrisati."
+            }
         }
     },
     "screenshot_messages": {

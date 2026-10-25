@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Diri",
+                "teleport": "Teleport",
+                "vehicle": "Kendaraan",
+                "world": "Dunia",
+                "staff": "Alat Staf",
+                "server": "Server"
+            },
+            "hints": {
+                "navigate": "Navigasi",
+                "options": "Opsi",
+                "select": "Pilih",
+                "pages": "Halaman"
+            },
+            "status": {
+                "none": "Tidak ada mode aktif",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Lompat Super",
+                "invisible": "Tak Terlihat",
+                "player_ids": "ID",
+                "map_blips": "Blip",
+                "coords_hud": "Koordinat",
+                "inspector": "Inspektur"
+            },
+            "toggle_state": {
+                "on": "ON",
+                "off": "OFF"
+            },
+            "invisible": {
+                "title": "Tak Terlihat",
+                "label": "Sembunyikan dirimu dari pemain lain. Kamu tetap bisa melihat dirimu sendiri.",
+                "alert_on": "Kamu tidak terlihat oleh pemain lain."
+            },
+            "cleanup_vehicles": {
+                "title": "Bersihkan Kendaraan",
+                "label": "Hapus semua kendaraan kosong dalam radius di sekitarmu",
+                "dialog_desc": "Masukkan radius (1-300) untuk menghapus kendaraan kosong. Kendaraan yang berisi pemain tidak pernah dihapus, tetapi kendaraan pemain yang diparkir akan dihapus.",
+                "dialog_error": "Radius tidak valid. Harus antara 1 dan 300.",
+                "success": "Menghapus %{count} kendaraan kosong dalam radius %{radius}m."
+            },
+            "dev_tools": {
+                "title": "Dev Tools",
+                "coords_hud": "HUD Koordinat",
+                "coords_hud_label": "Tampilkan koordinat dan arah hadapmu secara langsung di layar",
+                "inspector": "Inspektur",
+                "inspector_label": "Tampilkan detail entitas yang kamu bidik, tekan DELETE untuk menghapusnya"
+            },
+            "staff_chat": {
+                "title": "Staff Chat",
+                "label": "Kirim pesan yang hanya bisa dilihat staf online",
+                "dialog_desc": "Pesan ini hanya akan ditampilkan kepada staf online yang memiliki izin Staff Chat.",
+                "dialog_placeholder": "Pesan untuk staf..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Bakar",
                         "wild_attack": "Beri Azab"
                     }
+                },
+                "staff": {
+                    "title": "Staf",
+                    "options": {
+                        "return": "Kembalikan",
+                        "disarm": "Lucuti"
+                    },
+                    "notifications": {
+                        "return_player": "Pemain dikembalikan.",
+                        "return_none": "Pemain ini tidak punya lokasi untuk kembali. Bawa dia dulu.",
+                        "disarm_player": "Semua senjata pemain dihapus.",
+                        "disarmed_by_staff": "Senjatamu dihapus oleh staf."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Aktif/Nonaktifkan Tak Terlihat",
+            "toggle_coords_hud": "Dev Tools: HUD Koordinat",
+            "toggle_inspector": "Dev Tools: Inspektur Entitas",
+            "cleanup_vehicles": "Bersihkan Kendaraan",
+            "staff_chat": "Staff Chat"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Kirim pesan yang hanya terlihat oleh staf online.",
+            "staffchat_arg_help": "Pesan yang dikirim ke staf online."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staff Chat",
+            "usage": "Penggunaan: /staffchat [pesan]",
+            "rate_limited": "Kamu mengirim pesan staf terlalu cepat."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Posisi",
+                "heading": "Arah"
+            },
+            "inspector": {
+                "title": "Inspektur Entitas",
+                "no_target": "Bidik ped, kendaraan, atau objek untuk memeriksanya.",
+                "type": "Tipe",
+                "model": "Model",
+                "net_id": "Net ID",
+                "not_networked": "Tidak terhubung jaringan",
+                "owner": "Pemilik",
+                "player": "Pemain",
+                "health": "Kesehatan",
+                "distance": "Jarak",
+                "coords": "Koordinat",
+                "delete_hint": "Hapus entitas",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Kendaraan",
+                    "object": "Objek"
+                },
+                "delete_success": "Entitas dihapus.",
+                "delete_no_target": "Kamu tidak membidik entitas.",
+                "delete_not_found": "Entitas itu sudah tidak ada.",
+                "delete_player": "Kamu tidak bisa menghapus pemain.",
+                "delete_occupied": "Kendaraan itu sedang dikendarai pemain.",
+                "delete_too_far": "Entitas itu terlalu jauh.",
+                "delete_not_networked": "Objek peta yang tidak terhubung jaringan tidak bisa dihapus."
+            }
         }
     },
     "screenshot_messages": {

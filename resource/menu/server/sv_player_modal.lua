@@ -55,6 +55,9 @@ RegisterNetEvent('txsv:req:tpToPlayer', function(tgtId)
     TriggerEvent('txsv:logger:menuEvent', src, 'teleportPlayer', allow, data)
 end)
 
+-- Where each player was before being brought, keyed by their server id (string)
+local preBringLocations = {}
+
 RegisterNetEvent('txsv:req:bringPlayer', function(id)
     local src = source
     if type(id) ~= 'number' then
@@ -66,9 +69,50 @@ RegisterNetEvent('txsv:req:bringPlayer', function(id)
         local ped = GetPlayerPed(id)
         local srcPed = GetPlayerPed(src)
         if ped and ped > 0 and srcPed and srcPed > 0 then
+            local fromCoords = GetEntityCoords(ped)
+            preBringLocations[tostring(id)] = {
+                x = fromCoords[1],
+                y = fromCoords[2],
+                z = fromCoords[3],
+                bucket = GetPlayerRoutingBucket(id),
+            }
             local coords = GetEntityCoords(srcPed)
             TriggerClientEvent('txcl:tpToCoords', id, coords[1], coords[2], coords[3])
         end
     end
     TriggerEvent('txsv:logger:menuEvent', src, 'summonPlayer', allow, id)
+end)
+
+--- Sends a player back to where they were before they were last brought
+RegisterNetEvent('txsv:req:returnPlayer', function(id)
+    local src = source
+    if type(id) ~= 'number' then
+        return
+    end
+    local allow = PlayerHasTxPermission(src, 'players.teleport')
+    TriggerEvent('txsv:logger:menuEvent', src, 'returnPlayer', allow, id)
+    if not allow then
+        return
+    end
+
+    local ped = GetPlayerPed(id)
+    if not ped or ped <= 0 then
+        return
+    end
+    local key = tostring(id)
+    local location = preBringLocations[key]
+    if not location then
+        return TriggerClientEvent('txcl:staffTools:notify', src, 'error', 'nui_menu.player_modal.actions.staff.notifications.return_none')
+    end
+    preBringLocations[key] = nil
+
+    if GetPlayerRoutingBucket(id) ~= location.bucket then
+        SetPlayerRoutingBucket(id, location.bucket)
+    end
+    TriggerClientEvent('txcl:tpToCoords', id, location.x, location.y, location.z)
+    TriggerClientEvent('txcl:staffTools:notify', src, 'success', 'nui_menu.player_modal.actions.staff.notifications.return_player')
+end)
+
+AddEventHandler('playerDropped', function()
+    preBringLocations[tostring(source)] = nil
 end)

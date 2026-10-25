@@ -1,6 +1,22 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { styled } from '@mui/material/styles';
-import { Box, Button, DialogContent, Tooltip, TooltipProps, Typography } from '@mui/material';
+import { alpha, styled } from '@mui/material/styles';
+import { Box, ButtonBase, DialogContent, Typography } from '@mui/material';
+import {
+    AcUnitRounded,
+    AdminPanelSettingsRounded,
+    BackHandRounded,
+    FavoriteRounded,
+    LocalBarRounded,
+    LocalFireDepartmentRounded,
+    LogoutRounded,
+    MailRounded,
+    NearMeRounded,
+    PersonPinCircleRounded,
+    PetsRounded,
+    UndoRounded,
+    VisibilityRounded,
+    WarningAmberRounded,
+} from '@mui/icons-material';
 import { useAssociatedPlayerValue, usePlayerDetailsValue } from '../../../state/playerDetails.state';
 import { fetchWebPipe } from '../../../utils/fetchWebPipe';
 import { fetchNui } from '../../../utils/fetchNui';
@@ -9,7 +25,7 @@ import { useSnackbar } from 'notistack';
 import { usePlayerModalContext } from '@nui/src/provider/PlayerModalProvider';
 import { userHasPerm } from '@nui/src/utils/miscUtils';
 import { useTranslate } from 'react-polyglot';
-import { usePermissionsValue } from '../../../state/permissions.state';
+import { ResolvablePermission, usePermissionsValue } from '../../../state/permissions.state';
 import { DialogLoadError } from './DialogLoadError';
 import { useServerCtxValue } from '../../../state/server.state';
 import { GenericApiErrorResp, GenericApiResp } from '@shared/genericApiTypes';
@@ -19,24 +35,79 @@ const PREFIX = 'DialogActionView';
 
 const classes = {
     actionGrid: `${PREFIX}-actionGrid`,
-    tooltipOverride: `${PREFIX}-tooltipOverride`,
     sectionTitle: `${PREFIX}-sectionTitle`,
 };
 
-const StyledDialogContent = styled(DialogContent)({
+const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
     [`& .${classes.actionGrid}`]: {
-        display: 'flex',
-        columnGap: 10,
-        rowGap: 10,
-        paddingBottom: 15,
-    },
-    [`& .${classes.tooltipOverride}`]: {
-        fontSize: 12,
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(104px, 1fr))',
+        gap: 8,
     },
     [`& .${classes.sectionTitle}`]: {
-        paddingBottom: 5,
+        paddingBottom: 6,
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase',
+        color: theme.tokens.textMuted,
     },
+}));
+
+type ActionTone = 'default' | 'warning' | 'danger';
+
+const ActionTile = styled(ButtonBase, {
+    shouldForwardProp: (prop) => prop !== 'tone',
+})<{ tone: ActionTone }>(({ theme, tone }) => {
+    const toneColor =
+        tone === 'danger'
+            ? theme.palette.error.main
+            : tone === 'warning'
+              ? theme.palette.warning.main
+              : theme.tokens.accent;
+    return {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
+        minHeight: 64,
+        padding: '10px 6px',
+        borderRadius: theme.tokens.radiusRow,
+        border: `1px solid ${theme.tokens.border}`,
+        backgroundColor: theme.tokens.surfaceRaised,
+        color: theme.tokens.textPrimary,
+        fontSize: 12,
+        fontWeight: 500,
+        textAlign: 'center',
+        lineHeight: 1.2,
+        transition: 'background-color 120ms ease, border-color 120ms ease',
+        '& svg': {
+            fontSize: 20,
+            color: toneColor,
+        },
+        '&:hover': {
+            backgroundColor: alpha(toneColor, 0.12),
+            borderColor: alpha(toneColor, 0.5),
+        },
+        '&.Mui-disabled': {
+            opacity: 0.35,
+        },
+    };
 });
+
+interface ActionDef {
+    label: string;
+    icon: React.ReactElement;
+    perm: ResolvablePermission;
+    tone?: ActionTone;
+    onClick: () => void;
+}
+
+interface ActionSectionDef {
+    title: string;
+    actions: ActionDef[];
+}
 
 export type TxAdminActionRespType = 'success' | 'warning' | 'danger';
 
@@ -253,131 +324,153 @@ const DialogActionView: React.FC = () => {
         enqueueSnackbar(t('nui_menu.player_modal.actions.command_sent'));
     };
 
-    const TooltipOverride: React.FC<TooltipProps> = (props) => (
-        <Tooltip
-            classes={{
-                tooltip: classes.tooltipOverride,
-            }}
-            {...props}
-        >
-            {props.children}
-        </Tooltip>
-    );
+    //Staff
+    const handleReturn = () => {
+        if (!userHasPerm('players.teleport', playerPerms)) return showNoPerms('Teleport');
+        fetchNui('returnPlayer', { id: assocPlayer.id });
+    };
+
+    const handleDisarm = () => {
+        if (!userHasPerm('players.disarm', playerPerms)) return showNoPerms('Disarm');
+        fetchNui('disarmPlayer', { id: assocPlayer.id });
+    };
+
+    const sections: ActionSectionDef[] = [
+        {
+            title: t('nui_menu.player_modal.actions.moderation.title'),
+            actions: [
+                {
+                    label: t('nui_menu.player_modal.actions.moderation.options.dm'),
+                    icon: <MailRounded />,
+                    perm: 'players.direct_message',
+                    onClick: handleDM,
+                },
+                {
+                    label: t('nui_menu.player_modal.actions.moderation.options.warn'),
+                    icon: <WarningAmberRounded />,
+                    perm: 'players.warn',
+                    tone: 'warning',
+                    onClick: handleWarn,
+                },
+                {
+                    label: t('nui_menu.player_modal.actions.moderation.options.kick'),
+                    icon: <LogoutRounded />,
+                    perm: 'players.kick',
+                    tone: 'danger',
+                    onClick: handleKick,
+                },
+                {
+                    label: t('nui_menu.player_modal.actions.moderation.options.set_admin'),
+                    icon: <AdminPanelSettingsRounded />,
+                    perm: 'manage.admins',
+                    onClick: handleSetAdmin,
+                },
+            ],
+        },
+        {
+            title: t('nui_menu.player_modal.actions.interaction.title'),
+            actions: [
+                {
+                    label: t('nui_menu.player_modal.actions.interaction.options.heal'),
+                    icon: <FavoriteRounded />,
+                    perm: 'players.heal',
+                    onClick: handleHeal,
+                },
+                {
+                    label: t('nui_menu.player_modal.actions.interaction.options.go_to'),
+                    icon: <NearMeRounded />,
+                    perm: 'players.teleport',
+                    onClick: handleGoTo,
+                },
+                {
+                    label: t('nui_menu.player_modal.actions.interaction.options.bring'),
+                    icon: <PersonPinCircleRounded />,
+                    perm: 'players.teleport',
+                    onClick: handleBring,
+                },
+                {
+                    label: t('nui_menu.player_modal.actions.interaction.options.spectate'),
+                    icon: <VisibilityRounded />,
+                    perm: 'players.spectate',
+                    onClick: handleSpectate,
+                },
+            ],
+        },
+        {
+            title: t('nui_menu.player_modal.actions.staff.title'),
+            actions: [
+                {
+                    label: t('nui_menu.player_modal.actions.staff.options.return'),
+                    icon: <UndoRounded />,
+                    perm: 'players.teleport',
+                    onClick: handleReturn,
+                },
+                {
+                    label: t('nui_menu.player_modal.actions.interaction.options.toggle_freeze'),
+                    icon: <AcUnitRounded />,
+                    perm: 'players.freeze',
+                    onClick: handleFreeze,
+                },
+                {
+                    label: t('nui_menu.player_modal.actions.staff.options.disarm'),
+                    icon: <BackHandRounded />,
+                    perm: 'players.disarm',
+                    tone: 'warning',
+                    onClick: handleDisarm,
+                },
+            ],
+        },
+        {
+            title: t('nui_menu.player_modal.actions.troll.title'),
+            actions: [
+                {
+                    label: t('nui_menu.player_modal.actions.troll.options.drunk'),
+                    icon: <LocalBarRounded />,
+                    perm: 'players.troll',
+                    tone: 'danger',
+                    onClick: handleDrunk,
+                },
+                {
+                    label: t('nui_menu.player_modal.actions.troll.options.fire'),
+                    icon: <LocalFireDepartmentRounded />,
+                    perm: 'players.troll',
+                    tone: 'danger',
+                    onClick: handleSetOnFire,
+                },
+                {
+                    label: t('nui_menu.player_modal.actions.troll.options.wild_attack'),
+                    icon: <PetsRounded />,
+                    perm: 'players.troll',
+                    tone: 'danger',
+                    onClick: handleWildAttack,
+                },
+            ],
+        },
+    ];
 
     return (
         <StyledDialogContent>
             <Box pb={1}>
                 <Typography variant="h6">{t('nui_menu.player_modal.actions.title')}</Typography>
             </Box>
-            <Typography className={classes.sectionTitle}>
-                {t('nui_menu.player_modal.actions.moderation.title')}
-            </Typography>
-            <Box className={classes.actionGrid}>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleDM}
-                    disabled={!userHasPerm('players.direct_message', playerPerms)}
-                >
-                    {t('nui_menu.player_modal.actions.moderation.options.dm')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleWarn}
-                    disabled={!userHasPerm('players.warn', playerPerms)}
-                >
-                    {t('nui_menu.player_modal.actions.moderation.options.warn')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleKick}
-                    disabled={!userHasPerm('players.kick', playerPerms)}
-                >
-                    {t('nui_menu.player_modal.actions.moderation.options.kick')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleSetAdmin}
-                    disabled={!userHasPerm('manage.admins', playerPerms)}
-                >
-                    {t('nui_menu.player_modal.actions.moderation.options.set_admin')}
-                </Button>
-            </Box>
-            <Typography className={classes.sectionTitle}>
-                {t('nui_menu.player_modal.actions.interaction.title')}
-            </Typography>
-            <Box className={classes.actionGrid}>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleHeal}
-                    disabled={!userHasPerm('players.heal', playerPerms)}
-                >
-                    {t('nui_menu.player_modal.actions.interaction.options.heal')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleGoTo}
-                    disabled={!userHasPerm('players.teleport', playerPerms)}
-                >
-                    {t('nui_menu.player_modal.actions.interaction.options.go_to')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleBring}
-                    disabled={!userHasPerm('players.teleport', playerPerms)}
-                >
-                    {t('nui_menu.player_modal.actions.interaction.options.bring')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleSpectate}
-                    disabled={!userHasPerm('players.spectate', playerPerms)}
-                >
-                    {t('nui_menu.player_modal.actions.interaction.options.spectate')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleFreeze}
-                    disabled={!userHasPerm('players.freeze', playerPerms)}
-                >
-                    {t('nui_menu.player_modal.actions.interaction.options.toggle_freeze')}
-                </Button>
-            </Box>
-            <Typography className={classes.sectionTitle}>{t('nui_menu.player_modal.actions.troll.title')}</Typography>
-            <Box className={classes.actionGrid}>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleDrunk}
-                    disabled={!userHasPerm('players.troll', playerPerms)}
-                >
-                    {t('nui_menu.player_modal.actions.troll.options.drunk')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleSetOnFire}
-                    disabled={!userHasPerm('players.troll', playerPerms)}
-                >
-                    {t('nui_menu.player_modal.actions.troll.options.fire')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleWildAttack}
-                    disabled={!userHasPerm('players.troll', playerPerms)}
-                >
-                    {t('nui_menu.player_modal.actions.troll.options.wild_attack')}
-                </Button>
-            </Box>
+            {sections.map((section) => (
+                <Box key={section.title} pb={1.5}>
+                    <Typography className={classes.sectionTitle}>{section.title}</Typography>
+                    <Box className={classes.actionGrid}>
+                        {section.actions.map((action) => (
+                            <ActionTile
+                                key={action.label}
+                                tone={action.tone ?? 'default'}
+                                onClick={action.onClick}
+                                disabled={!userHasPerm(action.perm, playerPerms)}
+                            >
+                                {action.icon}
+                                <span>{action.label}</span>
+                            </ActionTile>
+                        ))}
+                    </Box>
+                </Box>
+            ))}
         </StyledDialogContent>
     );
 };

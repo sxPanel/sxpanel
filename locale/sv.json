@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Jag",
+                "teleport": "Teleport",
+                "vehicle": "Fordon",
+                "world": "Värld",
+                "staff": "Personalverktyg",
+                "server": "Server"
+            },
+            "hints": {
+                "navigate": "Navigera",
+                "options": "Alternativ",
+                "select": "Välj",
+                "pages": "Sidor"
+            },
+            "status": {
+                "none": "Inga aktiva lägen",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Superhopp",
+                "invisible": "Osynlig",
+                "player_ids": "ID",
+                "map_blips": "Blips",
+                "coords_hud": "Koord.",
+                "inspector": "Inspektör"
+            },
+            "toggle_state": {
+                "on": "PÅ",
+                "off": "AV"
+            },
+            "invisible": {
+                "title": "Osynlighet",
+                "label": "Dölj dig för andra spelare. Du ser dig själv fortfarande.",
+                "alert_on": "Du är osynlig för andra spelare."
+            },
+            "cleanup_vehicles": {
+                "title": "Rensa fordon",
+                "label": "Ta bort alla obemannade fordon inom en radie runt dig",
+                "dialog_desc": "Ange radien (1-300) för att ta bort obemannade fordon. Fordon med en spelare i tas aldrig bort, men parkerade spelarfordon tas bort.",
+                "dialog_error": "Ogiltig radie. Måste vara mellan 1 och 300.",
+                "success": "Tog bort %{count} obemannade fordon inom %{radius} m."
+            },
+            "dev_tools": {
+                "title": "Dev Tools",
+                "coords_hud": "Koordinat-HUD",
+                "coords_hud_label": "Visa dina live-koordinater och riktning på skärmen",
+                "inspector": "Inspektör",
+                "inspector_label": "Visa detaljer om entiteten du siktar på, tryck DELETE för att ta bort den"
+            },
+            "staff_chat": {
+                "title": "Personalchatt",
+                "label": "Skicka ett meddelande som bara personal online kan se",
+                "dialog_desc": "Det här meddelandet visas bara för personal online med behörigheten Personalchatt.",
+                "dialog_placeholder": "Meddelande till personalen..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Tänd Eld",
                         "wild_attack": "Vild Djursattack"
                     }
+                },
+                "staff": {
+                    "title": "Personal",
+                    "options": {
+                        "return": "Återför",
+                        "disarm": "Avväpna"
+                    },
+                    "notifications": {
+                        "return_player": "Spelaren skickades tillbaka.",
+                        "return_none": "Den här spelaren har ingen plats att återvända till. Hämta spelaren först.",
+                        "disarm_player": "Alla vapen togs bort från spelaren.",
+                        "disarmed_by_staff": "Dina vapen togs bort av en i personalen."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Växla osynlighet",
+            "toggle_coords_hud": "Dev Tools: Koordinat-HUD",
+            "toggle_inspector": "Dev Tools: Entitetsinspektör",
+            "cleanup_vehicles": "Rensa fordon",
+            "staff_chat": "Personalchatt"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Skicka ett meddelande som bara syns för personal online.",
+            "staffchat_arg_help": "Meddelandet som skickas till personal online."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Personalchatt",
+            "usage": "Användning: /staffchat [meddelande]",
+            "rate_limited": "Du skickar personalmeddelanden för snabbt."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Position",
+                "heading": "Riktning"
+            },
+            "inspector": {
+                "title": "Entitetsinspektör",
+                "no_target": "Sikta på en ped, ett fordon eller ett objekt för att inspektera det.",
+                "type": "Typ",
+                "model": "Modell",
+                "net_id": "Net ID",
+                "not_networked": "Ej nätverksansluten",
+                "owner": "Ägare",
+                "player": "Spelare",
+                "health": "Hälsa",
+                "distance": "Avstånd",
+                "coords": "Koord.",
+                "delete_hint": "Ta bort entitet",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Fordon",
+                    "object": "Objekt"
+                },
+                "delete_success": "Entiteten togs bort.",
+                "delete_no_target": "Du siktar inte på någon entitet.",
+                "delete_not_found": "Entiteten finns inte längre.",
+                "delete_player": "Du kan inte ta bort en spelare.",
+                "delete_occupied": "Fordonet är upptaget av en spelare.",
+                "delete_too_far": "Entiteten är för långt bort.",
+                "delete_not_networked": "Kartobjekt som inte är nätverksanslutna kan inte tas bort."
+            }
         }
     },
     "screenshot_messages": {

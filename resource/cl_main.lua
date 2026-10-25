@@ -102,20 +102,19 @@ end)
 --- The warn is displayed locally once the player starts walking,
 --- avoiding a server round-trip.
 local storedPendingWarn = nil
-
-RegisterNetEvent('txcl:setPendingWarn', function(warnData)
-    if type(warnData) == 'table' and warnData.author and warnData.reason and warnData.actionId then
-        storedPendingWarn = warnData
-        DebugPrint('Received pending warn for actionId: ' .. tostring(warnData.actionId))
-    end
-end)
+local isAwaitingWalk = false
 
 --- Awaits the player to start walking before showing a stored pending warning,
 --- to prevent players from being warned during character selection.
 --- Unlike the warn dismissal, stopping does not reset the counter.
+--- Only started when there is a pending warn, so it costs nothing otherwise.
 --- NOTE: Doing walk detection this way because IsPedRunning isn't reliable,
 --- and IsPedStopped is true even while teleporting.
-CreateThread(function()
+local function awaitWalkThenShowWarn()
+    if isAwaitingWalk then
+        return
+    end
+    isAwaitingWalk = true
     local minimumMoveCycles = 20 -- around 5 seconds of walking
     local moveCycles = 0
     local hasPedStartedWalking = false
@@ -134,6 +133,7 @@ CreateThread(function()
                             TriggerEvent('txcl:showWarning', warn.author, warn.reason, warn.actionId, false)
                         end
                         DebugPrint('Player started walking.')
+                        isAwaitingWalk = false
                         return
                     end
                 end
@@ -141,6 +141,14 @@ CreateThread(function()
                 hasPedStartedWalking = true
             end
         end
+    end
+end
+
+RegisterNetEvent('txcl:setPendingWarn', function(warnData)
+    if type(warnData) == 'table' and warnData.author and warnData.reason and warnData.actionId then
+        storedPendingWarn = warnData
+        DebugPrint('Received pending warn for actionId: ' .. tostring(warnData.actionId))
+        CreateThread(awaitWalkThenShowWarn)
     end
 end)
 

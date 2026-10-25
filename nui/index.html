@@ -34,6 +34,13 @@
                 var streamQuality = 0.4;
                 var frameCount = 0;
 
+                // The render loop only runs while a screenshot/stream is pending, so idle
+                // players pay nothing. A few frames are rendered before reading so CfxTexture
+                // is warm after being idle.
+                var WARMUP_FRAMES = 3;
+                var loopRunning = false;
+                var warmFrames = 0;
+
                 // ---- Pipeline setup (matches screenshot-basic exactly) ----
                 function initialize() {
                     if (pipelineReady) return true;
@@ -122,6 +129,7 @@
                     cameraRTT = new T.OrthographicCamera(w / -2, w / 2, h / 2, h / -2, -10000, 10000);
                     cameraRTT.position.z = 100;
 
+                    if (rtTexture) rtTexture.dispose();
                     rtTexture = new T.WebGLRenderTarget(w, h, {
                         minFilter: T.LinearFilter,
                         magFilter: NEAREST_FILTER,
@@ -129,6 +137,9 @@
                         type: T.UnsignedByteType,
                     });
 
+                    sceneRTT.children.forEach(function (child) {
+                        if (child.geometry) child.geometry.dispose();
+                    });
                     sceneRTT = new T.Scene();
                     var plane = new T.PlaneGeometry(w, h);
                     var quad = new T.Mesh(plane, material);
@@ -139,12 +150,26 @@
                 }
 
                 // ---- Render loop ----
-                function animate() {
+                function ensureLoop() {
+                    if (loopRunning) return;
+                    loopRunning = true;
+                    warmFrames = 0;
                     requestAnimationFrame(animate);
-                    if (!renderer || !sceneRTT || !cameraRTT || !rtTexture) return;
+                }
+
+                function animate() {
+                    if (!renderer || !sceneRTT || !cameraRTT || !rtTexture || (!screenshotRequest && !streamSessionId)) {
+                        loopRunning = false;
+                        return;
+                    }
+                    requestAnimationFrame(animate);
 
                     renderer.clear();
                     renderer.render(sceneRTT, cameraRTT, rtTexture, true);
+                    if (warmFrames < WARMUP_FRAMES) {
+                        warmFrames++;
+                        return;
+                    }
 
                     if (screenshotRequest) {
                         var req = screenshotRequest;
@@ -273,6 +298,7 @@
                     }, interval);
 
                     streamRequest = true;
+                    ensureLoop();
                     slog('Streaming started, interval=' + interval + 'ms');
                 }
 
@@ -322,6 +348,7 @@
                             quality: d.quality || 0.92,
                             encoding: d.encoding || 'jpg',
                         };
+                        ensureLoop();
                     }
                 });
 
@@ -329,11 +356,10 @@
                 window.__inlineCaptureEngine = true; // Signal to React hook: inline engine is active
                 slog('Script loaded, CFX_THREE=' + !!window.CFX_THREE);
                 if (initialize()) {
-                    slog('Init OK, starting render loop');
+                    slog('Init OK, render loop starts on first request');
                 } else {
                     slog('Init deferred, will retry on first request');
                 }
-                requestAnimationFrame(animate);
             })();
         </script>
 

@@ -64,6 +64,12 @@ local menuActionRunners = {
             TriggerServerEvent('txsv:req:bringPlayer', id)
         end
     end,
+    returnPlayer = function(args)
+        local id = parsePlayerId(args)
+        if id then
+            TriggerServerEvent('txsv:req:returnPlayer', id)
+        end
+    end,
 
     -- Health
     healSelf = function()
@@ -98,6 +104,9 @@ local menuActionRunners = {
     end,
     normalMode = function()
         TxAskChangePlayerMode('none')
+    end,
+    toggleInvisible = function()
+        TxToggleInvisible()
     end,
 
     -- Vehicle
@@ -137,6 +146,16 @@ local menuActionRunners = {
     toggleMapBlips = function()
         ExecuteCommand('txAdmin:menu:toggleMapBlips')
     end,
+    cleanupVehicles = function(args)
+        if #args == 0 then
+            return TxOpenCleanupVehiclesDialog()
+        end
+        local radius = parseNumber(args[1], 1, 300)
+        if not radius then
+            return SendSnackbarMessage('error', 'nui_menu.page_main.cleanup_vehicles.dialog_error', true)
+        end
+        TriggerServerEvent('txsv:req:cleanupVehicles', math.floor(radius))
+    end,
 
     -- Players
     spectatePlayer = function(args)
@@ -159,8 +178,25 @@ local menuActionRunners = {
         end
         TriggerServerEvent('txsv:req:freezePlayer', id)
     end,
+    disarmPlayer = function(args)
+        local id = parsePlayerId(args)
+        if id then
+            TriggerServerEvent('txsv:req:disarmPlayer', id)
+        end
+    end,
     openPlayersPage = function()
         ExecuteCommand('txAdmin:menu:openPlayersPage')
+    end,
+
+    -- Staff tools
+    staffChat = function(args)
+        TxSendStaffChat(table.concat(args, ' '))
+    end,
+    toggleCoordsHud = function()
+        TxToggleDevTool('coords')
+    end,
+    toggleInspector = function()
+        TxToggleDevTool('inspector')
     end,
 
     -- Server

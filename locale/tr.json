@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Kendim",
+                "teleport": "Işınlanma",
+                "vehicle": "Araç",
+                "world": "Dünya",
+                "staff": "Yetkili araçları",
+                "server": "Sunucu"
+            },
+            "hints": {
+                "navigate": "Gezin",
+                "options": "Seçenekler",
+                "select": "Seç",
+                "pages": "Sayfalar"
+            },
+            "status": {
+                "none": "Aktif mod yok",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Süper zıplama",
+                "invisible": "Görünmez",
+                "player_ids": "ID'ler",
+                "map_blips": "Blip'ler",
+                "coords_hud": "Koord.",
+                "inspector": "Denetleyici"
+            },
+            "toggle_state": {
+                "on": "AÇIK",
+                "off": "KAPALI"
+            },
+            "invisible": {
+                "title": "Görünmezlik",
+                "label": "Kendini diğer oyunculardan gizle. Kendini görmeye devam edersin.",
+                "alert_on": "Diğer oyunculara görünmezsin."
+            },
+            "cleanup_vehicles": {
+                "title": "Araçları temizle",
+                "label": "Çevrendeki bir yarıçap içindeki boş araçların hepsini sil",
+                "dialog_desc": "Boş araçların silineceği yarıçapı (1-300) gir. İçinde oyuncu olan araçlar asla silinmez, ancak park halindeki oyuncu araçları silinir.",
+                "dialog_error": "Geçersiz yarıçap. 1 ile 300 arasında olmalı.",
+                "success": "%{radius} m içinde %{count} boş araç silindi."
+            },
+            "dev_tools": {
+                "title": "Dev Tools",
+                "coords_hud": "Koordinat HUD",
+                "coords_hud_label": "Canlı koordinatlarını ve yönünü ekranda göster",
+                "inspector": "Denetleyici",
+                "inspector_label": "Nişan aldığın varlığın ayrıntılarını göster, silmek için DELETE'e bas"
+            },
+            "staff_chat": {
+                "title": "Yetkili sohbeti",
+                "label": "Yalnızca çevrimiçi yetkililerin görebileceği bir mesaj gönder",
+                "dialog_desc": "Bu mesaj yalnızca Yetkili sohbeti iznine sahip çevrimiçi yetkililere gösterilir.",
+                "dialog_placeholder": "Yetkililere mesaj..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Ateşe Ver",
                         "wild_attack": "Hayvan Saldırısı"
                     }
+                },
+                "staff": {
+                    "title": "Yetkili",
+                    "options": {
+                        "return": "Geri gönder",
+                        "disarm": "Silahsızlandır"
+                    },
+                    "notifications": {
+                        "return_player": "Oyuncu geri gönderildi.",
+                        "return_none": "Bu oyuncunun dönebileceği bir konum yok. Önce yanına getir.",
+                        "disarm_player": "Oyuncunun tüm silahları alındı.",
+                        "disarmed_by_staff": "Silahların bir yetkili tarafından alındı."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Görünmezliği aç/kapat",
+            "toggle_coords_hud": "Dev Tools: Koordinat HUD",
+            "toggle_inspector": "Dev Tools: Varlık Denetleyici",
+            "cleanup_vehicles": "Araçları temizle",
+            "staff_chat": "Yetkili sohbeti"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Yalnızca çevrimiçi yetkililerin görebileceği bir mesaj gönder.",
+            "staffchat_arg_help": "Çevrimiçi yetkililere gönderilecek mesaj."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Yetkili sohbeti",
+            "usage": "Kullanım: /staffchat [mesaj]",
+            "rate_limited": "Yetkili mesajlarını çok hızlı gönderiyorsun."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Konum",
+                "heading": "Yön"
+            },
+            "inspector": {
+                "title": "Varlık Denetleyici",
+                "no_target": "İncelemek için bir ped, araç veya nesneye nişan al.",
+                "type": "Tür",
+                "model": "Model",
+                "net_id": "Net ID",
+                "not_networked": "Ağa bağlı değil",
+                "owner": "Sahip",
+                "player": "Oyuncu",
+                "health": "Can",
+                "distance": "Mesafe",
+                "coords": "Koord.",
+                "delete_hint": "Varlığı sil",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Araç",
+                    "object": "Nesne"
+                },
+                "delete_success": "Varlık silindi.",
+                "delete_no_target": "Bir varlığa nişan almıyorsun.",
+                "delete_not_found": "Bu varlık artık mevcut değil.",
+                "delete_player": "Bir oyuncuyu silemezsin.",
+                "delete_occupied": "Bu araçta bir oyuncu var.",
+                "delete_too_far": "Bu varlık çok uzakta.",
+                "delete_not_networked": "Ağa bağlı olmayan harita nesneleri silinemez."
+            }
         }
     },
     "screenshot_messages": {

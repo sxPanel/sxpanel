@@ -232,6 +232,48 @@ export const discordMenuCommandDefinitions = [
         permissionId: 'menu.mapblips',
     },
     {
+        id: 'players.invisible',
+        label: 'Invisibility',
+        description: 'Toggle invisibility in the in-game admin menu.',
+        permissionId: 'players.invisible',
+    },
+    {
+        id: 'players.return',
+        label: 'Return Player',
+        description: 'Send a player back to where they were before being brought.',
+        permissionId: 'players.teleport',
+    },
+    {
+        id: 'players.disarm',
+        label: 'Disarm Player',
+        description: 'Remove all weapons from a player.',
+        permissionId: 'players.disarm',
+    },
+    {
+        id: 'menu.devtools',
+        label: 'Developer Tools',
+        description: 'Toggle the coordinates HUD or the entity inspector.',
+        permissionId: 'menu.devtools',
+    },
+    {
+        id: 'menu.delete_entities.aimed',
+        label: 'Delete Aimed Entity',
+        description: 'Delete an entity using the entity inspector.',
+        permissionId: 'menu.delete_entities',
+    },
+    {
+        id: 'menu.delete_entities.vehicles',
+        label: 'Clean Up Vehicles',
+        description: 'Delete unoccupied vehicles within a radius.',
+        permissionId: 'menu.delete_entities',
+    },
+    {
+        id: 'menu.staffchat',
+        label: 'Staff Chat',
+        description: 'Send a staff-only chat message.',
+        permissionId: 'menu.staffchat',
+    },
+    {
         id: 'players.troll.drunk',
         label: 'Drunk Effect',
         description: 'Trigger the drunk troll action on a player.',

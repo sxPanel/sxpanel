@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "आफू",
+                "teleport": "टेलिपोर्ट",
+                "vehicle": "सवारी",
+                "world": "संसार",
+                "staff": "स्टाफ टुल्स",
+                "server": "सर्भर"
+            },
+            "hints": {
+                "navigate": "नेभिगेट",
+                "options": "विकल्प",
+                "select": "छान्नुहोस्",
+                "pages": "पेज"
+            },
+            "status": {
+                "none": "कुनै सक्रिय मोड छैन",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "सुपर जम्प",
+                "invisible": "अदृश्य",
+                "player_ids": "ID",
+                "map_blips": "ब्लिप",
+                "coords_hud": "कोअर्ड",
+                "inspector": "इन्स्पेक्टर"
+            },
+            "toggle_state": {
+                "on": "ON",
+                "off": "OFF"
+            },
+            "invisible": {
+                "title": "अदृश्यता",
+                "label": "अरू खेलाडीबाट आफूलाई लुकाउनुहोस्। तपाईं आफूलाई अझै देख्न सक्नुहुन्छ।",
+                "alert_on": "तपाईं अरू खेलाडीलाई अदृश्य हुनुहुन्छ।"
+            },
+            "cleanup_vehicles": {
+                "title": "सवारी सफा गर्नुहोस्",
+                "label": "तपाईंको वरिपरि दिइएको रेडियसभित्रका सबै खाली सवारी मेटाउनुहोस्",
+                "dialog_desc": "खाली सवारी मेटाउने रेडियस (1-300) हाल्नुहोस्। खेलाडी भएको सवारी कहिल्यै मेटिँदैन, तर पार्क गरिएका खेलाडीका सवारी मेटिन्छन्।",
+                "dialog_error": "अमान्य रेडियस। १ देखि ३०० बीच हुनुपर्छ।",
+                "success": "%{radius}m भित्र %{count} खाली सवारी मेटियो।"
+            },
+            "dev_tools": {
+                "title": "Dev टुल्स",
+                "coords_hud": "कोअर्ड HUD",
+                "coords_hud_label": "आफ्नो लाइभ कोअर्डिनेट र दिशा स्क्रिनमा देखाउनुहोस्",
+                "inspector": "इन्स्पेक्टर",
+                "inspector_label": "तपाईंले निशाना लगाएको इन्टिटीको विवरण देखाउनुहोस्, हटाउन DELETE थिच्नुहोस्"
+            },
+            "staff_chat": {
+                "title": "स्टाफ च्याट",
+                "label": "अनलाइन स्टाफले मात्र देख्ने सन्देश पठाउनुहोस्",
+                "dialog_desc": "यो सन्देश स्टाफ च्याट अनुमति भएका अनलाइन स्टाफ सदस्यलाई मात्र देखाइनेछ।",
+                "dialog_placeholder": "स्टाफलाई सन्देश..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "आगो लगाउनुहोस्",
                         "wild_attack": "जंगली आक्रमण"
                     }
+                },
+                "staff": {
+                    "title": "स्टाफ",
+                    "options": {
+                        "return": "फर्काउनुहोस्",
+                        "disarm": "निःशस्त्र"
+                    },
+                    "notifications": {
+                        "return_player": "खेलाडीलाई फर्काइयो।",
+                        "return_none": "यो खेलाडीको फर्कने स्थान छैन। पहिले उसलाई ल्याउनुहोस्।",
+                        "disarm_player": "खेलाडीका सबै हतियार हटाइयो।",
+                        "disarmed_by_staff": "तपाईंका हतियार स्टाफ सदस्यले हटाए।"
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "अदृश्य मोड टगल गर्नुहोस्",
+            "toggle_coords_hud": "Dev टुल्स: कोअर्ड HUD",
+            "toggle_inspector": "Dev टुल्स: इन्टिटी इन्स्पेक्टर",
+            "cleanup_vehicles": "सवारी सफा गर्नुहोस्",
+            "staff_chat": "स्टाफ च्याट"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "अनलाइन स्टाफलाई मात्र देखिने सन्देश पठाउनुहोस्।",
+            "staffchat_arg_help": "अनलाइन स्टाफलाई पठाउने सन्देश।"
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "स्टाफ च्याट",
+            "usage": "प्रयोग: /staffchat [सन्देश]",
+            "rate_limited": "तपाईं स्टाफ सन्देश धेरै छिटो पठाउँदै हुनुहुन्छ।"
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "स्थिति",
+                "heading": "दिशा"
+            },
+            "inspector": {
+                "title": "इन्टिटी इन्स्पेक्टर",
+                "no_target": "जाँच्न ped, सवारी वा वस्तुमा निशाना लगाउनुहोस्।",
+                "type": "प्रकार",
+                "model": "मोडल",
+                "net_id": "Net ID",
+                "not_networked": "नेटवर्कमा छैन",
+                "owner": "मालिक",
+                "player": "खेलाडी",
+                "health": "स्वास्थ्य",
+                "distance": "दूरी",
+                "coords": "कोअर्ड",
+                "delete_hint": "इन्टिटी मेटाउनुहोस्",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "सवारी",
+                    "object": "वस्तु"
+                },
+                "delete_success": "इन्टिटी मेटियो।",
+                "delete_no_target": "तपाईं कुनै इन्टिटीमा निशाना लगाउँदै हुनुहुन्न।",
+                "delete_not_found": "त्यो इन्टिटी अब छैन।",
+                "delete_player": "तपाईं खेलाडी मेटाउन सक्नुहुन्न।",
+                "delete_occupied": "त्यो सवारीमा खेलाडी छ।",
+                "delete_too_far": "त्यो इन्टिटी धेरै टाढा छ।",
+                "delete_not_networked": "नेटवर्कमा नभएका नक्सा वस्तु मेटाउन सकिँदैन।"
+            }
         }
     },
     "screenshot_messages": {

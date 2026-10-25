@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Bản thân",
+                "teleport": "Dịch chuyển",
+                "vehicle": "Phương tiện",
+                "world": "Thế giới",
+                "staff": "Công cụ staff",
+                "server": "Máy chủ"
+            },
+            "hints": {
+                "navigate": "Di chuyển",
+                "options": "Tùy chọn",
+                "select": "Chọn",
+                "pages": "Trang"
+            },
+            "status": {
+                "none": "Không có chế độ nào đang bật",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Siêu nhảy",
+                "invisible": "Tàng hình",
+                "player_ids": "ID",
+                "map_blips": "Blip",
+                "coords_hud": "Tọa độ",
+                "inspector": "Kiểm tra"
+            },
+            "toggle_state": {
+                "on": "BẬT",
+                "off": "TẮT"
+            },
+            "invisible": {
+                "title": "Tàng hình",
+                "label": "Ẩn bạn khỏi người chơi khác. Bạn vẫn thấy chính mình.",
+                "alert_on": "Bạn đang tàng hình với người chơi khác."
+            },
+            "cleanup_vehicles": {
+                "title": "Dọn phương tiện",
+                "label": "Xóa mọi phương tiện không có người trong bán kính quanh bạn",
+                "dialog_desc": "Nhập bán kính (1-300) để xóa phương tiện không có người. Phương tiện có người chơi bên trong sẽ không bao giờ bị xóa, nhưng phương tiện của người chơi đang đỗ thì có.",
+                "dialog_error": "Bán kính không hợp lệ. Phải từ 1 đến 300.",
+                "success": "Đã xóa %{count} phương tiện không có người trong bán kính %{radius}m."
+            },
+            "dev_tools": {
+                "title": "Dev Tools",
+                "coords_hud": "HUD tọa độ",
+                "coords_hud_label": "Hiển thị tọa độ và hướng của bạn theo thời gian thực trên màn hình",
+                "inspector": "Kiểm tra",
+                "inspector_label": "Hiển thị chi tiết thực thể bạn đang ngắm, nhấn DELETE để xóa"
+            },
+            "staff_chat": {
+                "title": "Chat staff",
+                "label": "Gửi tin nhắn chỉ staff đang online mới thấy",
+                "dialog_desc": "Tin nhắn này chỉ hiển thị cho staff đang online có quyền Chat staff.",
+                "dialog_placeholder": "Tin nhắn cho staff..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Làm bốc cháy",
                         "wild_attack": "Động vật tấn công"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Đưa về",
+                        "disarm": "Tước vũ khí"
+                    },
+                    "notifications": {
+                        "return_player": "Đã đưa người chơi về.",
+                        "return_none": "Người chơi này không có vị trí để quay về. Hãy kéo họ đến trước.",
+                        "disarm_player": "Đã xóa toàn bộ vũ khí của người chơi.",
+                        "disarmed_by_staff": "Vũ khí của bạn đã bị staff xóa."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Bật/tắt tàng hình",
+            "toggle_coords_hud": "Dev Tools: HUD tọa độ",
+            "toggle_inspector": "Dev Tools: Trình kiểm tra thực thể",
+            "cleanup_vehicles": "Dọn phương tiện",
+            "staff_chat": "Chat staff"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Gửi tin nhắn chỉ staff đang online mới thấy.",
+            "staffchat_arg_help": "Tin nhắn gửi đến staff đang online."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Chat staff",
+            "usage": "Cách dùng: /staffchat [tin nhắn]",
+            "rate_limited": "Bạn gửi tin nhắn staff quá nhanh."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Vị trí",
+                "heading": "Hướng"
+            },
+            "inspector": {
+                "title": "Trình kiểm tra thực thể",
+                "no_target": "Ngắm vào ped, phương tiện hoặc vật thể để kiểm tra.",
+                "type": "Loại",
+                "model": "Model",
+                "net_id": "Net ID",
+                "not_networked": "Không đồng bộ mạng",
+                "owner": "Chủ sở hữu",
+                "player": "Người chơi",
+                "health": "Máu",
+                "distance": "Khoảng cách",
+                "coords": "Tọa độ",
+                "delete_hint": "Xóa thực thể",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Phương tiện",
+                    "object": "Vật thể"
+                },
+                "delete_success": "Đã xóa thực thể.",
+                "delete_no_target": "Bạn không ngắm vào thực thể nào.",
+                "delete_not_found": "Thực thể đó không còn tồn tại.",
+                "delete_player": "Bạn không thể xóa người chơi.",
+                "delete_occupied": "Phương tiện đó đang có người chơi.",
+                "delete_too_far": "Thực thể đó ở quá xa.",
+                "delete_not_networked": "Không thể xóa vật thể bản đồ không đồng bộ mạng."
+            }
         }
     },
     "screenshot_messages": {

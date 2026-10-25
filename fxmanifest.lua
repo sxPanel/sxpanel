@@ -42,6 +42,7 @@ server_scripts({
     'resource/menu/server/sv_player_modal.lua',
     'resource/menu/server/sv_spectate.lua',
     'resource/menu/server/sv_player_mode.lua',
+    'resource/menu/server/sv_staff_tools.lua',
     'addons/live-map/resource/sv_positions.lua',
 })
 
@@ -66,6 +67,7 @@ client_scripts({
     'resource/menu/client/cl_spectate.lua',
     'resource/menu/client/cl_trollactions.lua',
     'resource/menu/client/cl_freeze.lua',
+    'resource/menu/client/cl_staff_tools.lua',
     'resource/menu/vendor/freecam/utils.lua',
     'resource/menu/vendor/freecam/config.lua',
     'resource/menu/vendor/freecam/main.lua',
@@ -74,7 +76,7 @@ client_scripts({
 
 -- Cache-bust query prevents FiveM's CEF from serving stale NUI files.
 -- Bump the version whenever dist/nui content changes.
-ui_page 'nui/index.html?v=6'
+ui_page 'nui/index.html?v=7'
 
 files {
     'locale/*.json',

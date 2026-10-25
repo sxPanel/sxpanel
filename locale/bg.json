@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Аз",
+                "teleport": "Телепорт",
+                "vehicle": "Превозно средство",
+                "world": "Свят",
+                "staff": "Staff инструменти",
+                "server": "Сървър"
+            },
+            "hints": {
+                "navigate": "Навигация",
+                "options": "Опции",
+                "select": "Избор",
+                "pages": "Страници"
+            },
+            "status": {
+                "none": "Няма активни режими",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Супер скок",
+                "invisible": "Невидим",
+                "player_ids": "ID-та",
+                "map_blips": "Блипове",
+                "coords_hud": "Коорд.",
+                "inspector": "Инспектор"
+            },
+            "toggle_state": {
+                "on": "ВКЛ",
+                "off": "ИЗКЛ"
+            },
+            "invisible": {
+                "title": "Невидимост",
+                "label": "Скрий се от другите играчи. Ти все още се виждаш.",
+                "alert_on": "Невидим си за другите играчи."
+            },
+            "cleanup_vehicles": {
+                "title": "Почисти превозните средства",
+                "label": "Изтрий всяко незаето превозно средство в радиус около теб",
+                "dialog_desc": "Въведи радиус (1-300), в който да се изтрият незаетите превозни средства. Превозни средства с играч вътре никога не се трият, но паркираните превозни средства на играчи се трият.",
+                "dialog_error": "Невалиден радиус. Трябва да е между 1 и 300.",
+                "success": "Изтрити %{count} незаети превозни средства в радиус %{radius}м."
+            },
+            "dev_tools": {
+                "title": "Dev инструменти",
+                "coords_hud": "HUD координати",
+                "coords_hud_label": "Показва координатите и посоката ти на екрана в реално време",
+                "inspector": "Инспектор",
+                "inspector_label": "Показва данни за обекта, към който се целиш, натисни DELETE за изтриване"
+            },
+            "staff_chat": {
+                "title": "Staff чат",
+                "label": "Изпрати съобщение, което виждат само онлайн членове на персонала",
+                "dialog_desc": "Това съобщение ще се показва само на онлайн членове на персонала с право за Staff чат.",
+                "dialog_placeholder": "Съобщение до персонала..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Запали",
                         "wild_attack": "Атака от диви животни"
                     }
+                },
+                "staff": {
+                    "title": "Персонал",
+                    "options": {
+                        "return": "Върни",
+                        "disarm": "Обезоръжи"
+                    },
+                    "notifications": {
+                        "return_player": "Играчът беше върнат.",
+                        "return_none": "Този играч няма локация за връщане. Първо го телепортирай при себе си.",
+                        "disarm_player": "Всички оръжия на играча бяха премахнати.",
+                        "disarmed_by_staff": "Оръжията ти бяха премахнати от член на персонала."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Превключи невидимост",
+            "toggle_coords_hud": "Dev инструменти: HUD координати",
+            "toggle_inspector": "Dev инструменти: Инспектор на обекти",
+            "cleanup_vehicles": "Почисти превозните средства",
+            "staff_chat": "Staff чат"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Изпрати съобщение, видимо само за онлайн персонала.",
+            "staffchat_arg_help": "Съобщението за онлайн персонала."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staff чат",
+            "usage": "Употреба: /staffchat [съобщение]",
+            "rate_limited": "Изпращаш съобщения към персонала твърде бързо."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Позиция",
+                "heading": "Посока"
+            },
+            "inspector": {
+                "title": "Инспектор на обекти",
+                "no_target": "Прицели се в пед, превозно средство или обект, за да го прегледаш.",
+                "type": "Тип",
+                "model": "Модел",
+                "net_id": "Net ID",
+                "not_networked": "Не е в мрежата",
+                "owner": "Собственик",
+                "player": "Играч",
+                "health": "Здраве",
+                "distance": "Разстояние",
+                "coords": "Коорд.",
+                "delete_hint": "Изтрий обекта",
+                "types": {
+                    "ped": "Пед",
+                    "vehicle": "Превозно средство",
+                    "object": "Обект"
+                },
+                "delete_success": "Обектът е изтрит.",
+                "delete_no_target": "Не се целиш в обект.",
+                "delete_not_found": "Този обект вече не съществува.",
+                "delete_player": "Не можеш да изтриеш играч.",
+                "delete_occupied": "Това превозно средство е заето от играч.",
+                "delete_too_far": "Този обект е твърде далече.",
+                "delete_not_networked": "Обекти от картата, които не са в мрежата, не могат да се изтриват."
+            }
         }
     },
     "screenshot_messages": {

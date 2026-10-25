@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Eu",
+                "teleport": "Teleportare",
+                "vehicle": "Vehicul",
+                "world": "Lume",
+                "staff": "Unelte staff",
+                "server": "Server"
+            },
+            "hints": {
+                "navigate": "Navighează",
+                "options": "Opțiuni",
+                "select": "Selectează",
+                "pages": "Pagini"
+            },
+            "status": {
+                "none": "Niciun mod activ",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Super săritură",
+                "invisible": "Invizibil",
+                "player_ids": "ID-uri",
+                "map_blips": "Blips",
+                "coords_hud": "Coord.",
+                "inspector": "Inspector"
+            },
+            "toggle_state": {
+                "on": "ON",
+                "off": "OFF"
+            },
+            "invisible": {
+                "title": "Invizibilitate",
+                "label": "Ascunde-te de ceilalți jucători. Te vezi în continuare.",
+                "alert_on": "Ești invizibil pentru ceilalți jucători."
+            },
+            "cleanup_vehicles": {
+                "title": "Curăță vehiculele",
+                "label": "Șterge toate vehiculele neocupate dintr-o rază în jurul tău",
+                "dialog_desc": "Introdu raza (1-300) în care se șterg vehiculele neocupate. Vehiculele cu un jucător înăuntru nu sunt șterse niciodată, dar cele parcate ale jucătorilor da.",
+                "dialog_error": "Rază invalidă. Trebuie să fie între 1 și 300.",
+                "success": "%{count} vehicul(e) neocupat(e) șters(e) pe o rază de %{radius}m."
+            },
+            "dev_tools": {
+                "title": "Dev Tools",
+                "coords_hud": "HUD coordonate",
+                "coords_hud_label": "Afișează pe ecran coordonatele și direcția ta în timp real",
+                "inspector": "Inspector",
+                "inspector_label": "Afișează detalii despre entitatea țintită, apasă DELETE pentru a o șterge"
+            },
+            "staff_chat": {
+                "title": "Chat staff",
+                "label": "Trimite un mesaj vizibil doar pentru staff-ul online",
+                "dialog_desc": "Acest mesaj va fi afișat doar membrilor staff online cu permisiunea Chat staff.",
+                "dialog_placeholder": "Mesaj pentru staff..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Arde",
                         "wild_attack": "Atacu cu animale"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Returnează",
+                        "disarm": "Dezarmează"
+                    },
+                    "notifications": {
+                        "return_player": "Jucătorul a fost trimis înapoi.",
+                        "return_none": "Acest jucător nu are o locație la care să revină. Adu-l mai întâi.",
+                        "disarm_player": "Toate armele jucătorului au fost eliminate.",
+                        "disarmed_by_staff": "Armele tale au fost eliminate de un membru al staff-ului."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Comută invizibilitatea",
+            "toggle_coords_hud": "Dev Tools: HUD coordonate",
+            "toggle_inspector": "Dev Tools: Inspector entități",
+            "cleanup_vehicles": "Curăță vehiculele",
+            "staff_chat": "Chat staff"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Trimite un mesaj vizibil doar pentru staff-ul online.",
+            "staffchat_arg_help": "Mesajul de trimis staff-ului online."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Chat staff",
+            "usage": "Utilizare: /staffchat [mesaj]",
+            "rate_limited": "Trimiți mesaje staff prea repede."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Poziție",
+                "heading": "Direcție"
+            },
+            "inspector": {
+                "title": "Inspector entități",
+                "no_target": "Țintește un ped, vehicul sau obiect pentru a-l inspecta.",
+                "type": "Tip",
+                "model": "Model",
+                "net_id": "Net ID",
+                "not_networked": "Nesincronizat",
+                "owner": "Proprietar",
+                "player": "Jucător",
+                "health": "Viață",
+                "distance": "Distanță",
+                "coords": "Coord.",
+                "delete_hint": "Șterge entitatea",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Vehicul",
+                    "object": "Obiect"
+                },
+                "delete_success": "Entitate ștearsă.",
+                "delete_no_target": "Nu țintești nicio entitate.",
+                "delete_not_found": "Entitatea nu mai există.",
+                "delete_player": "Nu poți șterge un jucător.",
+                "delete_occupied": "Vehiculul este ocupat de un jucător.",
+                "delete_too_far": "Entitatea este prea departe.",
+                "delete_not_networked": "Obiectele de hartă nesincronizate nu pot fi șterse."
+            }
         }
     },
     "screenshot_messages": {

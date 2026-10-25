@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Mina",
+                "teleport": "Teleport",
+                "vehicle": "Sõiduk",
+                "world": "Maailm",
+                "staff": "Staffi tööriistad",
+                "server": "Server"
+            },
+            "hints": {
+                "navigate": "Liigu",
+                "options": "Valikud",
+                "select": "Vali",
+                "pages": "Lehed"
+            },
+            "status": {
+                "none": "Aktiivseid režiime pole",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Supervise",
+                "invisible": "Nähtamatu",
+                "player_ids": "ID-d",
+                "map_blips": "Blipid",
+                "coords_hud": "Koord.",
+                "inspector": "Inspektor"
+            },
+            "toggle_state": {
+                "on": "SEES",
+                "off": "VÄLJAS"
+            },
+            "invisible": {
+                "title": "Nähtamatus",
+                "label": "Peida end teiste mängijate eest. Sa näed end endiselt.",
+                "alert_on": "Oled teistele mängijatele nähtamatu."
+            },
+            "cleanup_vehicles": {
+                "title": "Puhasta sõidukid",
+                "label": "Kustuta kõik tühjad sõidukid enda ümber raadiuses",
+                "dialog_desc": "Sisesta raadius (1-300), kus tühjad sõidukid kustutatakse. Mängijaga sõidukeid ei kustutata kunagi, aga mängijate pargitud sõidukid kustutatakse.",
+                "dialog_error": "Kehtetu raadius. Peab olema vahemikus 1 kuni 300.",
+                "success": "Kustutati %{count} tühja sõidukit raadiuses %{radius} m."
+            },
+            "dev_tools": {
+                "title": "Dev tööriistad",
+                "coords_hud": "Koordinaatide HUD",
+                "coords_hud_label": "Näita ekraanil oma reaalajas koordinaate ja suunda",
+                "inspector": "Inspektor",
+                "inspector_label": "Näita sihitava olemi andmeid, vajuta DELETE selle eemaldamiseks"
+            },
+            "staff_chat": {
+                "title": "Staffi vestlus",
+                "label": "Saada sõnum, mida näeb ainult onlain staff",
+                "dialog_desc": "See sõnum kuvatakse ainult onlain staffi liikmetele, kellel on Staffi vestluse õigus.",
+                "dialog_placeholder": "Sõnum staffile..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Pane mängija põlema",
                         "wild_attack": "Metsik rünnak"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Tagasta",
+                        "disarm": "Võta relvad"
+                    },
+                    "notifications": {
+                        "return_player": "Mängija saadeti tagasi.",
+                        "return_none": "Sellel mängijal pole asukohta, kuhu tagasi minna. Too ta esmalt enda juurde.",
+                        "disarm_player": "Mängijalt eemaldati kõik relvad.",
+                        "disarmed_by_staff": "Staffi liige eemaldas sinu relvad."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Lülita nähtamatus",
+            "toggle_coords_hud": "Dev tööriistad: koordinaatide HUD",
+            "toggle_inspector": "Dev tööriistad: olemi inspektor",
+            "cleanup_vehicles": "Puhasta sõidukid",
+            "staff_chat": "Staffi vestlus"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Saada sõnum, mida näeb ainult onlain staff.",
+            "staffchat_arg_help": "Sõnum onlain staffile."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staffi vestlus",
+            "usage": "Kasutus: /staffchat [sõnum]",
+            "rate_limited": "Saadad staffi sõnumeid liiga kiiresti."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Asukoht",
+                "heading": "Suund"
+            },
+            "inspector": {
+                "title": "Olemi inspektor",
+                "no_target": "Sihi pedi, sõidukit või objekti, et seda uurida.",
+                "type": "Tüüp",
+                "model": "Mudel",
+                "net_id": "Net ID",
+                "not_networked": "Pole võrgus",
+                "owner": "Omanik",
+                "player": "Mängija",
+                "health": "Tervis",
+                "distance": "Kaugus",
+                "coords": "Koord.",
+                "delete_hint": "Kustuta olem",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Sõiduk",
+                    "object": "Objekt"
+                },
+                "delete_success": "Olem kustutatud.",
+                "delete_no_target": "Sa ei sihi ühtegi olemit.",
+                "delete_not_found": "Seda olemit enam pole.",
+                "delete_player": "Mängijat ei saa kustutada.",
+                "delete_occupied": "Seda sõidukit kasutab mängija.",
+                "delete_too_far": "See olem on liiga kaugel.",
+                "delete_not_networked": "Võrgus mitteolevaid kaardiobjekte ei saa kustutada."
+            }
         }
     },
     "screenshot_messages": {

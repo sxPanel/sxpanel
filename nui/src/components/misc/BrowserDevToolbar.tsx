@@ -62,6 +62,19 @@ export function BrowserDevToolbar() {
                 >
                     My Tickets
                 </Button>
+                <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => browserMenuDebug.showStaffHud()}
+                    sx={{
+                        textTransform: 'none',
+                        fontSize: '0.75rem',
+                        color: '#9ea4bd',
+                        borderColor: 'rgba(124, 134, 171, 0.35)',
+                    }}
+                >
+                    Staff HUD
+                </Button>
             </Stack>
         </Box>
     );

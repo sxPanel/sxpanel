@@ -63,7 +63,10 @@ const loadHostStaticDataCache = async (): Promise<HostStaticDataType | null> => 
 
     try {
         const cpuStats = await si.cpu();
-        const cpuSpeed = cpuStats.speedMin ?? cpuStats.speed;
+        //On linux, si's speedMin is lscpu's "CPU min MHz" (the idle floor, e.g. 0.55GHz on Ryzen),
+        //  and it's NaN when lscpu omits it (common on VPS), so prefer the base clock.
+        const validSpeed = (val: number) => (Number.isFinite(val) && val > 0 ? val : 0);
+        const cpuSpeed = validSpeed(cpuStats.speed) || validSpeed(cpuStats.speedMax) || validSpeed(cpuStats.speedMin);
 
         _hostStaticDataCache = {
             nodeVersion: process.version,
@@ -73,7 +76,7 @@ const loadHostStaticDataCache = async (): Promise<HostStaticDataType | null> => 
                 manufacturer: cpuStats.manufacturer,
                 brand: cpuStats.brand,
                 speedMin: cpuSpeed,
-                speedMax: cpuStats.speedMax,
+                speedMax: validSpeed(cpuStats.speedMax),
                 physicalCores: cpuStats.physicalCores,
                 cores: cpuStats.cores,
             },

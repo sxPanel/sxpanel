@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "خودم",
+                "teleport": "تلپورت",
+                "vehicle": "خودرو",
+                "world": "دنیا",
+                "staff": "ابزار استاف",
+                "server": "سرور"
+            },
+            "hints": {
+                "navigate": "حرکت",
+                "options": "گزینه‌ها",
+                "select": "انتخاب",
+                "pages": "صفحات"
+            },
+            "status": {
+                "none": "حالت فعالی وجود ندارد",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "ابرپرش",
+                "invisible": "نامرئی",
+                "player_ids": "شناسه‌ها",
+                "map_blips": "بلیپ‌ها",
+                "coords_hud": "مختصات",
+                "inspector": "بازرس"
+            },
+            "toggle_state": {
+                "on": "روشن",
+                "off": "خاموش"
+            },
+            "invisible": {
+                "title": "نامرئی",
+                "label": "خودت را از دید بازیکنان دیگر پنهان کن. خودت همچنان خودت را می‌بینی.",
+                "alert_on": "تو برای بازیکنان دیگر نامرئی هستی."
+            },
+            "cleanup_vehicles": {
+                "title": "پاکسازی خودروها",
+                "label": "حذف تمام خودروهای خالی در شعاعی اطراف تو",
+                "dialog_desc": "شعاع (۱ تا ۳۰۰) برای حذف خودروهای خالی را وارد کن. خودروهایی که بازیکن داخلشان است هرگز حذف نمی‌شوند، اما خودروهای پارک‌شده بازیکنان حذف می‌شوند.",
+                "dialog_error": "شعاع نامعتبر. باید بین ۱ تا ۳۰۰ باشد.",
+                "success": "%{count} خودروی خالی در شعاع %{radius} متر حذف شد."
+            },
+            "dev_tools": {
+                "title": "ابزار توسعه",
+                "coords_hud": "HUD مختصات",
+                "coords_hud_label": "نمایش زنده مختصات و جهت تو روی صفحه",
+                "inspector": "بازرس",
+                "inspector_label": "نمایش جزئیات موجودیتی که نشانه می‌گیری، با DELETE حذفش کن"
+            },
+            "staff_chat": {
+                "title": "چت استاف",
+                "label": "پیامی بفرست که فقط استاف آنلاین می‌تواند ببیند",
+                "dialog_desc": "این پیام فقط به اعضای استاف آنلاینی که مجوز چت استاف دارند نمایش داده می‌شود.",
+                "dialog_placeholder": "پیام به استاف..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Set Fire",
                         "wild_attack": "Wild attack"
                     }
+                },
+                "staff": {
+                    "title": "استاف",
+                    "options": {
+                        "return": "بازگرداندن",
+                        "disarm": "خلع سلاح"
+                    },
+                    "notifications": {
+                        "return_player": "بازیکن بازگردانده شد.",
+                        "return_none": "این بازیکن مکانی برای بازگشت ندارد. ابتدا او را بیاور.",
+                        "disarm_player": "تمام سلاح‌های بازیکن حذف شد.",
+                        "disarmed_by_staff": "سلاح‌های تو توسط یکی از اعضای استاف حذف شد."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "تغییر وضعیت نامرئی",
+            "toggle_coords_hud": "ابزار توسعه: HUD مختصات",
+            "toggle_inspector": "ابزار توسعه: بازرس موجودیت",
+            "cleanup_vehicles": "پاکسازی خودروها",
+            "staff_chat": "چت استاف"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "پیامی بفرست که فقط استاف آنلاین ببیند.",
+            "staffchat_arg_help": "پیامی که برای استاف آنلاین ارسال می‌شود."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "چت استاف",
+            "usage": "نحوه استفاده: /staffchat [پیام]",
+            "rate_limited": "پیام‌های استاف را خیلی سریع ارسال می‌کنی."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "موقعیت",
+                "heading": "جهت"
+            },
+            "inspector": {
+                "title": "بازرس موجودیت",
+                "no_target": "برای بررسی، به یک پد، خودرو یا شیء نشانه بگیر.",
+                "type": "نوع",
+                "model": "مدل",
+                "net_id": "Net ID",
+                "not_networked": "غیرشبکه‌ای",
+                "owner": "مالک",
+                "player": "بازیکن",
+                "health": "سلامتی",
+                "distance": "فاصله",
+                "coords": "مختصات",
+                "delete_hint": "حذف موجودیت",
+                "types": {
+                    "ped": "پد",
+                    "vehicle": "خودرو",
+                    "object": "شیء"
+                },
+                "delete_success": "موجودیت حذف شد.",
+                "delete_no_target": "به هیچ موجودیتی نشانه نگرفته‌ای.",
+                "delete_not_found": "این موجودیت دیگر وجود ندارد.",
+                "delete_player": "نمی‌توانی یک بازیکن را حذف کنی.",
+                "delete_occupied": "این خودرو توسط یک بازیکن اشغال شده است.",
+                "delete_too_far": "این موجودیت خیلی دور است.",
+                "delete_not_networked": "اشیای نقشه که شبکه‌ای نیستند قابل حذف نیستند."
+            }
         }
     },
     "screenshot_messages": {

@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Es",
+                "teleport": "Teleports",
+                "vehicle": "Transportlīdzeklis",
+                "world": "Pasaule",
+                "staff": "Staff rīki",
+                "server": "Serveris"
+            },
+            "hints": {
+                "navigate": "Navigācija",
+                "options": "Opcijas",
+                "select": "Izvēlēties",
+                "pages": "Lapas"
+            },
+            "status": {
+                "none": "Nav aktīvu režīmu",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Superlēciens",
+                "invisible": "Neredzams",
+                "player_ids": "ID",
+                "map_blips": "Atzīmes",
+                "coords_hud": "Koord.",
+                "inspector": "Inspektors"
+            },
+            "toggle_state": {
+                "on": "IESL",
+                "off": "IZSL"
+            },
+            "invisible": {
+                "title": "Neredzamība",
+                "label": "Paslēp sevi no citiem spēlētājiem. Pats sevi joprojām redzi.",
+                "alert_on": "Tu esi neredzams citiem spēlētājiem."
+            },
+            "cleanup_vehicles": {
+                "title": "Notīrīt transportlīdzekļus",
+                "label": "Dzēst visus tukšos transportlīdzekļus norādītajā rādiusā ap tevi",
+                "dialog_desc": "Ievadi rādiusu (1-300) tukšo transportlīdzekļu dzēšanai. Transportlīdzekļi ar spēlētāju iekšā netiek dzēsti, bet novietotie spēlētāju transportlīdzekļi tiek.",
+                "dialog_error": "Nederīgs rādiuss. Jābūt no 1 līdz 300.",
+                "success": "Izdzēsti %{count} tukšie transportlīdzekļi %{radius} m rādiusā."
+            },
+            "dev_tools": {
+                "title": "Dev rīki",
+                "coords_hud": "Koordināšu HUD",
+                "coords_hud_label": "Rādīt tiešraides koordinātas un virzienu ekrānā",
+                "inspector": "Inspektors",
+                "inspector_label": "Rādīt informāciju par entītiju, uz kuru mērķē, nospied DELETE, lai to noņemtu"
+            },
+            "staff_chat": {
+                "title": "Staff čats",
+                "label": "Nosūtīt ziņu, ko redz tikai tiešsaistes staff",
+                "dialog_desc": "Šī ziņa tiks rādīta tikai tiešsaistes staff dalībniekiem ar Staff čata atļauju.",
+                "dialog_placeholder": "Ziņa staff..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Aizdedzināt",
                         "wild_attack": "Dzivnieku Uzbrukšana"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Atgriezt",
+                        "disarm": "Atbruņot"
+                    },
+                    "notifications": {
+                        "return_player": "Spēlētājs atgriezts.",
+                        "return_none": "Šim spēlētājam nav atgriešanās vietas. Vispirms pievelc viņu.",
+                        "disarm_player": "Spēlētājam noņemti visi ieroči.",
+                        "disarmed_by_staff": "Staff dalībnieks noņēma tavus ieročus."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Pārslēgt neredzamību",
+            "toggle_coords_hud": "Dev rīki: koordināšu HUD",
+            "toggle_inspector": "Dev rīki: entītijas inspektors",
+            "cleanup_vehicles": "Notīrīt transportlīdzekļus",
+            "staff_chat": "Staff čats"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Nosūtīt ziņu, ko redz tikai tiešsaistes staff.",
+            "staffchat_arg_help": "Ziņa tiešsaistes staff."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staff čats",
+            "usage": "Lietošana: /staffchat [ziņa]",
+            "rate_limited": "Tu sūti staff ziņas pārāk ātri."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Pozīcija",
+                "heading": "Virziens"
+            },
+            "inspector": {
+                "title": "Entītijas inspektors",
+                "no_target": "Mērķē uz pedu, transportlīdzekli vai objektu, lai to pārbaudītu.",
+                "type": "Veids",
+                "model": "Modelis",
+                "net_id": "Net ID",
+                "not_networked": "Nav tīklā",
+                "owner": "Īpašnieks",
+                "player": "Spēlētājs",
+                "health": "Veselība",
+                "distance": "Attālums",
+                "coords": "Koord.",
+                "delete_hint": "Dzēst entītiju",
+                "types": {
+                    "ped": "Peds",
+                    "vehicle": "Transportlīdzeklis",
+                    "object": "Objekts"
+                },
+                "delete_success": "Entītija izdzēsta.",
+                "delete_no_target": "Tu nemērķē uz entītiju.",
+                "delete_not_found": "Šī entītija vairs neeksistē.",
+                "delete_player": "Spēlētāju nevar dzēst.",
+                "delete_occupied": "Šajā transportlīdzeklī atrodas spēlētājs.",
+                "delete_too_far": "Šī entītija ir pārāk tālu.",
+                "delete_not_networked": "Kartes objektus, kas nav tīklā, nevar dzēst."
+            }
         }
     },
     "screenshot_messages": {

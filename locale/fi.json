@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Oma",
+                "teleport": "Teleport",
+                "vehicle": "Ajoneuvo",
+                "world": "Maailma",
+                "staff": "Staff-työkalut",
+                "server": "Palvelin"
+            },
+            "hints": {
+                "navigate": "Selaa",
+                "options": "Valinnat",
+                "select": "Valitse",
+                "pages": "Sivut"
+            },
+            "status": {
+                "none": "Ei aktiivisia tiloja",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Superhyppy",
+                "invisible": "Näkymätön",
+                "player_ids": "ID:t",
+                "map_blips": "Blipit",
+                "coords_hud": "Koord.",
+                "inspector": "Tarkastaja"
+            },
+            "toggle_state": {
+                "on": "PÄÄLLÄ",
+                "off": "POIS"
+            },
+            "invisible": {
+                "title": "Näkymättömyys",
+                "label": "Piilota itsesi muilta pelaajilta. Näet silti itsesi.",
+                "alert_on": "Olet näkymätön muille pelaajille."
+            },
+            "cleanup_vehicles": {
+                "title": "Siivoa ajoneuvot",
+                "label": "Poista kaikki tyhjät ajoneuvot säteellä ympäriltäsi",
+                "dialog_desc": "Anna säde (1-300), jolla tyhjät ajoneuvot poistetaan. Ajoneuvoja, joissa on pelaaja, ei koskaan poisteta, mutta pelaajien pysäköidyt ajoneuvot poistetaan.",
+                "dialog_error": "Virheellinen säde. Arvon on oltava 1-300.",
+                "success": "Poistettiin %{count} tyhjää ajoneuvoa %{radius} m säteeltä."
+            },
+            "dev_tools": {
+                "title": "Kehitystyökalut",
+                "coords_hud": "Koordinaatti-HUD",
+                "coords_hud_label": "Näytä reaaliaikaiset koordinaattisi ja suuntasi ruudulla",
+                "inspector": "Tarkastaja",
+                "inspector_label": "Näytä tiedot entiteetistä, jota tähtäät, poista painamalla DELETE"
+            },
+            "staff_chat": {
+                "title": "Staff-chat",
+                "label": "Lähetä viesti, jonka näkevät vain paikalla olevat staff-jäsenet",
+                "dialog_desc": "Tämä viesti näytetään vain paikalla oleville staff-jäsenille, joilla on Staff-chat-oikeus.",
+                "dialog_placeholder": "Viesti staffille..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Aseta tuleen",
                         "wild_attack": "Wild attack"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Palauta",
+                        "disarm": "Riisu aseista"
+                    },
+                    "notifications": {
+                        "return_player": "Pelaaja palautettiin.",
+                        "return_none": "Pelaajalla ei ole sijaintia, johon palauttaa. Tuo hänet ensin luoksesi.",
+                        "disarm_player": "Pelaajan kaikki aseet poistettiin.",
+                        "disarmed_by_staff": "Staff-jäsen poisti aseesi."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Vaihda näkymättömyys",
+            "toggle_coords_hud": "Kehitystyökalut: Koordinaatti-HUD",
+            "toggle_inspector": "Kehitystyökalut: Entiteettitarkastaja",
+            "cleanup_vehicles": "Siivoa ajoneuvot",
+            "staff_chat": "Staff-chat"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Lähetä viesti, jonka näkevät vain paikalla olevat staff-jäsenet.",
+            "staffchat_arg_help": "Viesti paikalla olevalle staffille."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staff-chat",
+            "usage": "Käyttö: /staffchat [viesti]",
+            "rate_limited": "Lähetät staff-viestejä liian nopeasti."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Sijainti",
+                "heading": "Suunta"
+            },
+            "inspector": {
+                "title": "Entiteettitarkastaja",
+                "no_target": "Tähtää pediin, ajoneuvoon tai objektiin tarkastaaksesi sen.",
+                "type": "Tyyppi",
+                "model": "Malli",
+                "net_id": "Net ID",
+                "not_networked": "Ei verkossa",
+                "owner": "Omistaja",
+                "player": "Pelaaja",
+                "health": "Terveys",
+                "distance": "Etäisyys",
+                "coords": "Koord.",
+                "delete_hint": "Poista entiteetti",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Ajoneuvo",
+                    "object": "Objekti"
+                },
+                "delete_success": "Entiteetti poistettu.",
+                "delete_no_target": "Et tähtää mihinkään entiteettiin.",
+                "delete_not_found": "Tuota entiteettiä ei enää ole.",
+                "delete_player": "Pelaajaa ei voi poistaa.",
+                "delete_occupied": "Tuossa ajoneuvossa on pelaaja.",
+                "delete_too_far": "Tuo entiteetti on liian kaukana.",
+                "delete_not_networked": "Karttaobjekteja, jotka eivät ole verkossa, ei voi poistaa."
+            }
         }
     },
     "screenshot_messages": {

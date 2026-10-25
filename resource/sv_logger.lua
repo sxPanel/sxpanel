@@ -267,6 +267,20 @@ local function getMenuCommandMeta(action, data)
         return 'menu.viewids', 'menu.viewids'
     elseif action == 'showMapBlips' then
         return 'menu.mapblips', 'menu.mapblips'
+    elseif action == 'invisibleChanged' then
+        return 'players.invisible', 'players.invisible'
+    elseif action == 'returnPlayer' then
+        return 'players.return', 'players.teleport'
+    elseif action == 'disarmPlayer' then
+        return 'players.disarm', 'players.disarm'
+    elseif action == 'devTools' then
+        return 'menu.devtools', 'menu.devtools'
+    elseif action == 'deleteEntity' then
+        return 'menu.delete_entities.aimed', 'menu.delete_entities'
+    elseif action == 'cleanupVehicles' then
+        return 'menu.delete_entities.vehicles', 'menu.delete_entities'
+    elseif action == 'staffChat' then
+        return 'menu.staffchat', 'menu.staffchat'
     elseif action == 'restartServer' then
         return 'control.server.restart', 'control.server'
     elseif action == 'stopServer' then
@@ -380,6 +394,44 @@ AddEventHandler('txsv:logger:menuEvent', function(source, action, allowed, data)
         else
             message = 'turned map blips off'
         end
+
+    --STAFF tools
+    elseif action == 'invisibleChanged' then
+        if type(data) ~= 'boolean' then
+            return
+        end
+        message = data and 'turned invisibility on' or 'turned invisibility off'
+    elseif action == 'returnPlayer' then
+        message = 'sent player ' .. getLogPlayerName(data) .. ' back to their previous location'
+    elseif action == 'disarmPlayer' then
+        message = 'removed all weapons from player ' .. getLogPlayerName(data)
+    elseif action == 'devTools' then
+        if type(data) ~= 'table' or type(data.tool) ~= 'string' then
+            return
+        end
+        local toolLabel = data.tool == 'inspector' and 'the entity inspector' or 'the coordinates HUD'
+        message = (data.enabled and 'turned on ' or 'turned off ') .. toolLabel
+    elseif action == 'deleteEntity' then
+        if type(data) ~= 'table' then
+            return
+        end
+        message = ('deleted an entity (type=%s, model=%s)'):format(
+            tostring(data.entityType or 'unknown'),
+            tostring(data.model or 'unknown')
+        )
+    elseif action == 'cleanupVehicles' then
+        if type(data) ~= 'table' or type(data.radius) ~= 'number' then
+            return
+        end
+        message = ('deleted %d unoccupied vehicle(s) within a %dm radius'):format(
+            tonumber(data.count) or 0,
+            data.radius
+        )
+    elseif action == 'staffChat' then
+        if type(data) ~= 'string' then
+            return
+        end
+        message = 'sent a staff chat message: ' .. data
     elseif action == 'restartServer' then
         message = 'requested a server restart'
     elseif action == 'stopServer' then

@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "ตัวเอง",
+                "teleport": "เทเลพอร์ต",
+                "vehicle": "ยานพาหนะ",
+                "world": "โลก",
+                "staff": "เครื่องมือสตาฟ",
+                "server": "เซิร์ฟเวอร์"
+            },
+            "hints": {
+                "navigate": "เลื่อน",
+                "options": "ตัวเลือก",
+                "select": "เลือก",
+                "pages": "หน้า"
+            },
+            "status": {
+                "none": "ไม่มีโหมดที่เปิดอยู่",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "กระโดดสูง",
+                "invisible": "ล่องหน",
+                "player_ids": "ID",
+                "map_blips": "Blips",
+                "coords_hud": "พิกัด",
+                "inspector": "ตัวตรวจสอบ"
+            },
+            "toggle_state": {
+                "on": "เปิด",
+                "off": "ปิด"
+            },
+            "invisible": {
+                "title": "ล่องหน",
+                "label": "ซ่อนตัวจากผู้เล่นอื่น คุณยังมองเห็นตัวเองอยู่",
+                "alert_on": "คุณล่องหนจากผู้เล่นอื่น"
+            },
+            "cleanup_vehicles": {
+                "title": "ล้างยานพาหนะ",
+                "label": "ลบยานพาหนะที่ไม่มีคนขับทั้งหมดในรัศมีรอบตัวคุณ",
+                "dialog_desc": "ใส่รัศมี (1-300) เพื่อลบยานพาหนะที่ไม่มีคนขับ ยานพาหนะที่มีผู้เล่นอยู่ข้างในจะไม่ถูกลบ แต่ยานพาหนะของผู้เล่นที่จอดอยู่จะถูกลบ",
+                "dialog_error": "รัศมีไม่ถูกต้อง ต้องอยู่ระหว่าง 1 ถึง 300",
+                "success": "ลบยานพาหนะที่ไม่มีคนขับ %{count} คัน ในรัศมี %{radius} ม."
+            },
+            "dev_tools": {
+                "title": "Dev Tools",
+                "coords_hud": "HUD พิกัด",
+                "coords_hud_label": "แสดงพิกัดและทิศทางของคุณบนหน้าจอแบบเรียลไทม์",
+                "inspector": "ตัวตรวจสอบ",
+                "inspector_label": "แสดงรายละเอียดของเอนทิตีที่คุณเล็งอยู่ กด DELETE เพื่อลบ"
+            },
+            "staff_chat": {
+                "title": "แชทสตาฟ",
+                "label": "ส่งข้อความที่เฉพาะสตาฟออนไลน์เท่านั้นที่เห็น",
+                "dialog_desc": "ข้อความนี้จะแสดงเฉพาะสตาฟออนไลน์ที่มีสิทธิ์แชทสตาฟ",
+                "dialog_placeholder": "ข้อความถึงสตาฟ..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "ใส่ไฟ",
                         "wild_attack": "สัตว์ป่าโจมตี"
                     }
+                },
+                "staff": {
+                    "title": "สตาฟ",
+                    "options": {
+                        "return": "ส่งกลับ",
+                        "disarm": "ปลดอาวุธ"
+                    },
+                    "notifications": {
+                        "return_player": "ส่งผู้เล่นกลับแล้ว",
+                        "return_none": "ผู้เล่นนี้ไม่มีตำแหน่งให้ส่งกลับ ให้ดึงตัวมาก่อน",
+                        "disarm_player": "ลบอาวุธทั้งหมดของผู้เล่นแล้ว",
+                        "disarmed_by_staff": "อาวุธของคุณถูกลบโดยสตาฟ"
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "สลับการล่องหน",
+            "toggle_coords_hud": "Dev Tools: HUD พิกัด",
+            "toggle_inspector": "Dev Tools: ตัวตรวจสอบเอนทิตี",
+            "cleanup_vehicles": "ล้างยานพาหนะ",
+            "staff_chat": "แชทสตาฟ"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "ส่งข้อความที่สตาฟออนไลน์เท่านั้นที่เห็น",
+            "staffchat_arg_help": "ข้อความที่จะส่งถึงสตาฟออนไลน์"
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "แชทสตาฟ",
+            "usage": "วิธีใช้: /staffchat [ข้อความ]",
+            "rate_limited": "คุณส่งข้อความสตาฟเร็วเกินไป"
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "ตำแหน่ง",
+                "heading": "ทิศทาง"
+            },
+            "inspector": {
+                "title": "ตัวตรวจสอบเอนทิตี",
+                "no_target": "เล็งไปที่เพด ยานพาหนะ หรือวัตถุเพื่อตรวจสอบ",
+                "type": "ประเภท",
+                "model": "โมเดล",
+                "net_id": "Net ID",
+                "not_networked": "ไม่ได้เชื่อมเครือข่าย",
+                "owner": "เจ้าของ",
+                "player": "ผู้เล่น",
+                "health": "เลือด",
+                "distance": "ระยะทาง",
+                "coords": "พิกัด",
+                "delete_hint": "ลบเอนทิตี",
+                "types": {
+                    "ped": "เพด",
+                    "vehicle": "ยานพาหนะ",
+                    "object": "วัตถุ"
+                },
+                "delete_success": "ลบเอนทิตีแล้ว",
+                "delete_no_target": "คุณไม่ได้เล็งเอนทิตีอยู่",
+                "delete_not_found": "เอนทิตีนั้นไม่มีอยู่แล้ว",
+                "delete_player": "คุณไม่สามารถลบผู้เล่นได้",
+                "delete_occupied": "ยานพาหนะคันนั้นมีผู้เล่นอยู่",
+                "delete_too_far": "เอนทิตีนั้นอยู่ไกลเกินไป",
+                "delete_not_networked": "วัตถุแผนที่ที่ไม่ได้เชื่อมเครือข่ายไม่สามารถลบได้"
+            }
         }
     },
     "screenshot_messages": {

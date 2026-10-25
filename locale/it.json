@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Personale",
+                "teleport": "Teleport",
+                "vehicle": "Veicolo",
+                "world": "Mondo",
+                "staff": "Strumenti Staff",
+                "server": "Server"
+            },
+            "hints": {
+                "navigate": "Naviga",
+                "options": "Opzioni",
+                "select": "Seleziona",
+                "pages": "Pagine"
+            },
+            "status": {
+                "none": "Nessuna modalità attiva",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Super salto",
+                "invisible": "Invisibile",
+                "player_ids": "ID",
+                "map_blips": "Blip",
+                "coords_hud": "Coord.",
+                "inspector": "Ispettore"
+            },
+            "toggle_state": {
+                "on": "ON",
+                "off": "OFF"
+            },
+            "invisible": {
+                "title": "Invisibilità",
+                "label": "Nasconditi agli altri giocatori. Tu continui a vederti.",
+                "alert_on": "Sei invisibile agli altri giocatori."
+            },
+            "cleanup_vehicles": {
+                "title": "Pulisci veicoli",
+                "label": "Elimina ogni veicolo vuoto entro un raggio attorno a te",
+                "dialog_desc": "Inserisci il raggio (1-300) in cui eliminare i veicoli vuoti. I veicoli con un giocatore dentro non vengono mai eliminati, ma quelli parcheggiati dei giocatori sì.",
+                "dialog_error": "Raggio non valido. Deve essere tra 1 e 300.",
+                "success": "Eliminati %{count} veicoli vuoti entro %{radius}m."
+            },
+            "dev_tools": {
+                "title": "Dev Tools",
+                "coords_hud": "HUD coordinate",
+                "coords_hud_label": "Mostra a schermo le tue coordinate e la direzione in tempo reale",
+                "inspector": "Ispettore",
+                "inspector_label": "Mostra i dettagli dell'entità che stai mirando, premi DELETE per rimuoverla"
+            },
+            "staff_chat": {
+                "title": "Staff Chat",
+                "label": "Invia un messaggio visibile solo allo staff online",
+                "dialog_desc": "Questo messaggio sarà mostrato solo ai membri dello staff online con il permesso Staff Chat.",
+                "dialog_placeholder": "Messaggio allo staff..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Dai Fuoco",
                         "wild_attack": "Attacco di Scimmie"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Riporta",
+                        "disarm": "Disarma"
+                    },
+                    "notifications": {
+                        "return_player": "Giocatore riportato indietro.",
+                        "return_none": "Questo giocatore non ha una posizione a cui tornare. Portalo prima da te.",
+                        "disarm_player": "Tutte le armi del giocatore sono state rimosse.",
+                        "disarmed_by_staff": "Le tue armi sono state rimosse da un membro dello staff."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Attiva/Disattiva invisibilità",
+            "toggle_coords_hud": "Dev Tools: HUD coordinate",
+            "toggle_inspector": "Dev Tools: Ispettore entità",
+            "cleanup_vehicles": "Pulisci veicoli",
+            "staff_chat": "Staff Chat"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Invia un messaggio visibile solo allo staff online.",
+            "staffchat_arg_help": "Il messaggio da inviare allo staff online."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staff Chat",
+            "usage": "Uso: /staffchat [messaggio]",
+            "rate_limited": "Stai inviando messaggi staff troppo velocemente."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Posizione",
+                "heading": "Direzione"
+            },
+            "inspector": {
+                "title": "Ispettore entità",
+                "no_target": "Mira a un ped, veicolo o oggetto per ispezionarlo.",
+                "type": "Tipo",
+                "model": "Modello",
+                "net_id": "Net ID",
+                "not_networked": "Non in rete",
+                "owner": "Proprietario",
+                "player": "Giocatore",
+                "health": "Salute",
+                "distance": "Distanza",
+                "coords": "Coord.",
+                "delete_hint": "Elimina entità",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Veicolo",
+                    "object": "Oggetto"
+                },
+                "delete_success": "Entità eliminata.",
+                "delete_no_target": "Non stai mirando a un'entità.",
+                "delete_not_found": "Quell'entità non esiste più.",
+                "delete_player": "Non puoi eliminare un giocatore.",
+                "delete_occupied": "Quel veicolo è occupato da un giocatore.",
+                "delete_too_far": "Quell'entità è troppo lontana.",
+                "delete_not_networked": "Gli oggetti della mappa non in rete non possono essere eliminati."
+            }
         }
     },
     "screenshot_messages": {

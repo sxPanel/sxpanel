@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Saját",
+                "teleport": "Teleport",
+                "vehicle": "Jármű",
+                "world": "Világ",
+                "staff": "Staff eszközök",
+                "server": "Szerver"
+            },
+            "hints": {
+                "navigate": "Navigálás",
+                "options": "Opciók",
+                "select": "Kiválasztás",
+                "pages": "Oldalak"
+            },
+            "status": {
+                "none": "Nincs aktív mód",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Szupersugrás",
+                "invisible": "Láthatatlan",
+                "player_ids": "ID-k",
+                "map_blips": "Blipek",
+                "coords_hud": "Koord.",
+                "inspector": "Vizsgáló"
+            },
+            "toggle_state": {
+                "on": "BE",
+                "off": "KI"
+            },
+            "invisible": {
+                "title": "Láthatatlanság",
+                "label": "Elrejtőzöl a többi játékos elől. Magadat továbbra is látod.",
+                "alert_on": "Láthatatlan vagy a többi játékos számára."
+            },
+            "cleanup_vehicles": {
+                "title": "Járművek takarítása",
+                "label": "Minden üres jármű törlése a körülötted lévő sugarban",
+                "dialog_desc": "Add meg a sugarat (1-300) az üres járművek törléséhez. A játékossal teli járművek sosem törlődnek, de a leparkolt játékosjárművek igen.",
+                "dialog_error": "Érvénytelen sugár. 1 és 300 között kell lennie.",
+                "success": "%{count} üres jármű törölve %{radius} m-en belül."
+            },
+            "dev_tools": {
+                "title": "Fejlesztői eszközök",
+                "coords_hud": "Koordináta HUD",
+                "coords_hud_label": "Élő koordináták és irány megjelenítése a képernyőn",
+                "inspector": "Vizsgáló",
+                "inspector_label": "A célzott entitás adatainak mutatása, DELETE-tel törölhető"
+            },
+            "staff_chat": {
+                "title": "Staff chat",
+                "label": "Csak az online staff által látható üzenet küldése",
+                "dialog_desc": "Ezt az üzenetet csak a Staff chat jogosultsággal rendelkező online staff tagok látják.",
+                "dialog_placeholder": "Üzenet a staffnak..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Felgyújtás",
                         "wild_attack": "Állat támadás"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Visszaküld",
+                        "disarm": "Lefegyverez"
+                    },
+                    "notifications": {
+                        "return_player": "A játékos visszaküldve.",
+                        "return_none": "Ennek a játékosnak nincs visszatérési helye. Előbb told hozzád.",
+                        "disarm_player": "A játékos összes fegyvere eltávolítva.",
+                        "disarmed_by_staff": "Egy staff tag eltávolította a fegyvereidet."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Láthatatlanság váltása",
+            "toggle_coords_hud": "Fejlesztői eszk.: Koordináta HUD",
+            "toggle_inspector": "Fejlesztői eszk.: Entitásvizsgáló",
+            "cleanup_vehicles": "Járművek takarítása",
+            "staff_chat": "Staff chat"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Csak az online staffnak látható üzenet küldése.",
+            "staffchat_arg_help": "Az online staffnak küldendő üzenet."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staff chat",
+            "usage": "Használat: /staffchat [üzenet]",
+            "rate_limited": "Túl gyorsan küldesz staff üzeneteket."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Pozíció",
+                "heading": "Irány"
+            },
+            "inspector": {
+                "title": "Entitásvizsgáló",
+                "no_target": "Célozz egy pedre, járműre vagy objektumra a vizsgálathoz.",
+                "type": "Típus",
+                "model": "Modell",
+                "net_id": "Net ID",
+                "not_networked": "Nem hálózati",
+                "owner": "Tulajdonos",
+                "player": "Játékos",
+                "health": "Életerő",
+                "distance": "Távolság",
+                "coords": "Koord.",
+                "delete_hint": "Entitás törlése",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Jármű",
+                    "object": "Objektum"
+                },
+                "delete_success": "Entitás törölve.",
+                "delete_no_target": "Nem célzol entitásra.",
+                "delete_not_found": "Ez az entitás már nem létezik.",
+                "delete_player": "Játékost nem törölhetsz.",
+                "delete_occupied": "Ezt a járművet egy játékos használja.",
+                "delete_too_far": "Ez az entitás túl messze van.",
+                "delete_not_networked": "A nem hálózati térképobjektumok nem törölhetők."
+            }
         }
     },
     "screenshot_messages": {

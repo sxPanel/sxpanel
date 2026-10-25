@@ -31,6 +31,7 @@ export const RESERVED_COMMAND_NAMES = new Set([
     'tpm',
     'ticket',
     'report',
+    'staffchat',
     // FXServer / common built-ins
     'quit',
     'disconnect',
@@ -73,7 +74,7 @@ export type CustomCommandMenuActionDef = {
     id: string;
     label: string;
     description: string;
-    group: 'Teleport' | 'Health' | 'Player Mode' | 'Vehicle' | 'World' | 'Players' | 'Server';
+    group: 'Teleport' | 'Health' | 'Player Mode' | 'Vehicle' | 'World' | 'Players' | 'Staff Tools' | 'Server';
     /** The permission required by the underlying menu action (re-checked server-side) */
     permission: string;
     /** Name suggested when adding this action as a command */
@@ -122,6 +123,15 @@ export const customCommandMenuActions = [
         permission: 'players.teleport',
         suggestedName: 'bring',
         args: [{ name: 'player ID', help: 'Server ID of the player to bring' }],
+    },
+    {
+        id: 'returnPlayer',
+        label: 'Return Player',
+        description: 'Sends a player back to where they were before you last brought them.',
+        group: 'Teleport',
+        permission: 'players.teleport',
+        suggestedName: 'return',
+        args: [{ name: 'player ID', help: 'Server ID of the player to send back' }],
     },
 
     // Health
@@ -199,6 +209,15 @@ export const customCommandMenuActions = [
         suggestedName: 'normal',
         args: [],
     },
+    {
+        id: 'toggleInvisible',
+        label: 'Toggle Invisibility',
+        description: 'Hides you from other players, or makes you visible again.',
+        group: 'Player Mode',
+        permission: 'players.invisible',
+        suggestedName: 'invis',
+        args: [],
+    },
 
     // Vehicle
     {
@@ -266,6 +285,16 @@ export const customCommandMenuActions = [
         suggestedName: 'blips',
         args: [],
     },
+    {
+        id: 'cleanupVehicles',
+        label: 'Clean Up Vehicles',
+        description:
+            'Deletes every unoccupied vehicle within the given radius around you. Opens the radius dialog when used without arguments.',
+        group: 'World',
+        permission: 'menu.delete_entities',
+        suggestedName: 'dvall',
+        args: [{ name: 'radius', help: 'Radius in meters (1-300)', optional: true }],
+    },
 
     // Players
     {
@@ -287,12 +316,51 @@ export const customCommandMenuActions = [
         args: [{ name: 'player ID', help: 'Server ID of the player to (un)freeze' }],
     },
     {
+        id: 'disarmPlayer',
+        label: 'Disarm Player',
+        description: 'Removes all weapons from a player.',
+        group: 'Players',
+        permission: 'players.disarm',
+        suggestedName: 'disarm',
+        args: [{ name: 'player ID', help: 'Server ID of the player to disarm' }],
+    },
+    {
         id: 'openPlayersPage',
         label: 'Open Players Page',
         description: 'Opens the /tx menu directly on the players page.',
         group: 'Players',
         permission: '',
         suggestedName: 'players',
+        args: [],
+    },
+
+    // Staff tools
+    {
+        id: 'staffChat',
+        label: 'Staff Chat',
+        description: 'Sends a message only visible to online staff. Same as the built-in /staffchat command.',
+        group: 'Staff Tools',
+        permission: 'menu.staffchat',
+        suggestedName: 'sc',
+        args: [{ name: 'message', help: 'The message to send to online staff' }],
+    },
+    {
+        id: 'toggleCoordsHud',
+        label: 'Toggle Coords HUD',
+        description: 'Shows or hides your live coordinates and heading on screen.',
+        group: 'Staff Tools',
+        permission: 'menu.devtools',
+        suggestedName: 'coords',
+        args: [],
+    },
+    {
+        id: 'toggleInspector',
+        label: 'Toggle Entity Inspector',
+        description:
+            'Shows details about the entity you are aiming at. With the Delete Entities permission, press DELETE to remove it.',
+        group: 'Staff Tools',
+        permission: 'menu.devtools',
+        suggestedName: 'inspect',
         args: [],
     },
 

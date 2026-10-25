@@ -249,6 +249,60 @@
                 "title": "Toggle",
                 "player_ids": "Player IDs",
                 "map_blips": "Map Blips"
+            },
+            "sections": {
+                "self": "Meg selv",
+                "teleport": "Teleport",
+                "vehicle": "Kjøretøy",
+                "world": "Verden",
+                "staff": "Staff-verktøy",
+                "server": "Server"
+            },
+            "hints": {
+                "navigate": "Naviger",
+                "options": "Valg",
+                "select": "Velg",
+                "pages": "Sider"
+            },
+            "status": {
+                "none": "Ingen aktive moduser",
+                "noclip": "NoClip",
+                "godmode": "God",
+                "superjump": "Superhopp",
+                "invisible": "Usynlig",
+                "player_ids": "ID-er",
+                "map_blips": "Blips",
+                "coords_hud": "Koord.",
+                "inspector": "Inspektør"
+            },
+            "toggle_state": {
+                "on": "PÅ",
+                "off": "AV"
+            },
+            "invisible": {
+                "title": "Usynlighet",
+                "label": "Skjul deg selv for andre spillere. Du kan fortsatt se deg selv.",
+                "alert_on": "Du er usynlig for andre spillere."
+            },
+            "cleanup_vehicles": {
+                "title": "Rydd opp kjøretøy",
+                "label": "Slett alle tomme kjøretøy innenfor en radius rundt deg",
+                "dialog_desc": "Skriv inn radius (1-300) for sletting av tomme kjøretøy. Kjøretøy med en spiller i slettes aldri, men parkerte spillerkjøretøy slettes.",
+                "dialog_error": "Ugyldig radius. Må være mellom 1 og 300.",
+                "success": "Slettet %{count} tomme kjøretøy innenfor %{radius}m."
+            },
+            "dev_tools": {
+                "title": "Dev-verktøy",
+                "coords_hud": "Koordinat-HUD",
+                "coords_hud_label": "Vis dine live-koordinater og retning på skjermen",
+                "inspector": "Inspektør",
+                "inspector_label": "Vis detaljer om entiteten du sikter på, trykk DELETE for å fjerne den"
+            },
+            "staff_chat": {
+                "title": "Staff-chat",
+                "label": "Send en melding som bare staff på nett kan se",
+                "dialog_desc": "Denne meldingen vises bare for staff-medlemmer på nett med Staff-chat-tillatelsen.",
+                "dialog_placeholder": "Melding til staff..."
             }
         },
         "page_players": {
@@ -346,6 +400,19 @@
                         "fire": "Set Fire",
                         "wild_attack": "Wild attack"
                     }
+                },
+                "staff": {
+                    "title": "Staff",
+                    "options": {
+                        "return": "Send tilbake",
+                        "disarm": "Avvæpne"
+                    },
+                    "notifications": {
+                        "return_player": "Spilleren ble sendt tilbake.",
+                        "return_none": "Denne spilleren har ingen posisjon å gå tilbake til. Hent spilleren først.",
+                        "disarm_player": "Alle våpen ble fjernet fra spilleren.",
+                        "disarmed_by_staff": "Våpnene dine ble fjernet av et staff-medlem."
+                    }
                 }
             },
             "info": {
@@ -417,7 +484,12 @@
             "vehicle_boost": "Vehicle: Boost",
             "vehicle_delete": "Vehicle: Delete",
             "vehicle_fix": "Vehicle: Fix",
-            "vehicle_spawn": "Vehicle: Spawn"
+            "vehicle_spawn": "Vehicle: Spawn",
+            "toggle_invisible": "Slå av/på usynlighet",
+            "toggle_coords_hud": "Dev-verktøy: Koordinat-HUD",
+            "toggle_inspector": "Dev-verktøy: Entitetsinspektør",
+            "cleanup_vehicles": "Rydd opp kjøretøy",
+            "staff_chat": "Staff-chat"
         },
         "chat": {
             "tx_description": "Opens the main sxPanel Menu or specific page for a player.",
@@ -435,7 +507,9 @@
             "announce_description": "Send a server-wide announcement.",
             "announce_arg_help": "The announcement message to broadcast.",
             "ticket_description": "Open the support ticket UI.",
-            "report_description": "Open the support ticket UI (alias for /ticket)."
+            "report_description": "Open the support ticket UI (alias for /ticket).",
+            "staffchat_description": "Send en melding som bare er synlig for staff på nett.",
+            "staffchat_arg_help": "Meldingen som sendes til staff på nett."
         },
         "instructional": {
             "exit_spectate": "Exit Spectate",
@@ -451,6 +525,43 @@
             "noclip_up": "Up",
             "noclip_speed": "Speed",
             "noclip_speed_value": "Speed: x%{speed}"
+        },
+        "staff_chat": {
+            "title": "Staff-chat",
+            "usage": "Bruk: /staffchat [melding]",
+            "rate_limited": "Du sender staff-meldinger for raskt."
+        },
+        "staff_hud": {
+            "coords": {
+                "title": "Posisjon",
+                "heading": "Retning"
+            },
+            "inspector": {
+                "title": "Entitetsinspektør",
+                "no_target": "Sikt på en ped, et kjøretøy eller et objekt for å inspisere det.",
+                "type": "Type",
+                "model": "Modell",
+                "net_id": "Net ID",
+                "not_networked": "Ikke nettverkstilkoblet",
+                "owner": "Eier",
+                "player": "Spiller",
+                "health": "Helse",
+                "distance": "Avstand",
+                "coords": "Koord.",
+                "delete_hint": "Slett entitet",
+                "types": {
+                    "ped": "Ped",
+                    "vehicle": "Kjøretøy",
+                    "object": "Objekt"
+                },
+                "delete_success": "Entitet slettet.",
+                "delete_no_target": "Du sikter ikke på en entitet.",
+                "delete_not_found": "Den entiteten finnes ikke lenger.",
+                "delete_player": "Du kan ikke slette en spiller.",
+                "delete_occupied": "Det kjøretøyet er opptatt av en spiller.",
+                "delete_too_far": "Den entiteten er for langt unna.",
+                "delete_not_networked": "Kartobjekter som ikke er nettverkstilkoblet kan ikke slettes."
+            }
         }
     },
     "screenshot_messages": {

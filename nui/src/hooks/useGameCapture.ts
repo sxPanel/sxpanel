@@ -7,8 +7,8 @@ import { startCapture, stopCapture, captureSingleFrame, warmupPipeline } from '.
  *   - `takeScreenshot` (single frame, existing screenshot feature)
  *   - `startCapture` / `stopCapture` (continuous, live spectate)
  *
- * Initializes the persistent WebGL render loop on mount so CfxTexture
- * is always warm when a capture request arrives.
+ * Initializes the WebGL pipeline on mount; the render loop itself only
+ * runs while a capture request is pending.
  */
 export function useGameCapture() {
     useEffect(() => {
@@ -17,7 +17,7 @@ export function useGameCapture() {
             return;
         }
 
-        // Start the persistent render loop immediately so CfxTexture is warm
+        // Pre-build the pipeline so the first capture request is fast
         try {
             warmupPipeline();
         } catch (e) {

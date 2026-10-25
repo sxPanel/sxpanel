@@ -351,6 +351,7 @@ function toggleMapBlips(enabled, showNotification)
     end
 
     isMapBlipsEnabled = enabled
+    SetStaffStatus('mapBlips', isMapBlipsEnabled)
     local snackMessage
 
     if isMapBlipsEnabled then

@@ -3,7 +3,7 @@
  *
  * Mirrors the fivem-watch / screenshot-basic approach exactly:
  *  1. init() creates the WebGL pipeline once
- *  2. animate() runs every frame via rAF, always renders CfxTexture → renderTarget
+ *  2. animate() runs via rAF ONLY while a capture is pending, renders CfxTexture → renderTarget
  *  3. Pixel reads happen INSIDE animate(), right after render (never in a separate callstack)
  *  4. For streaming: setInterval sets captureRequestPending, animate() processes it
  *  5. For screenshots: a pending callback is set, animate() resolves it after render
@@ -38,6 +38,11 @@ let material: any = null;
 let outputCanvas: HTMLCanvasElement | null = null;
 let outputCtx: CanvasRenderingContext2D | null = null;
 let currentResolutionScale = 0.5;
+
+// ---- Render loop state (only runs while there is a pending capture) ----
+const WARMUP_FRAMES = 3;
+let loopRunning = false;
+let warmFrames = 0;
 
 // ---- Streaming state ----
 let captureActive = false;
@@ -134,9 +139,17 @@ function init() {
     window.addEventListener('resize', resize);
 
     pipelineReady = true;
+}
 
-    // Start the persistent render loop
-    animate();
+/**
+ * Starts the render loop if it isn't running. A few frames are rendered
+ * before any pixel read so CfxTexture is warm after being idle.
+ */
+function ensureLoop() {
+    if (loopRunning) return;
+    loopRunning = true;
+    warmFrames = 0;
+    requestAnimationFrame(animate);
 }
 
 function resize() {
@@ -149,6 +162,7 @@ function resize() {
     camera = new T.OrthographicCamera(rw / -2, rw / 2, rh / 2, rh / -2, -10000, 10000);
     camera.position.z = 100;
 
+    renderTarget?.dispose();
     renderTarget = new T.WebGLRenderTarget(rw, rh, {
         minFilter: T.LinearFilter,
         magFilter: NEAREST_FILTER,
@@ -160,6 +174,7 @@ function resize() {
     const quad = new T.Mesh(plane, material);
     quad.position.z = -100;
 
+    scene?.children.forEach((child: any) => child.geometry?.dispose());
     scene = new T.Scene();
     scene.add(quad);
 
@@ -167,17 +182,22 @@ function resize() {
 }
 
 /**
- * Persistent render loop. Always renders the game view to the render target.
+ * Render loop, stops itself once there is nothing left to capture.
  * Pixel reads happen HERE, right after render — never in a separate callstack.
  */
 function animate() {
+    if (!renderer || !scene || !camera || !renderTarget || (!captureActive && !screenshotPending)) {
+        loopRunning = false;
+        return;
+    }
     requestAnimationFrame(animate);
 
-    if (!renderer || !scene || !camera || !renderTarget) return;
-
-    // Always render (keeps CfxTexture warm)
     renderer.clear();
     renderer.render(scene, camera, renderTarget, true);
+    if (warmFrames < WARMUP_FRAMES) {
+        warmFrames++;
+        return;
+    }
 
     // Process streaming capture (flag set by setInterval)
     if (captureRequestPending) {
@@ -304,6 +324,7 @@ export function startCapture(
     captureIntervalTimer = setInterval(() => {
         captureRequestPending = true;
     }, intervalMs);
+    ensureLoop();
 }
 
 /**
@@ -337,11 +358,12 @@ export function captureSingleFrame(
 
     return new Promise((resolve) => {
         screenshotPending = { quality, encoding, resolutionScale, resolve };
+        ensureLoop();
     });
 }
 
 /**
- * Pre-initialize the pipeline and start the render loop.
+ * Pre-initialize the pipeline. The render loop only starts on the first capture request.
  */
 export function warmupPipeline() {
     init();
