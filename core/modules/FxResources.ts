@@ -1,7 +1,7 @@
 const modulename = 'FxResources';
 import consoleFactory from '@lib/console';
 import { Stopwatch } from './FxMonitor/utils';
-import type { ResourcePerfStats, ResourceStatusEvent } from '@shared/resourcesApiTypes';
+import type { ResourceStatusEvent } from '@shared/resourcesApiTypes';
 const console = consoleFactory(modulename);
 
 type ResourceEventType = {
@@ -14,16 +14,6 @@ type ResourceEventType = {
         | 'onResourceListRefresh'
         | 'onResourceStop'
         | 'onServerResourceStop';
-};
-
-type ResourcePerfEventType = {
-    type: 'txAdminResourcePerf';
-    resources: {
-        name: string;
-        cpu: number;
-        memory: number;
-        tickTime: number;
-    }[];
 };
 
 type ResourceReportType = {
@@ -53,7 +43,7 @@ const CONSOLE_LINE_BUFFER_MAX = 4096;
 
 /**
  * Module responsible to track FXServer resource states.
- * Also tracks real-time resource status and perf stats.
+ * Also tracks real-time resource status.
  */
 export default class FxResources {
     public resourceReport?: ResourceReportType;
@@ -62,7 +52,6 @@ export default class FxResources {
 
     // Real-time resource state tracking
     private resourceStates: Map<string, string> = new Map();
-    private resourcePerf: Map<string, ResourcePerfStats> = new Map();
     private resourceUpdateNotices: Map<string, string> = new Map();
     private consoleLineBuffer = '';
 
@@ -77,7 +66,6 @@ export default class FxResources {
         this.resBooting = null;
         this.resBootLog = [];
         this.resourceStates.clear();
-        this.resourcePerf.clear();
         this.resourceUpdateNotices.clear();
         this.consoleLineBuffer = '';
     }
@@ -108,48 +96,9 @@ export default class FxResources {
             this.pushStatusUpdate(resource, 'started');
         } else if (event === 'onResourceStop' || event === 'onServerResourceStop') {
             this.resourceStates.set(resource, 'stopped');
-            this.resourcePerf.delete(resource);
             //Clear the notice so a restart of an updated resource doesn't show a stale warning
             this.resourceUpdateNotices.delete(resource);
             this.pushStatusUpdate(resource, 'stopped');
-        }
-    }
-
-    /**
-     * Handle resource performance data from the server
-     */
-    handlePerfData(payload: ResourcePerfEventType) {
-        if (!Array.isArray(payload.resources)) return;
-        const updates: ResourceStatusEvent[] = [];
-        const shouldPush = this.hasResourceListeners();
-        for (const res of payload.resources) {
-            const perf: ResourcePerfStats = {
-                cpu: Math.round(res.cpu * 100) / 100,
-                memory: Math.round(res.memory),
-                tickTime: Math.round(res.tickTime * 100) / 100,
-            };
-            const status = this.resourceStates.get(res.name) ?? 'started';
-            const previousPerf = this.resourcePerf.get(res.name);
-            const perfChanged =
-                !previousPerf ||
-                previousPerf.cpu !== perf.cpu ||
-                previousPerf.memory !== perf.memory ||
-                previousPerf.tickTime !== perf.tickTime;
-
-            if (!this.resourceStates.has(res.name)) {
-                this.resourceStates.set(res.name, status);
-            }
-            this.resourcePerf.set(res.name, perf);
-
-            if (shouldPush && perfChanged) {
-                updates.push({ name: res.name, status, perf, updateNotice: this.resourceUpdateNotices.get(res.name) });
-            }
-        }
-        if (updates.length > 0) {
-            txCore.webServer.webSocket.buffer('resources', {
-                type: 'update',
-                updates,
-            });
         }
     }
 
@@ -192,10 +141,9 @@ export default class FxResources {
      */
     private pushStatusUpdate(name: string, status: string) {
         if (!this.hasResourceListeners()) return;
-        const perf = this.resourcePerf.get(name);
         txCore.webServer.webSocket.buffer('resources', {
             type: 'update',
-            updates: [{ name, status, perf, updateNotice: this.resourceUpdateNotices.get(name) }],
+            updates: [{ name, status, updateNotice: this.resourceUpdateNotices.get(name) }],
         });
     }
 
@@ -239,7 +187,6 @@ export default class FxResources {
                     updates.push({
                         name: res.name,
                         status,
-                        perf: this.resourcePerf.get(res.name),
                         updateNotice: this.resourceUpdateNotices.get(res.name),
                     });
                 }
@@ -263,7 +210,6 @@ export default class FxResources {
             result.push({
                 name,
                 status,
-                perf: this.resourcePerf.get(name),
                 updateNotice: this.resourceUpdateNotices.get(name),
             });
         }

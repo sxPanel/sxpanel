@@ -1,9 +1,3 @@
-export type ResourcePerfStats = {
-    cpu: number; // CPU usage percentage (0-100)
-    memory: number; // Memory usage in KB
-    tickTime: number; // Average tick time in ms
-};
-
 export type ResourceItemData = {
     name: string;
     status: string;
@@ -11,7 +5,6 @@ export type ResourceItemData = {
     version: string;
     author: string;
     description: string;
-    perf?: ResourcePerfStats;
     updateNotice?: string; // console message indicating an update is available
 };
 
@@ -33,7 +26,6 @@ export type ResourcesListResp =
 export type ResourceStatusEvent = {
     name: string;
     status: string;
-    perf?: ResourcePerfStats;
     updateNotice?: string;
 };
 

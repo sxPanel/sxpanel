@@ -322,8 +322,6 @@ const handleFd3Messages = (mutex: string, trace: StructuredTraceType) => {
             txCore.metrics.svRuntime.logServerNodeMemory(tracePayload);
         } else if (tracePayload.type === 'txAdminResourceEvent') {
             txCore.fxResources.handleServerEvents(tracePayload, mutex);
-        } else if (tracePayload.type === 'txAdminResourcePerf') {
-            txCore.fxResources.handlePerfData(tracePayload);
         } else if (tracePayload.type === 'txAdminResourceRuntimes') {
             txManager.txRuntime.handleResourceRuntimes(tracePayload);
         } else if (tracePayload.type === 'txAdminPlayerlistEvent') {
