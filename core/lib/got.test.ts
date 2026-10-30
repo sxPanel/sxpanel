@@ -19,6 +19,9 @@ describe('lib/got (undici wrapper)', () => {
             if (url.pathname === '/json') {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ hello: 'world' }));
+            } else if (url.pathname === '/echo-accept-encoding') {
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end(req.headers['accept-encoding'] ?? '');
             } else if (url.pathname === '/text') {
                 res.writeHead(200, { 'Content-Type': 'text/plain' });
                 res.end('hello world');
@@ -149,6 +152,11 @@ describe('lib/got (undici wrapper)', () => {
     it('got.post applies Basic Auth from username/password', async () => {
         await got.post(`${baseUrl}/post`, { json: {}, username: 'admin', password: 'secret' });
         expect(lastAuthHeader).toBe(`Basic ${Buffer.from('admin:secret').toString('base64')}`);
+    });
+
+    it('does not advertise Brotli in Accept-Encoding', async () => {
+        const resp = await got.get(`${baseUrl}/echo-accept-encoding`);
+        expect(resp.body).toBe('gzip, deflate');
     });
 
     it('got.post throws on non-2xx', async () => {

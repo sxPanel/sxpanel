@@ -123,6 +123,25 @@ if (Number.isNaN(nodeMajor) || nodeMajor < 18) {
     ]);
 }
 
+//CVE-2026-111497 ("Node2Shell"): out-of-bounds write in Node's bundled Brotli decoder.
+//Patched in 22.23.4 / 24.22.1 / 26.12.1; every other line is EOL and will never get the fix.
+//The embedded Node is FXServer's to update, so we can only mitigate (see rejectBrotliBodyMw) and warn.
+const brotliFixedVersions: Record<number, [number, number]> = { 22: [23, 4], 24: [22, 1], 26: [12, 1] };
+const [, nodeMinor, nodePatch] = process.versions.node.split('.').map(Number);
+const brotliFix = brotliFixedVersions[nodeMajor];
+const isNodeBrotliPatched =
+    nodeMajor > 26 ||
+    (brotliFix !== undefined &&
+        (nodeMinor > brotliFix[0] || (nodeMinor === brotliFix[0] && nodePatch >= brotliFix[1])));
+if (!isNodeBrotliPatched) {
+    console.warn(
+        `This FXServer's embedded Node v${process.versions.node} is affected by CVE-2026-111497 (Brotli decoder).`,
+    );
+    console.warn(
+        'sxPanel blocks Brotli request bodies as a mitigation, but please update FXServer once a patched build is out.',
+    );
+}
+
 //Getting sxPanel version
 if (!nativeVars.txaResourceVersion) {
     fatalError.GlobalData(3, [
