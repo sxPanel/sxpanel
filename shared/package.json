@@ -1,6 +1,6 @@
 {
     "name": "sxpanel-shared",
-    "version": "0.6.3-Beta",
+    "version": "0.7.0-Beta",
     "description": "The shared package contains stuff used in more than one package, no build step required.",
     "type": "module",
     "main": "index.js",
