@@ -126,6 +126,8 @@ const checkFileWhitelist = (manifestFiles: Set<string> | null, url: string) => {
     return true;
 };
 
+const COMPRESS_CONCURRENCY = 4;
+
 //Scans a folder and returns all files processed with size and count limits
 export const scanStaticFolder = async ({ rootPath, state, limits }: ScanFolderOpts) => {
     //Load manifest for panel roots to build the file whitelist
@@ -153,8 +155,9 @@ export const scanStaticFolder = async ({ rootPath, state, limits }: ScanFolderOp
         }
 
         const entries = await fsp.readdir(currentFolderAbs, { withFileTypes: true });
+        const pendingFiles: { url: string; abs: string }[] = [];
         for (const entry of entries) {
-            if (limits.MAX_FILES && state.files.length > limits.MAX_FILES) {
+            if (limits.MAX_FILES && state.files.length + pendingFiles.length > limits.MAX_FILES) {
                 console.error(
                     'MAX_FILES ERROR',
                     'Panel static cache exceeded its file limit. If this is a fresh build, raise PANEL_STATIC_CACHE_LIMITS.MAX_FILES.',
@@ -184,15 +187,29 @@ export const scanStaticFolder = async ({ rootPath, state, limits }: ScanFolderOp
                     continue;
                 }
 
-                const entryPathAbs = path.join(currentFolderAbs, entry.name);
-                const fileData = await getCompressedFile(entryPathAbs);
+                pendingFiles.push({ url: entryPathUrl, abs: path.join(currentFolderAbs, entry.name) });
+            }
+        }
+
+        //Compress several files at once - sequential processing underuses the libuv threadpool
+        //and made the boot take 20s+ on busy hosts.
+        for (let i = 0; i < pendingFiles.length; i += COMPRESS_CONCURRENCY) {
+            const batch = pendingFiles.slice(i, i + COMPRESS_CONCURRENCY);
+            const results = await Promise.all(batch.map((file) => getCompressedFile(file.abs)));
+            results.forEach((fileData, idx) => {
                 state.bytes += fileData.raw.length;
-                state.files.push({
-                    url: entryPathUrl,
-                    ...fileData,
-                });
+                state.files.push({ url: batch[idx].url, ...fileData });
                 addedFiles++;
                 addedBytes += fileData.raw.length;
+            });
+            if (limits.MAX_BYTES && state.bytes > limits.MAX_BYTES) {
+                console.error(
+                    'MAX_BYTES ERROR',
+                    'This likely means you did not erase the previous artifact files before adding new ones.',
+                );
+                throw new ScanLimitError('MAX_BYTES', limits.MAX_BYTES, state.bytes);
+            } else if (limits.MAX_TIME && state.elapsedMs > limits.MAX_TIME) {
+                throw new ScanLimitError('MAX_TIME', limits.MAX_TIME, state.elapsedMs);
             }
         }
     }
