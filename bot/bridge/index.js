@@ -5,6 +5,11 @@ const { pending } = require('./requests');
 let ws;
 let client;
 let reconnectTimer;
+let disconnectedSince;
+// The panel spawns this process without a parent link, so if the panel dies uncleanly the bot is
+// orphaned. An orphan keeps answering Discord interactions alongside the new bot and causes
+// "interaction already acknowledged" errors, so give up if the bridge stays unreachable.
+const ORPHAN_EXIT_AFTER_MS = 60_000;
 const queuedMessages = [];
 
 const parseMessage = (raw) => {
@@ -41,6 +46,12 @@ const handleIncomingMessage = async (raw, discordClient = client) => {
 const scheduleReconnect = () => {
     if (!client || reconnectTimer) return;
 
+    disconnectedSince ??= Date.now();
+    if (Date.now() - disconnectedSince >= ORPHAN_EXIT_AFTER_MS) {
+        console.error('[BotBridge] Bridge unreachable for 60s, assuming the panel is gone. Exiting.');
+        process.exit(0);
+    }
+
     reconnectTimer = setTimeout(() => {
         reconnectTimer = undefined;
         connect(client);
@@ -68,6 +79,7 @@ const connect = (discordClient) => {
 
     ws = new WebSocket(`ws://127.0.0.1:${process.env.BOT_BRIDGE_PORT}`);
     ws.on('open', () => {
+        disconnectedSince = undefined;
         ws.send(JSON.stringify({ type: 'auth', secret: process.env.BOT_SECRET }));
         flushQueuedMessages();
     });

@@ -21,6 +21,7 @@ import { fetchNui } from './utils/fetchNui';
 import { useLocale } from './hooks/useLocale';
 import { TooltipProvider } from './provider/TooltipProvider';
 import { BrowserDevToolbar } from './components/misc/BrowserDevToolbar';
+import { StaffHud } from './components/StaffHud/StaffHud';
 
 //Mock events for browser development
 debugData<any>(
@@ -39,6 +40,10 @@ debugData<any>(
             action: 'setGameName',
             data: 'fivem',
             // data: 'redm',
+        },
+        {
+            action: 'setStaffStatus',
+            data: { playerMode: 'noclip', playerIds: true },
         },
     ],
     150,
@@ -98,6 +103,7 @@ const MenuWrapper: React.FC = () => {
                             </TooltipProvider>
                         </PlayerModalProvider>
                     </DialogProvider>
+                    <StaffHud />
                     <WarnPage />
                     <ReportPage />
                     <BrowserDevToolbar />

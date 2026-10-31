@@ -43,6 +43,7 @@ const InsightsPage = lazy(() => import('@/pages/InsightsPage/InsightsPage'));
 const LiveConsolePage = lazy(() => import('@/pages/LiveConsole/LiveConsolePage'));
 const AdminManagerPage = lazy(() => import('@/pages/AdminManager/AdminManagerPage'));
 const ResourcesPage = lazy(() => import('@/pages/ResourcesPage/ResourcesPage'));
+const CustomCommandsPage = lazy(() => import('@/pages/CustomCommands/CustomCommandsPage'));
 const WhitelistPage = lazy(() => import('@/pages/Whitelist/WhitelistPage'));
 const EmbedEditorPage = lazy(() => import('@/pages/Settings/EmbedEditorPage'));
 const DeferralStudioPage = lazy(() => import('@/pages/Settings/DeferralStudioPage'));
@@ -230,6 +231,12 @@ const allRoutes: RouteType[] = [
         titleKey: 'panel.routes.resources',
         featureFlag: 'resourcesPage',
         Page: ResourcesPage,
+    },
+    {
+        path: '/server/commands',
+        titleKey: 'panel.routes.custom_commands',
+        permission: 'settings.view',
+        Page: CustomCommandsPage,
     },
     {
         path: '/server/server-log',

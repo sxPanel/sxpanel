@@ -71,6 +71,8 @@ local function extractInstructionalLabels(locale)
         noclip_title = instructional['noclip_title'],
         noclip_down = instructional['noclip_down'],
         noclip_up = instructional['noclip_up'],
+        noclip_speed = instructional['noclip_speed'],
+        noclip_speed_value = instructional['noclip_speed_value'],
     }
 end
 

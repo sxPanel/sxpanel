@@ -77,6 +77,7 @@ const ticketFixture: DatabaseTicketType = {
     category: 'player-report',
     reporter: { license: 'license:reporter', name: 'Reporter', netid: 1 },
     targets: [],
+    nearbyPlayers: [],
     description: 'Test ticket',
     messages: [],
     staffNotes: [],

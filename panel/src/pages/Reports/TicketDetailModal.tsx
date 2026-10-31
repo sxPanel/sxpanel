@@ -529,6 +529,11 @@ function TicketInfoPanel({
                     {ticket.reporter.name}
                     {ticket.reporter.netid && ` (#${ticket.reporter.netid})`}
                 </button>
+                {ticket.reporter.discord && (
+                    <p className="text-muted-foreground text-xs">
+                        {t('panel.reports.ticket_modal.discord_id_label')}: {formatDiscordId(ticket.reporter.discord)}
+                    </p>
+                )}
             </div>
 
             {ticket.targets.length > 0 && (
@@ -536,20 +541,64 @@ function TicketInfoPanel({
                     <h4 className="mb-2 text-sm font-medium">{t('panel.reports.ticket_modal.targets_heading')}</h4>
                     <div className="space-y-1">
                         {ticket.targets.map((target) => (
-                            <button
-                                key={target.license}
-                                className="text-primary block cursor-pointer text-sm hover:underline"
-                                onClick={() => onPlayerClick(target.license)}
-                            >
-                                {target.name}
-                                {target.netid && ` (#${target.netid})`}
-                            </button>
+                            <div key={target.license}>
+                                <button
+                                    className="text-primary block cursor-pointer text-sm hover:underline"
+                                    onClick={() => onPlayerClick(target.license)}
+                                >
+                                    {target.name}
+                                    {target.netid && ` (#${target.netid})`}
+                                </button>
+                                {target.discord && (
+                                    <p className="text-muted-foreground text-xs">
+                                        {t('panel.reports.ticket_modal.discord_id_label')}:{' '}
+                                        {formatDiscordId(target.discord)}
+                                    </p>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {(ticket.nearbyPlayers ?? []).length > 0 && (
+                <div className="pt-1">
+                    <h4 className="mb-2 text-sm font-medium">
+                        {t('panel.reports.ticket_modal.nearby_players_heading')}
+                    </h4>
+                    <p className="text-muted-foreground mb-2 text-xs">
+                        {t('panel.reports.ticket_modal.nearby_players_desc')}
+                    </p>
+                    <div className="space-y-1">
+                        {(ticket.nearbyPlayers ?? []).map((nearbyPlayer) => (
+                            <div key={nearbyPlayer.license}>
+                                <button
+                                    className="text-primary block cursor-pointer text-sm hover:underline"
+                                    onClick={() => onPlayerClick(nearbyPlayer.license)}
+                                >
+                                    {nearbyPlayer.name}
+                                    {nearbyPlayer.netid && ` (#${nearbyPlayer.netid})`}
+                                </button>
+                                {nearbyPlayer.discord && (
+                                    <p className="text-muted-foreground text-xs">
+                                        {t('panel.reports.ticket_modal.discord_id_label')}:{' '}
+                                        {formatDiscordId(nearbyPlayer.discord)}
+                                    </p>
+                                )}
+                            </div>
                         ))}
                     </div>
                 </div>
             )}
         </div>
     );
+}
+
+/**
+ * Strips the "discord:" prefix from a stored discord identifier for display.
+ */
+function formatDiscordId(discordId: string) {
+    return discordId.startsWith('discord:') ? discordId.slice('discord:'.length) : discordId;
 }
 
 function TicketLightbox({ url, onClose }: { url: string | null; onClose: () => void }) {

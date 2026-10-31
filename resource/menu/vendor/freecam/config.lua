@@ -1,4 +1,5 @@
 local CTRL_MOUSE_LR, CTRL_MOUSE_UD, CTRL_SLOW, CTRL_FAST, CTRL_FRONT_BACK, CTRL_LEFT_RIGHT, CTRL_GO_UP, CTRL_GO_DOWN, CTRL_RIGHT_TRIGGER, CTRL_LEFT_TRIGGER
+local CTRL_SCROLL_UP, CTRL_SCROLL_DOWN, CTRL_WHEEL_CONFLICTS
 
 if IS_FIVEM then
   CTRL_MOUSE_LR = 1               -- INPUT_LOOK_LR
@@ -12,6 +13,16 @@ if IS_FIVEM then
 
   CTRL_RIGHT_TRIGGER = 71         -- INPUT_VEH_ACCELERATE
   CTRL_LEFT_TRIGGER = 72          -- INPUT_VEH_BRAKE
+
+  CTRL_SCROLL_UP = 241            -- INPUT_CURSOR_SCROLL_UP
+  CTRL_SCROLL_DOWN = 242          -- INPUT_CURSOR_SCROLL_DOWN
+  -- Mouse wheel actions that must be blocked while scrolling noclip speed
+  CTRL_WHEEL_CONFLICTS = {
+    14, 15, 16, 17,               -- INPUT_WEAPON_WHEEL_NEXT/PREV, INPUT_SELECT_NEXT/PREV_WEAPON
+    99, 100,                      -- INPUT_VEH_SELECT_NEXT/PREV_WEAPON
+    81, 82,                       -- INPUT_VEH_NEXT/PREV_RADIO
+    261, 262,                     -- INPUT_PREV/NEXT_WEAPON
+  }
 else
   CTRL_MOUSE_LR = 0xA987235F      -- INPUT_LOOK_LR
   CTRL_MOUSE_UD = 0xD2047988      -- INPUT_LOOK_UD
@@ -24,6 +35,12 @@ else
 
   CTRL_RIGHT_TRIGGER = 0x5B9FD4E2 -- INPUT_VEH_ACCELERATE
   CTRL_LEFT_TRIGGER = 0x6E1F639B  -- INPUT_VEH_BRAKE
+
+  CTRL_SCROLL_UP = 0x62800C92     -- INPUT_CURSOR_SCROLL_UP
+  CTRL_SCROLL_DOWN = 0x8BDE7443   -- INPUT_CURSOR_SCROLL_DOWN
+  CTRL_WHEEL_CONFLICTS = {
+    0xFD0F0C2C, 0xCC1075A7,       -- INPUT_NEXT_WEAPON, INPUT_PREV_WEAPON
+  }
 end
 
 --------------------------------------------------------------------------------
@@ -40,7 +57,12 @@ local BASE_CONTROL_MAPPING = Protect({
 
   -- Multiplier
   MOVE_FAST = CTRL_FAST,
-  MOVE_SLOW = CTRL_SLOW
+  MOVE_SLOW = CTRL_SLOW,
+
+  -- Fine speed tuning (mouse wheel)
+  SPEED_UP = CTRL_SCROLL_UP,
+  SPEED_DOWN = CTRL_SCROLL_DOWN,
+  WHEEL_CONFLICTS = CTRL_WHEEL_CONFLICTS,
 })
 
 --------------------------------------------------------------------------------
@@ -54,6 +76,11 @@ local BASE_CONTROL_SETTINGS = Protect({
   BASE_MOVE_MULTIPLIER = 0.85,
   FAST_MOVE_MULTIPLIER = 6,
   SLOW_MOVE_MULTIPLIER = 6,
+
+  -- Mouse wheel fine tuning: each notch scales speed by this step
+  SCROLL_SPEED_STEP = 1.1,
+  SCROLL_SPEED_MIN = 0.05,
+  SCROLL_SPEED_MAX = 20.0,
 })
 
 --------------------------------------------------------------------------------

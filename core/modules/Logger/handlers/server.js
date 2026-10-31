@@ -10,6 +10,7 @@ import consoleFactory from '@lib/console';
 import bytes from 'bytes';
 import { summarizeIdsArray } from '@lib/player/idUtils';
 import { getTimeFilename } from '@lib/misc';
+import { formatCombatStats, parseCombatDamageSummary, parseCombatSummary } from '@lib/combatLog';
 const console = consoleFactory(modulename);
 
 /**
@@ -40,9 +41,23 @@ const eventFormatters = {
         const cause = eventData.data.cause || 'unknown';
         if (typeof eventData.data.killer === 'number' && eventData.data.killer > 0) {
             const killer = txCore.fxPlayerlist.getPlayerById(eventData.data.killer);
-            return killer ? `died from ${cause} by ${killer.displayName}` : `died from ${cause} by unknown killer`;
+            const base = killer
+                ? `died from ${cause} by ${killer.displayName}`
+                : `died from ${cause} by unknown killer`;
+            const combat = parseCombatSummary(eventData.data.combat);
+            const stats = combat ? formatCombatStats(combat) : '';
+            return stats ? `${base} (${stats})` : base;
         }
         return `died from ${cause}`;
+    },
+    CombatDamage(eventData) {
+        const summary = parseCombatDamageSummary(eventData.data);
+        if (!summary) return 'dealt damage (invalid combat data)';
+        const victim = txCore.fxPlayerlist.getPlayerById(summary.victim);
+        const victimName = victim ? victim.displayName : `unknown player #${summary.victim}`;
+        const weapon = summary.weapon ? ` with ${summary.weapon}` : '';
+        const stats = formatCombatStats(summary);
+        return `damaged ${victimName}${weapon}${stats ? ` (${stats})` : ''}`;
     },
     explosionEvent(eventData) {
         const expType = eventData.data.explosionType || 'UNKNOWN';
@@ -74,6 +89,17 @@ const eventFormatters = {
         return typeof eventData.data.message === 'string' ? `${eventData.data.message}` : 'did unknown action';
     },
 };
+
+//Event types that can be routed to Discord (see DiscordBot/logRouting.ts)
+const discordRoutedEventTypes = new Set([
+    'MenuEvent',
+    'DeathNotice',
+    'CombatDamage',
+    'playerJoining',
+    'playerDropped',
+    'playerJoinDenied',
+    'ChatMessage',
+]);
 
 /*
 NOTE: Expected time cap based on log size cap to prevent memory leak
@@ -217,7 +243,10 @@ export default class ServerLogger extends LoggerBase {
                 //Write to JSONL session file
                 this.sessionStream.write(JSON.stringify(eventObject) + '\n');
 
-                if (eventObject.type === 'MenuEvent' && typeof txCore.discordBot?.handleServerLogEvent === 'function') {
+                if (
+                    discordRoutedEventTypes.has(eventObject.type) &&
+                    typeof txCore.discordBot?.handleServerLogEvent === 'function'
+                ) {
                     txCore.discordBot.handleServerLogEvent(data[i], eventObject).catch(() => {});
                 }
             } catch (error) {

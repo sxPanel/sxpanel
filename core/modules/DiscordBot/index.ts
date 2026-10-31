@@ -17,10 +17,12 @@ import BridgeServer, { BridgeMessage } from './bridgeServer';
 import { getDisplayPlayerCount } from '@lib/fxserver/httpHealthCheck';
 import { buildTicketSummaryMessagePayload } from './ticketCommandUtils';
 import {
-    buildServerMenuDiscordPayload,
+    buildServerLogDiscordPayload,
     buildSystemLogDiscordPayload,
     type DiscordLogMessagePayload,
+    type DiscordLogPlayerResolver,
 } from './logRouting';
+import { DiscordLogBatcher } from './logBatcher';
 import { handleModerationCommand } from './moderationCommands';
 import { getActiveWorkflow } from '@modules/Whitelist/WhitelistService';
 import { getDiscordLocaleSnapshot } from './discordLocale';
@@ -122,6 +124,13 @@ export default class DiscordBot {
 
     readonly cooldowns = new Map();
     readonly #botProcess: BotProcess;
+    readonly #logBatcher = new DiscordLogBatcher({
+        send: (payload) => {
+            this.postLogMessage(payload).catch((error) => {
+                console.verbose.warn(`Failed to post Discord log message: ${emsg(error)}`);
+            });
+        },
+    });
     #bridgeServer: BridgeServer | undefined;
     #bridgeRuntimeConfig: { port: number; secret: string } | undefined;
     #pendingStart: PendingStart | undefined;
@@ -230,6 +239,7 @@ export default class DiscordBot {
     }
 
     public handleShutdown() {
+        this.#logBatcher.clear();
         this.#rejectPendingStart(new Error('Discord bot shutdown.'));
         this.#clearBridgeAutoHealTimer();
         void this.#stopRuntime();
@@ -479,21 +489,45 @@ export default class DiscordBot {
     }
 
     async handleSystemLogEntry(entry: SystemLogEntry) {
+        if (!this.#isBotEnabled() || !this.#bridgeServer?.isReady) return false;
         const payload = buildSystemLogDiscordPayload(txConfig.discordBot.logRoutes, entry);
         if (!payload) return false;
 
-        return await this.postLogMessage(payload);
+        this.#logBatcher.enqueue(payload);
+        return true;
     }
 
+    /**
+     * Routes an in-game (server log) event to Discord.
+     * NOTE: the payload is built synchronously, as player objects may be removed right after a playerDropped.
+     */
     async handleServerLogEvent(
-        rawEvent: { type?: unknown; data?: unknown },
+        rawEvent: { type?: unknown; src?: unknown; data?: unknown },
         logEntry: { ts: number; src: { id: string | false; name: string }; msg: string; type: string },
     ) {
-        const payload = buildServerMenuDiscordPayload(txConfig.discordBot.logRoutes, rawEvent, logEntry);
+        if (!this.#isBotEnabled() || !this.#bridgeServer?.isReady) return false;
+        const payload = buildServerLogDiscordPayload(
+            txConfig.discordBot.logRoutes,
+            rawEvent,
+            logEntry,
+            this.#resolveLogPlayer,
+        );
         if (!payload) return false;
 
-        return await this.postLogMessage(payload);
+        this.#logBatcher.enqueue(payload);
+        return true;
     }
+
+    readonly #resolveLogPlayer: DiscordLogPlayerResolver = (netid) => {
+        const player = txCore.fxPlayerlist.getPlayerById(netid);
+        if (!player) return undefined;
+        const discordId = player.ids.find((id) => id.startsWith('discord:'))?.slice('discord:'.length);
+        return {
+            netid: player.netid,
+            displayName: player.displayName,
+            discordId: discordId && /^\d{17,20}$/.test(discordId) ? discordId : null,
+        };
+    };
 
     async updateBotStatus() {
         if (!this.#bridgeServer?.isReady) {

@@ -107,6 +107,9 @@ function resolveRedirect(opts: GotOptions): 'follow' | 'manual' {
 function buildHeaders(opts: GotOptions): Record<string, string> {
     const headers: Record<string, string> = {
         'User-Agent': `txAdmin ${txEnv.txaVersion}`,
+        //undici advertises 'br' over https by default; opt out so well-behaved servers never hand
+        //us Brotli, keeping the embedded Node's decoder (CVE-2026-111497) out of the response path.
+        'Accept-Encoding': 'gzip, deflate',
         ...(opts.headers ?? {}),
     };
     if (opts.username || opts.password) {

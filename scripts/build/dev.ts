@@ -120,7 +120,7 @@ const buildOptions: BuildOptions = {
     sourcemap: 'linked',
     outfile: path.join(fxsPaths.monitor, 'core', 'index.js'),
     platform: 'node',
-    target: 'node16',
+    target: 'node18',
     format: 'cjs', //typescript builds to esm and esbuild converts it to cjs
     charset: 'utf8',
     inject: [path.join('scripts', 'build', 'importMetaUrlShim.js')],

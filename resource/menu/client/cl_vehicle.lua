@@ -109,18 +109,25 @@ end
 
 local gameSpawnReqHandler = IS_FIVEM and handleSpawnRequestFivem or handleSpawnRequestRedm
 
+--- Validates the model and requests the spawn, showing the result snackbar.
+--- Global so it can be reused by custom chat commands (cl_custom_commands.lua).
+---@param model string
+function TxRequestSpawnVehicle(model)
+    if not IsModelValid(model) then
+        DebugPrint('^1Invalid vehicle/horse model requested: ' .. model)
+        SendSnackbarMessage('error', 'nui_menu.page_main.vehicle.spawn.dialog_error', true, { modelName = model })
+    elseif not gameSpawnReqHandler(model) then
+        SendSnackbarMessage('error', 'nui_menu.page_main.vehicle.spawn.dialog_error', true, { modelName = model })
+    else
+        SendSnackbarMessage('info', 'nui_menu.page_main.vehicle.spawn.dialog_info', true, { modelName = model })
+    end
+end
+
 RegisterSecureNuiCallback('spawnVehicle', function(data, cb)
     if type(data) ~= 'table' or type(data.model) ~= 'string' then
         error('Invalid spawnVehicle NUI callback data')
     end
-    if not IsModelValid(data.model) then
-        DebugPrint('^1Invalid vehicle/horse model requested: ' .. data.model)
-        SendSnackbarMessage('error', 'nui_menu.page_main.vehicle.spawn.dialog_error', true, { modelName = data.model })
-    elseif not gameSpawnReqHandler(data.model) then
-        SendSnackbarMessage('error', 'nui_menu.page_main.vehicle.spawn.dialog_error', true, { modelName = data.model })
-    else
-        SendSnackbarMessage('info', 'nui_menu.page_main.vehicle.spawn.dialog_info', true, { modelName = data.model })
-    end
+    TxRequestSpawnVehicle(data.model)
     cb({})
 end)
 RegisterCommand('txAdmin:menu:spawnVehicle', function()

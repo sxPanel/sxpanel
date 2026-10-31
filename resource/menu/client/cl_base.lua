@@ -9,6 +9,20 @@ TX_MENU_VISIBLE = false
 TX_LAST_MENU_CLOSE = 0
 TX_MENU_PERMISSIONS = {}
 TX_LAST_TP_COORDS = false
+TX_STAFF_INVISIBLE = false
+-- Active staff toggles, mirrored to the NUI status strip (playerMode, invisible, playerIds, etc)
+TX_STAFF_STATUS = { playerMode = 'none' }
+
+--- Updates one of the staff toggles shown on the menu status strip
+---@param key string
+---@param value any
+function SetStaffStatus(key, value)
+    if TX_STAFF_STATUS[key] == value then
+        return
+    end
+    TX_STAFF_STATUS[key] = value
+    SendMenuMessage('setStaffStatus', { [key] = value })
+end
 
 -- Locals
 local noMenuReason = 'unknown reason'
@@ -150,6 +164,7 @@ RegisterSecureNuiCallback('reactLoaded', function(_, cb)
         SendMenuMessage('setDebugMode', TX_DEBUG_MODE)
         SendMenuMessage('setServerCtx', TX_SERVER_CTX)
         SendMenuMessage('setPermissions', TX_MENU_PERMISSIONS)
+        SendMenuMessage('setStaffStatus', TX_STAFF_STATUS)
     end)
 
     cb({})
@@ -192,6 +207,11 @@ RegisterNetEvent('txcl:setAdmin', function(username, perms, rejectReason)
             RegisterKeyMapping('txAdmin:menu:deleteVehicle', translator.t('nui_menu.keybinds.vehicle_delete'), 'KEYBOARD', '')
             RegisterKeyMapping('txAdmin:menu:fixVehicle', translator.t('nui_menu.keybinds.vehicle_fix'), 'KEYBOARD', '')
             RegisterKeyMapping('txAdmin:menu:spawnVehicle', translator.t('nui_menu.keybinds.vehicle_spawn'), 'KEYBOARD', '')
+            RegisterKeyMapping('txAdmin:menu:toggleInvisible', translator.t('nui_menu.keybinds.toggle_invisible'), 'KEYBOARD', '')
+            RegisterKeyMapping('txAdmin:menu:toggleCoordsHud', translator.t('nui_menu.keybinds.toggle_coords_hud'), 'KEYBOARD', '')
+            RegisterKeyMapping('txAdmin:menu:toggleInspector', translator.t('nui_menu.keybinds.toggle_inspector'), 'KEYBOARD', '')
+            RegisterKeyMapping('txAdmin:menu:cleanupVehicles', translator.t('nui_menu.keybinds.cleanup_vehicles'), 'KEYBOARD', '')
+            RegisterKeyMapping('txAdmin:menu:staffChat', translator.t('nui_menu.keybinds.staff_chat'), 'KEYBOARD', '')
         end
     else
         noMenuReason = tostring(rejectReason)
@@ -263,6 +283,12 @@ CreateThread(function()
         '/announce',
         translator.t('nui_menu.chat.announce_description'),
         { { name = 'message', help = translator.t('nui_menu.chat.announce_arg_help') } }
+    )
+    TriggerEvent(
+        'chat:addSuggestion',
+        '/staffchat',
+        translator.t('nui_menu.chat.staffchat_description'),
+        { { name = 'message', help = translator.t('nui_menu.chat.staffchat_arg_help') } }
     )
 end)
 

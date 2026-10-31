@@ -155,6 +155,8 @@ export default () => {
     router.post('/settings/banTemplates', apiAuthMw, mutationLimiter, routes.settings_saveBanTemplates);
     router.get('/settings/customThemes', apiAuthMw, routes.settings_getCustomThemes);
     router.post('/settings/customThemes', apiAuthMw, mutationLimiter, routes.settings_saveCustomThemes);
+    router.get('/settings/customCommands', apiAuthMw, routes.customCommands_get);
+    router.post('/settings/customCommands', apiAuthMw, mutationLimiter, routes.customCommands_save);
     router.post('/settings/resetServerDataPath', apiAuthMw, mutationLimiter, routes.settings_resetServerDataPath);
     router.get('/discord/guild-roles', apiAuthMw, wrapRoute('DiscordGuildRoles', routes.discord_guildRoles));
 

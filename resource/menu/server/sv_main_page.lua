@@ -82,6 +82,9 @@ end)
 
 RegisterNetEvent('txsv:req:clearArea', function(radius)
     local src = source
+    if type(radius) ~= 'number' or radius < 0 or radius > 300 then
+        return
+    end
     local allow = PlayerHasTxPermission(src, 'menu.clear_area')
     TriggerEvent('txsv:logger:menuEvent', src, 'clearArea', allow, radius)
     if allow then

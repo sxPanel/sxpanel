@@ -61,6 +61,25 @@ export const discordLogRouteDefinitions = [
             'Log in-game admin menu actions such as noclip, teleport, heal, spectate, vehicle tools, and troll actions.',
         supportsEntryFilter: true,
     },
+    {
+        key: 'server.combat',
+        label: 'Combat Logs',
+        description:
+            'Log player kills, other deaths, and non-lethal combat summaries. Hit, damage, and distance details require the Combat Log to be enabled by the server owner in Game settings.',
+        supportsEntryFilter: true,
+    },
+    {
+        key: 'server.connection',
+        label: 'Player Connection Logs',
+        description: 'Log players joining and leaving the server, and joins denied by bans or the whitelist.',
+        supportsEntryFilter: true,
+    },
+    {
+        key: 'server.chat',
+        label: 'Chat Logs',
+        description: 'Log in-game chat messages. Busy servers may want a dedicated channel for this stream.',
+        supportsEntryFilter: false,
+    },
 ] as const;
 
 export type DiscordLogRouteKey = (typeof discordLogRouteDefinitions)[number]['key'];
@@ -213,6 +232,48 @@ export const discordMenuCommandDefinitions = [
         permissionId: 'menu.mapblips',
     },
     {
+        id: 'players.invisible',
+        label: 'Invisibility',
+        description: 'Toggle invisibility in the in-game admin menu.',
+        permissionId: 'players.invisible',
+    },
+    {
+        id: 'players.return',
+        label: 'Return Player',
+        description: 'Send a player back to where they were before being brought.',
+        permissionId: 'players.teleport',
+    },
+    {
+        id: 'players.disarm',
+        label: 'Disarm Player',
+        description: 'Remove all weapons from a player.',
+        permissionId: 'players.disarm',
+    },
+    {
+        id: 'menu.devtools',
+        label: 'Developer Tools',
+        description: 'Toggle the coordinates HUD or the entity inspector.',
+        permissionId: 'menu.devtools',
+    },
+    {
+        id: 'menu.delete_entities.aimed',
+        label: 'Delete Aimed Entity',
+        description: 'Delete an entity using the entity inspector.',
+        permissionId: 'menu.delete_entities',
+    },
+    {
+        id: 'menu.delete_entities.vehicles',
+        label: 'Clean Up Vehicles',
+        description: 'Delete unoccupied vehicles within a radius.',
+        permissionId: 'menu.delete_entities',
+    },
+    {
+        id: 'menu.staffchat',
+        label: 'Staff Chat',
+        description: 'Send a staff-only chat message.',
+        permissionId: 'menu.staffchat',
+    },
+    {
         id: 'players.troll.drunk',
         label: 'Drunk Effect',
         description: 'Trigger the drunk troll action on a player.',
@@ -232,8 +293,50 @@ export const discordMenuCommandDefinitions = [
     },
 ] as const;
 
+export const discordCombatEntryDefinitions = [
+    {
+        id: 'combat.kill',
+        label: 'Player Kills',
+        description: 'A player killed another player. Includes hits, headshots, damage, and distance when available.',
+    },
+    {
+        id: 'combat.death',
+        label: 'Other Deaths',
+        description: 'A player died without another player being responsible, such as falls, NPCs, or suicide.',
+    },
+    {
+        id: 'combat.damage',
+        label: 'Damage Summaries',
+        description: 'A non-lethal fight between two players ended. Requires Combat Log damage summaries.',
+    },
+] as const;
+
+export const discordConnectionEntryDefinitions = [
+    {
+        id: 'player.join',
+        label: 'Player Joined',
+        description: 'A player connected to the server.',
+    },
+    {
+        id: 'player.leave',
+        label: 'Player Left',
+        description: 'A player disconnected from the server, including the drop reason.',
+    },
+    {
+        id: 'player.join_denied',
+        label: 'Join Denied',
+        description: 'A connection was refused, for example due to an active ban.',
+    },
+] as const;
+
 export type DiscordMenuCommandId = (typeof discordMenuCommandDefinitions)[number]['id'];
-export type DiscordLogRouteEntryId = DiscordMenuCommandId | SystemLogActionId;
+export type DiscordCombatEntryId = (typeof discordCombatEntryDefinitions)[number]['id'];
+export type DiscordConnectionEntryId = (typeof discordConnectionEntryDefinitions)[number]['id'];
+export type DiscordLogRouteEntryId =
+    | DiscordMenuCommandId
+    | DiscordCombatEntryId
+    | DiscordConnectionEntryId
+    | SystemLogActionId;
 
 export const discordLogRouteEntryDefinitions = {
     'system.action': getSystemLogActionDefinitions('action'),
@@ -247,6 +350,9 @@ export const discordLogRouteEntryDefinitions = {
     'system.scheduler': getSystemLogActionDefinitions('scheduler'),
     'system.system': getSystemLogActionDefinitions('system'),
     'server.menu': discordMenuCommandDefinitions,
+    'server.combat': discordCombatEntryDefinitions,
+    'server.connection': discordConnectionEntryDefinitions,
+    'server.chat': [],
 } satisfies Record<DiscordLogRouteKey, readonly DiscordLogRouteEntryDefinition[]>;
 
 const discordLogRouteKeySet = new Set<string>(discordLogRouteDefinitions.map((route) => route.key));
@@ -335,6 +441,8 @@ const discordLogRoutes = {
     discordLogRouteDefinitions,
     discordLogRouteEntryDefinitions,
     discordMenuCommandDefinitions,
+    discordCombatEntryDefinitions,
+    discordConnectionEntryDefinitions,
     isDiscordLogRouteKey,
     isDiscordMenuCommandId,
     getDiscordLogRouteEntryDefinitions,

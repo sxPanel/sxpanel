@@ -4,7 +4,7 @@ import type { ResourcesWsEventType } from '@shared/resourcesApiTypes';
 /**
  * The resources room provides real-time resource status updates.
  * Joined when viewing the resources page.
- * Pushes status changes and perf stats via WebSocket instead of polling.
+ * Pushes status changes via WebSocket instead of polling.
  */
 export default {
     permission: 'commands.resources',

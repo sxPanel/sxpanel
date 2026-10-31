@@ -63,6 +63,7 @@ export type TicketLogEntry = {
 // ── Player ref ──
 export type TicketPlayerRef = {
     license: string;
+    discord?: string;
     name: string;
     netid?: number;
 };
@@ -90,6 +91,7 @@ export type DatabaseTicketType = {
     priority?: TicketPriority; // undefined when priority is disabled in config
     reporter: TicketPlayerRef;
     targets: TicketPlayerRef[];
+    nearbyPlayers: TicketPlayerRef[]; // players near the reporter at submission time (player reports only)
     description: string; // replaces 'reason'
     screenshotUrl?: string;
     messages: TicketMessage[];
@@ -222,8 +224,9 @@ export type ApiGetAnalyticsResp = TicketAnalyticsSummary | { error: string };
 // ── NUI-facing intercom types (player) ──
 
 export type IntercomTicketCreateReq = {
-    reporter: { name: string; license: string; netid: number };
+    reporter: { name: string; license: string; discord?: string; netid: number };
     targets: TicketPlayerRef[];
+    nearbyPlayers?: TicketPlayerRef[];
     category: string;
     priority?: TicketPriority;
     description: string;

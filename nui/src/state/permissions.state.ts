@@ -34,9 +34,14 @@ export type ResolvablePermission =
     | 'menu.clear_area'
     | 'menu.viewids'
     | 'menu.mapblips'
+    | 'menu.devtools'
+    | 'menu.delete_entities'
+    | 'menu.staffchat'
     | 'players.spectate'
     | 'players.troll'
-    | 'players.freeze';
+    | 'players.freeze'
+    | 'players.invisible'
+    | 'players.disarm';
 
 const permissionState = atom<ResolvablePermission[]>([]);
 

@@ -135,7 +135,8 @@ local setLocallyInvisibleFunc = IS_FIVEM and SetEntityLocallyInvisible or SetPla
 local function toggleFreecam(enabled)
     noClipEnabled = enabled
     local ped = PlayerPedId()
-    SetEntityVisible(ped, not enabled, false)
+    -- staff invisibility (cl_staff_tools.lua) must survive leaving noclip
+    SetEntityVisible(ped, not enabled and not TX_STAFF_INVISIBLE, false)
     SetEntityInvincible(ped, enabled)
     FreezeEntityPosition(ped, enabled)
 
@@ -239,6 +240,8 @@ local function askChangePlayerMode(mode)
 
     TriggerServerEvent('txsv:req:changePlayerMode', mode, nearbyPlayers)
 end
+-- Exposed for custom chat commands (cl_custom_commands.lua)
+TxAskChangePlayerMode = askChangePlayerMode
 
 -- NoClip toggle keybind
 RegisterCommand('txAdmin:menu:noClipToggle', function()
@@ -262,6 +265,7 @@ RegisterNetEvent('txcl:setPlayerMode', function(mode, ptfx)
     if ptfx then
         CreatePlayerModePtfxLoop(PlayerPedId(), true)
     end
+    SetStaffStatus('playerMode', mode)
 
     --FIXME: Refactor this file:
     -- * keep state of the current game mode in a var

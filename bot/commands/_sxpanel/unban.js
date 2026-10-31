@@ -7,6 +7,7 @@ const {
     resolveBridgeReply,
     resolveSearchId,
     sendBridgeError,
+    sendInteractionReply,
     translateBot,
 } = require('./common');
 const { addTargetSubcommands } = require('./moderationCommon');
@@ -69,7 +70,7 @@ module.exports = {
             } else if (subcommand === 'member' || subcommand === 'id' || subcommand === 'serverid') {
                 const result = resolveSearchId(interaction);
                 if (result.errorReply) {
-                    await interaction.reply(result.errorReply);
+                    await sendInteractionReply(interaction, result.errorReply);
                     return;
                 }
 
@@ -80,7 +81,8 @@ module.exports = {
                     ...getRequesterPayload(interaction),
                 });
             } else {
-                await interaction.reply(
+                await sendInteractionReply(
+                    interaction,
                     buildReply(
                         'danger',
                         translateBot(interaction, 'common.subcommand_not_found', { subcommand }),

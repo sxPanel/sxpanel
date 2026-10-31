@@ -33,6 +33,7 @@ import got from '@lib/got';
 import { resolveTelemetryPanelUrl } from '@lib/panelPublicUrl';
 import { fetchFreshResourceReport, getCachedResourceReport, isValidResourceName } from './resources/shared';
 import { randomUUID } from 'node:crypto';
+import { getMenuActionDef } from '@shared/customCommands';
 const console = consoleFactory(modulename);
 
 const STATS_INVENTORY_REPORT_TIMEOUT_MS = 5000;
@@ -307,6 +308,8 @@ const statsSchema = z
     })
     .strict();
 
+const customCommandsSchema = z.object(baseIntercomSchema).strict();
+
 const playerTagSchema = z
     .object({
         ...baseIntercomSchema,
@@ -489,6 +492,7 @@ const ticketScreenshotUploadSchema = z
 // Map of scope names to their validation schemas
 const scopeValidators = {
     monitor: monitorSchema,
+    customCommands: customCommandsSchema,
     resources: resourcesSchema,
     // Legacy report scopes (kept for backward compat with older Lua resources)
     reportCreate: reportCreateSchema,
@@ -784,6 +788,25 @@ export default async function Intercom(ctx: InitializedCtx) {
                 console.warn(`Intercom playerTag failed (netId=${v.data.netId}, tag=${v.data.tagId}): ${message}`);
                 return ctx.send({ success: false, error: message });
             }
+        }
+        case 'customCommands': {
+            const v = validateBody('customCommands');
+            if (!v.ok) return ctx.utils.error(400, v.errorMsg);
+            //Only the enabled ones are relevant to the game server
+            //The chat suggestion params are attached here so the resource doesn't need its own catalog
+            const commands = txConfig.gameFeatures.customCommands
+                .filter((cmd) => cmd.enabled)
+                .map((cmd) => ({
+                    ...cmd,
+                    params:
+                        cmd.action.type === 'menuAction'
+                            ? (getMenuActionDef(cmd.action.actionId)?.args ?? []).map(({ name, help }) => ({
+                                  name,
+                                  help,
+                              }))
+                            : [],
+                }));
+            return ctx.send({ success: true, commands });
         }
         default: {
             // All keys of scopeValidators are handled above; this is a compile-time exhaustiveness guard.

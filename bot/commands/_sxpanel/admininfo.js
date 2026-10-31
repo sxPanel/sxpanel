@@ -6,6 +6,7 @@ const {
     resolveBridgeReply,
     resolveSearchId,
     sendBridgeError,
+    sendInteractionReply,
 } = require('./common');
 
 module.exports = {
@@ -41,7 +42,7 @@ module.exports = {
     async execute(interaction) {
         const result = resolveSearchId(interaction);
         if (result.errorReply) {
-            await interaction.reply(result.errorReply);
+            await sendInteractionReply(interaction, result.errorReply);
             return;
         }
 

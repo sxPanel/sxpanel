@@ -6,6 +6,7 @@ const {
     getRequesterPayload,
     resolveBridgeReply,
     sendBridgeError,
+    sendInteractionReply,
     translateBot,
 } = require('./common');
 
@@ -73,7 +74,8 @@ module.exports = {
             } else if (subcommand === 'request' || subcommand === 'application') {
                 const requestId = interaction.options.getString('id', true).trim().toUpperCase();
                 if (requestId.length !== 5 || requestId[0] !== 'R') {
-                    await interaction.reply(
+                    await sendInteractionReply(
+                        interaction,
                         buildReply('danger', translateBot(interaction, 'whitelist.invalid_request_id'), true),
                     );
                     return;
@@ -85,7 +87,8 @@ module.exports = {
                     requestId,
                 });
             } else {
-                await interaction.reply(
+                await sendInteractionReply(
+                    interaction,
                     buildReply(
                         'danger',
                         translateBot(interaction, 'whitelist.subcommand_not_found', { subcommand }),

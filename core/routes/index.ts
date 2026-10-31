@@ -60,6 +60,10 @@ export { default as settings_saveBanTemplates } from './settings/saveBanTemplate
 export { default as settings_getCustomThemes } from './settings/getCustomThemes';
 export { default as settings_saveCustomThemes } from './settings/saveCustomThemes';
 export { default as settings_resetServerDataPath } from './settings/resetServerDataPath';
+export {
+    getCustomCommands as customCommands_get,
+    saveCustomCommands as customCommands_save,
+} from './customCommands';
 export { default as deferral_card_asset } from './deferralCardAsset';
 export { default as deferral_card_logo } from './deferralCardLogo';
 export { default as deferral_addon_meta } from './deferralAddonMeta';

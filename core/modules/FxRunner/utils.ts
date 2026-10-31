@@ -47,6 +47,9 @@ export const getMutableConvars = (isCmdLine = false) => {
         ['set', 'hideDefaultDirectMessage', txConfig.gameFeatures.hideDefaultDirectMessage],
         ['set', 'hideDefaultWarning', txConfig.gameFeatures.hideDefaultWarning],
         ['set', 'hideDefaultScheduledRestartWarning', txConfig.gameFeatures.hideDefaultScheduledRestartWarning],
+        ['set', 'combatLogEnabled', txConfig.gameFeatures.combatLogEnabled],
+        ['set', 'combatLogDamageSummaries', txConfig.gameFeatures.combatLogDamageSummaries],
+        ['set', 'combatLogEngagementWindow', txConfig.gameFeatures.combatLogEngagementWindow],
         ['set', 'tagDefinitions', JSON.stringify(getTagDefinitions())],
 
         // //NOTE: no auto update, maybe we shouldn't tie core and server verbosity anyways

@@ -17,6 +17,7 @@ import { generatePlayerListMessage, generateStatusMessage } from '@modules/Disco
 import { getSchemaChainError } from '@modules/ConfigStore/schema/utils';
 import { confx } from '@modules/ConfigStore/utils';
 import { SYM_RESET_CONFIG } from '@lib/symbols';
+import gameFeaturesSchema from '@modules/ConfigStore/schema/gameFeatures';
 import cleanFullPath from '@shared/cleanFullPath';
 import jsonForgivingParse from '@shared/jsonForgivingParse';
 const console = consoleFactory(modulename);
@@ -60,6 +61,15 @@ const cardNamesMap = {
     'panel-features': 'Panel Features',
 } as const;
 const validCardIds = Object.keys(cardNamesMap) as [keyof typeof cardNamesMap];
+const combatLogConfigKeys = ['combatLogEnabled', 'combatLogDamageSummaries', 'combatLogEngagementWindow'] as const;
+const changesCombatLogConfig = (inputConfig: Record<string, unknown>, resetKeys: string[]) => {
+    const gameFeaturesInput = (inputConfig.gameFeatures ?? {}) as Record<string, unknown>;
+    return combatLogConfigKeys.some((key) => {
+        const currentValue = txConfig.gameFeatures?.[key];
+        if (gameFeaturesInput[key] !== undefined && gameFeaturesInput[key] !== currentValue) return true;
+        return resetKeys.includes(`gameFeatures.${key}`) && currentValue !== gameFeaturesSchema[key].default;
+    });
+};
 
 //Req validation
 const paramsSchema = z.object({ card: z.enum(validCardIds) });
@@ -103,6 +113,16 @@ export default async function SaveSettingsConfigs(ctx: AuthedCtx) {
     const cardId = paramsSchemaRes.data.card;
     const { resetKeys, changes: inputConfig } = bodySchemaRes.data;
     const cardName = cardNamesMap[ctx.params.card as keyof typeof cardNamesMap] ?? 'UNKNOWN';
+
+    //Only master admin can change the combat log, as it records player activity
+    //NOTE: checked for every card, since any card request can carry gameFeatures changes.
+    //NOTE: the panel sends every value of a card, so only actual changes are rejected.
+    if (!ctx.admin.isMaster && changesCombatLogConfig(inputConfig, resetKeys)) {
+        return sendTypedResp({
+            type: 'error',
+            msg: 'Only the master admin can change the Combat Log settings.',
+        });
+    }
 
     //Delegate to the specific card handlers - if required
     let handlerResp: CardHandlerSuccessResp | void = { processedConfig: inputConfig };

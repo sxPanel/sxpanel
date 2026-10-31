@@ -174,6 +174,24 @@ export const registeredPermissions: PermissionDefinition[] = [
         description: 'See all players on the in-game map via map blips.',
         category: 'ingame',
     },
+    {
+        id: 'menu.devtools',
+        label: 'Developer Tools',
+        description: 'Use the coordinates HUD and the entity inspector in-game.',
+        category: 'ingame',
+    },
+    {
+        id: 'menu.delete_entities',
+        label: 'Delete Entities',
+        description: 'Delete the entity you are aiming at, and clean up unoccupied vehicles around you.',
+        category: 'ingame',
+    },
+    {
+        id: 'menu.staffchat',
+        label: 'Staff Chat',
+        description: 'Send and receive staff-only chat messages in-game.',
+        category: 'ingame',
+    },
 
     // ── Player Management ──
     {
@@ -254,15 +272,27 @@ export const registeredPermissions: PermissionDefinition[] = [
         migratedFrom: 'players.playermode',
     },
     {
+        id: 'players.invisible',
+        label: 'Invisibility',
+        description: 'Toggle invisibility for yourself, hiding you from other players.',
+        category: 'players',
+    },
+    {
         id: 'players.spectate',
         label: 'Spectate',
         description: 'Spectate players.',
         category: 'players',
     },
     {
+        id: 'players.disarm',
+        label: 'Disarm',
+        description: 'Remove all weapons from a player.',
+        category: 'players',
+    },
+    {
         id: 'players.teleport',
         label: 'Teleport',
-        description: 'Teleport self or bring/go to players.',
+        description: 'Teleport self or bring/go to/return players.',
         category: 'players',
     },
     {

@@ -215,6 +215,7 @@ TX_EVENT_HANDLERS = {
     -- Handled by another file
     adminsUpdated = false, -- sv_admins.lua
     configChanged = false, -- sv_ctx.lua
+    customCommandsChanged = false, -- sv_custom_commands.lua
 
     -- Known NO-OP
     actionRevoked = false,

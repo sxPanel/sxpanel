@@ -365,6 +365,7 @@ export default function useServerLog() {
         leaves: 0,
         chat: 0,
         deaths: 0,
+        combat: 0,
         menu: 0,
         explosions: 0,
         commands: 0,

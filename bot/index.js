@@ -185,7 +185,13 @@ const setAddonLoadFailures = (kind, failures) => {
     pushRuntimeDiagnostics();
 };
 
-const loadCommandFiles = async (filePaths, { shouldBustCache = () => false, tolerateErrors = false } = {}) => {
+const commandSourcePaths = new WeakMap();
+
+const loadCommandFiles = async (
+    filePaths,
+    target,
+    { shouldBustCache = () => false, tolerateErrors = false } = {},
+) => {
     const failures = [];
 
     for (const filePath of filePaths) {
@@ -195,12 +201,17 @@ const loadCommandFiles = async (filePaths, { shouldBustCache = () => false, tole
 
             const addonDescriptor = isAddonModuleFile(filePath) ? resolveAddonDescriptorForFile(filePath) : null;
 
-            if (client.commands.has(command.data.name)) {
-                console.warn(`[Bot] Skipping duplicate command /${command.data.name} from ${filePath}`);
+            if (target.has(command.data.name)) {
+                const existing = target.get(command.data.name);
+                const firstPath = commandSourcePaths.get(existing) ?? 'unknown';
+                console.warn(
+                    `[Bot] Skipping duplicate command /${command.data.name} from ${filePath} (already loaded from ${firstPath})`,
+                );
                 continue;
             }
 
-            client.commands.set(command.data.name, command);
+            commandSourcePaths.set(command, filePath);
+            target.set(command.data.name, command);
             if (addonDescriptor?.id) {
                 registerAddonCommandModule(client.sxpanel.addonRuntime, {
                     addonId: addonDescriptor.id,
@@ -292,6 +303,27 @@ const loadBaseEvents = async () => {
 };
 
 client.commands = new Collection();
+let commandLoadQueue = Promise.resolve();
+
+const runLoadCommands = async ({ clearCustomCache = false, clearAddonCache = false } = {}) => {
+    resetAddonRuntimeRegistries(client.sxpanel.addonRuntime);
+
+    //Build into a fresh collection and swap, so commands never disappear mid-reload
+    const nextCommands = new Collection();
+    await loadCommandFiles(getAllFiles(commandsRoot), nextCommands, {
+        shouldBustCache: (filePath) => clearCustomCache && isCustomCommandFile(filePath),
+    });
+
+    const addonCommandFiles = collectAddonRoots('commandsPath').flatMap((rootPath) => getAllFiles(rootPath));
+    await loadCommandFiles(addonCommandFiles, nextCommands, {
+        shouldBustCache: () => clearAddonCache,
+        tolerateErrors: true,
+    });
+
+    client.commands = nextCommands;
+    return client.commands;
+};
+
 client.sxpanel = {
     latestConfigSnapshot: null,
     addonEventBindings: [],
@@ -316,21 +348,12 @@ client.sxpanel = {
         }
         return recordedIssue;
     },
-    loadCommands: async ({ clearCustomCache = false, clearAddonCache = false } = {}) => {
-        resetAddonRuntimeRegistries(client.sxpanel.addonRuntime);
-        client.commands.clear();
-
-        await loadCommandFiles(getAllFiles(commandsRoot), {
-            shouldBustCache: (filePath) => clearCustomCache && isCustomCommandFile(filePath),
-        });
-
-        const addonCommandFiles = collectAddonRoots('commandsPath').flatMap((rootPath) => getAllFiles(rootPath));
-        await loadCommandFiles(addonCommandFiles, {
-            shouldBustCache: () => clearAddonCache,
-            tolerateErrors: true,
-        });
-
-        return client.commands;
+    //Serialized: overlapping loads (ready event + panel reloadCommands) used to interleave at
+    //each await and flag each other's commands as duplicates.
+    loadCommands: (options = {}) => {
+        const run = commandLoadQueue.then(() => runLoadCommands(options));
+        commandLoadQueue = run.catch(() => {});
+        return run;
     },
     reloadAddonEvents: async ({ clearAddonCache = false } = {}) => {
         for (const binding of client.sxpanel.addonEventBindings) {

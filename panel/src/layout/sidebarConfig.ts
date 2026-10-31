@@ -21,6 +21,7 @@ import {
     ScrollTextIcon,
     BlocksIcon,
     SparklesIcon,
+    SquareTerminalIcon,
 } from 'lucide-react';
 
 export type SidebarNavItemConfig = {
@@ -80,6 +81,12 @@ export const SIDEBAR_SECTIONS: SidebarSectionConfig[] = [
                 icon: BoxIcon,
                 labelKey: 'panel.sidebar.item.resources',
                 featureFlag: 'resourcesPage',
+            },
+            {
+                href: '/server/commands',
+                icon: SquareTerminalIcon,
+                labelKey: 'panel.sidebar.item.custom_commands',
+                permission: 'settings.view',
             },
             {
                 href: '/server/cfg-editor',

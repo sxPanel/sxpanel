@@ -199,6 +199,61 @@ const MenuObject = {
     openReportCreate: () => MenuObject.openReportUI({ view: 'create' }),
     /** Shortcut — opens on My Tickets list */
     openReportList: () => MenuObject.openReportUI({ view: 'list' }),
+    /** Shows the dev tools overlays (coords HUD + entity inspector) with mock data */
+    showStaffHud: () => {
+        debugData<unknown>(
+            [
+                { action: 'setStaffStatus', data: { coordsHud: true, inspector: true, invisible: true } },
+                { action: 'setCoordsHud', data: { x: -1037.42, y: -2738.11, z: 20.17, heading: 328.4 } },
+                {
+                    action: 'setInspectorData',
+                    data: {
+                        target: {
+                            entityType: 'vehicle',
+                            model: -1216765807,
+                            modelHex: '0xB779A091',
+                            archetype: 'adder',
+                            handle: 123906,
+                            netId: 132,
+                            owner: 3,
+                            playerId: false,
+                            health: 742,
+                            maxHealth: 1000,
+                            coords: { x: -1030.12, y: -2731.55, z: 19.98 },
+                            heading: 240.1,
+                            distance: 9.6,
+                            canDelete: true,
+                        },
+                    },
+                },
+            ],
+            0,
+        );
+    },
+    /** Shows a staff chat message toast */
+    staffChatMsg: (message = 'Heads up, checking the adder at the airport.') => {
+        debugData([{ action: 'staffChatMessage', data: { authorId: 3, author: 'Taso', message, isSelf: false } }], 0);
+    },
+    /** Loads mock players and opens the player modal for the first one */
+    openPlayerModalDemo: () => {
+        MenuObject.useMockPlayerList();
+        setTimeout(() => MenuObject.setPlayerModalTarget('1'), 300);
+    },
+    /** Opens the staff chat dialog */
+    openStaffChatDialog: () => {
+        debugData([{ action: 'openStaffChatDialog', data: {} }], 0);
+    },
+    /** Hides the dev tools overlays */
+    hideStaffHud: () => {
+        debugData<unknown>(
+            [
+                { action: 'setStaffStatus', data: { coordsHud: false, inspector: false } },
+                { action: 'setCoordsHud', data: false },
+                { action: 'setInspectorData', data: false },
+            ],
+            0,
+        );
+    },
     /** Closes the report UI overlay */
     closeReportUI: () => {
         debugData([{ action: 'closeTicketUI', data: {} }], 0);
@@ -211,6 +266,12 @@ export const browserMenuDebug = MenuObject;
 export const registerDebugFunctions = () => {
     if (isBrowserEnv()) {
         (window as any).menuDebug = browserMenuDebug;
+
+        // `?debug=showStaffHud` runs a debug function on load (handy for headless screenshots)
+        const debugFn = new URLSearchParams(window.location.search).get('debug');
+        if (debugFn && typeof (browserMenuDebug as any)[debugFn] === 'function') {
+            setTimeout(() => (browserMenuDebug as any)[debugFn](), 1500);
+        }
 
         console.log('%csxPanel Debug Utilities', 'font-weight: bold; font-size: 25px; color: red;');
         console.log(

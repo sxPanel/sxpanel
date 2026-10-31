@@ -1,7 +1,14 @@
 const { ChannelType, SlashCommandBuilder } = require('discord.js');
 const { normalizeMessageEditPayload } = require('../../componentsV2');
 const { request } = require('../../bridge/requests');
-const { buildReply, getRequesterPayload, resolveBridgeReply, sendBridgeError, translateBot } = require('./common');
+const {
+    buildReply,
+    getRequesterPayload,
+    resolveBridgeReply,
+    sendBridgeError,
+    sendInteractionReply,
+    translateBot,
+} = require('./common');
 
 const staleStoredEmbedErrorCodes = new Set([10003, 10008, 'StoredChannelNotFound']);
 
@@ -81,7 +88,8 @@ const createPersistentEmbedCommand = ({
 
                 if (subcommand === 'remove') {
                     if (!hasStoredEmbed) {
-                        await interaction.reply(
+                        await sendInteractionReply(
+                            interaction,
                             buildReply(
                                 'warning',
                                 translateBot(interaction, 'persistent_embed.failed_remove_no_saved_message', {
@@ -102,7 +110,8 @@ const createPersistentEmbedCommand = ({
                             embedLabel,
                         );
                     } catch (error) {
-                        await interaction.reply(
+                        await sendInteractionReply(
+                            interaction,
                             buildReply(
                                 'warning',
                                 translateBot(interaction, 'persistent_embed.failed_remove_error', {
@@ -121,7 +130,7 @@ const createPersistentEmbedCommand = ({
                     });
                     if (await resolveBridgeReply(interaction, clearResponse)) return;
 
-                    await interaction.reply(buildReply('success', removedReply, true));
+                    await sendInteractionReply(interaction, buildReply('success', removedReply, true));
                     return;
                 }
 
@@ -129,7 +138,8 @@ const createPersistentEmbedCommand = ({
                     interaction.channel?.type !== ChannelType.GuildText &&
                     interaction.channel?.type !== ChannelType.GuildAnnouncement
                 ) {
-                    await interaction.reply(
+                    await sendInteractionReply(
+                        interaction,
                         buildReply('danger', translateBot(interaction, 'common.channel_type_not_supported'), true),
                     );
                     return;
@@ -162,11 +172,12 @@ const createPersistentEmbedCommand = ({
                         });
                         if (await resolveBridgeReply(interaction, saveResponse)) return;
 
-                        await interaction.reply(buildReply('success', savedReply, true));
+                        await sendInteractionReply(interaction, buildReply('success', savedReply, true));
                         return;
                     } catch (error) {
                         if (!isStaleStoredEmbedError(error)) {
-                            await interaction.reply(
+                            await sendInteractionReply(
+                                interaction,
                                 buildReply(
                                     'warning',
                                     translateBot(interaction, 'persistent_embed.failed_remove_error', {
@@ -192,7 +203,8 @@ const createPersistentEmbedCommand = ({
                         );
                     } catch (error) {
                         if (!isStaleStoredEmbedError(error)) {
-                            await interaction.reply(
+                            await sendInteractionReply(
+                                interaction,
                                 buildReply(
                                     'warning',
                                     translateBot(interaction, 'persistent_embed.failed_remove_error', {
@@ -230,7 +242,7 @@ const createPersistentEmbedCommand = ({
                 });
                 if (await resolveBridgeReply(interaction, saveResponse)) return;
 
-                await interaction.reply(buildReply('success', savedReply, true));
+                await sendInteractionReply(interaction, buildReply('success', savedReply, true));
             } catch (error) {
                 await sendBridgeError(interaction, `/${commandName}`, error);
             }

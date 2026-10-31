@@ -13,6 +13,7 @@ import { styled } from '@mui/material/styles';
 
 import {
     Button,
+    Chip,
     Dialog,
     DialogActions,
     DialogContent,
@@ -32,7 +33,19 @@ import { txAdminMenuPage, usePageValue } from '../state/page.state';
 import { Box } from '@mui/system';
 
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
-    color: theme.palette.primary.main,
+    color: theme.palette.text.primary,
+    fontSize: 16,
+    fontWeight: 600,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    '&::before': {
+        content: '""',
+        width: 3,
+        height: 16,
+        borderRadius: 2,
+        backgroundColor: theme.palette.primary.main,
+    },
 }));
 const StyledCreate = styled(Create)(({ theme }) => ({
     color: theme.palette.text.secondary,
@@ -150,11 +163,11 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
                     }}
                 >
                     <StyledDialogTitle>{dialogProps.title}</StyledDialogTitle>
-                    <DialogContent>
-                        <DialogContentText>{dialogProps.description}</DialogContentText>
+                    <DialogContent sx={{ pb: 1 }}>
+                        <DialogContentText sx={{ fontSize: 13, mb: 1.5 }}>{dialogProps.description}</DialogContentText>
                         <TextField
-                            sx={{ pt: 1 }}
-                            variant="standard"
+                            variant="outlined"
+                            size="small"
                             autoFocus
                             fullWidth
                             multiline={dialogProps?.isMultiline}
@@ -163,44 +176,40 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <StyledCreate color="inherit" />
+                                        <StyledCreate color="inherit" fontSize="small" />
                                     </InputAdornment>
                                 ),
+                                sx: { backgroundColor: theme.tokens.surfaceRaised },
                             }}
                             onChange={handleChange}
                         />
+                        {Array.isArray(dialogProps.suggestions) && dialogProps.suggestions.length > 0 && (
+                            <Box display="flex" flexWrap="wrap" gap={0.75} mt={1.25}>
+                                {dialogProps.suggestions.map((suggestion) => (
+                                    <Chip
+                                        key={suggestion}
+                                        label={suggestion}
+                                        size="small"
+                                        variant="outlined"
+                                        clickable
+                                        onClick={() => handleDialogSubmit(suggestion)}
+                                    />
+                                ))}
+                            </Box>
+                        )}
                     </DialogContent>
-                    <DialogActions>
-                        <Box display="flex" justifyContent="space-between" width="100%">
-                            <Box>
-                                {Array.isArray(dialogProps.suggestions) &&
-                                    dialogProps.suggestions.map((suggestion) => (
-                                        <Button
-                                            onClick={() => {
-                                                handleDialogSubmit(suggestion);
-                                            }}
-                                            style={{
-                                                color: theme.palette.text.secondary,
-                                            }}
-                                        >
-                                            {suggestion}
-                                        </Button>
-                                    ))}
-                            </Box>
-                            <Box>
-                                <Button
-                                    onClick={handleDialogClose}
-                                    style={{
-                                        color: theme.palette.text.secondary,
-                                    }}
-                                >
-                                    {t('nui_menu.common.cancel')}
-                                </Button>
-                                <Button type="submit" color="primary">
-                                    {t('nui_menu.common.submit')}
-                                </Button>
-                            </Box>
-                        </Box>
+                    <DialogActions sx={{ px: 3, pb: 2 }}>
+                        <Button
+                            onClick={handleDialogClose}
+                            style={{
+                                color: theme.palette.text.secondary,
+                            }}
+                        >
+                            {t('nui_menu.common.cancel')}
+                        </Button>
+                        <Button type="submit" color="primary" variant="contained" disableElevation>
+                            {t('nui_menu.common.submit')}
+                        </Button>
                     </DialogActions>
                 </form>
             </Dialog>

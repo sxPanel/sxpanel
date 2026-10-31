@@ -13,11 +13,13 @@ import {
 import { GameMenuSettingsFields, gameMenuPageConfigs } from './gameMenu';
 import { GameNotificationsSettingsFields, gameNotificationsPageConfigs } from './gameNotifications';
 import { GameReportsSettingsFields, gameReportsPageConfigs } from './gameReports';
+import { GameCombatLogSettingsFields, gameCombatLogPageConfigs } from './gameCombatLog';
 
 export const pageConfigs = {
     ...gameMenuPageConfigs,
     ...gameNotificationsPageConfigs,
     ...gameReportsPageConfigs,
+    ...gameCombatLogPageConfigs,
 } as const;
 
 export default function ConfigCardGame({ cardCtx, pageCtx }: SettingsCardProps) {
@@ -34,6 +36,7 @@ export default function ConfigCardGame({ cardCtx, pageCtx }: SettingsCardProps) 
     const categoriesRef = useRef<HTMLInputElement | null>(null);
     const retentionDaysRef = useRef<HTMLInputElement | null>(null);
     const ticketChannelRef = useRef<HTMLInputElement | null>(null);
+    const engagementWindowRef = useRef<HTMLInputElement | null>(null);
     const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
@@ -91,6 +94,12 @@ export default function ConfigCardGame({ cardCtx, pageCtx }: SettingsCardProps) 
             }
             return values;
         }, []);
+
+        const windowVal = engagementWindowRef.current?.value;
+        if (windowVal !== undefined) {
+            const parsed = parseInt(windowVal, 10);
+            overwrites.combatLogEngagementWindow = isNaN(parsed) ? 10 : Math.min(60, Math.max(3, parsed));
+        }
 
         const retDays = parseInt(retentionDaysRef.current?.value ?? '30', 10);
         const chanId = ticketChannelRef.current?.value.trim() || null;
@@ -159,6 +168,13 @@ export default function ConfigCardGame({ cardCtx, pageCtx }: SettingsCardProps) 
                 ticketChannelRef={ticketChannelRef}
                 updatePageState={updatePageState}
                 debouncedUpdatePageState={debouncedUpdatePageState}
+            />
+            <GameCombatLogSettingsFields
+                cfg={cfg}
+                states={states}
+                pageCtx={pageCtx}
+                engagementWindowRef={engagementWindowRef}
+                updatePageState={updatePageState}
             />
         </SettingsCardShell>
     );

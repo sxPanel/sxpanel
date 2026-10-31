@@ -71,7 +71,7 @@ function mergeWsUpdate(
         resources: group.resources.map((res) => {
             const ws = wsData.get(res.name);
             const updated = ws
-                ? { ...res, status: ws.status, perf: ws.perf, updateNotice: ws.updateNotice ?? res.updateNotice }
+                ? { ...res, status: ws.status, updateNotice: ws.updateNotice ?? res.updateNotice }
                 : res;
             if (updated.status === 'started') startedCount++;
             else stoppedCount++;
@@ -556,43 +556,27 @@ function ResourceGroupSection({
     );
 }
 
-function PerfDisplay({ resource, className }: { resource: ResourceItemData; className?: string }) {
-    if (!resource.perf) return null;
-    const { cpu, memory, tickTime } = resource.perf;
-
+function PerfDisplay({ className }: { className?: string }) {
+    // Keep unavailable measurements distinct from a measured zero.
     return (
-        <div className={cn('flex items-center gap-3 text-xs', className)}>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <span className={`flex items-center gap-1 ${cpu > 5 ? 'text-warning' : 'text-muted-foreground'}`}>
-                        <CpuIcon className="size-3" />
-                        {cpu.toFixed(1)}ms
-                    </span>
-                </TooltipTrigger>
-                <TooltipContent>CPU time per frame</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <span
-                        className={`flex items-center gap-1 ${memory > 128000 ? 'text-warning' : 'text-muted-foreground'}`}
-                    >
-                        <MemoryStickIcon className="size-3" />
-                        {memory > 1024 ? `${(memory / 1024).toFixed(1)}MB` : `${memory}KB`}
-                    </span>
-                </TooltipTrigger>
-                <TooltipContent>Memory usage</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <span
-                        className={`flex items-center gap-1 ${tickTime > 5 ? 'text-warning' : 'text-muted-foreground'}`}
-                    >
-                        <TimerIcon className="size-3" />
-                        {tickTime.toFixed(2)}ms
-                    </span>
-                </TooltipTrigger>
-                <TooltipContent>Average tick time</TooltipContent>
-            </Tooltip>
+        <div className={cn('text-muted-foreground flex shrink-0 items-center gap-3 text-xs', className)}>
+            {[
+                { label: 'CPU time', Icon: CpuIcon },
+                { label: 'Memory usage', Icon: MemoryStickIcon },
+                { label: 'Average tick time', Icon: TimerIcon },
+            ].map(({ label, Icon }) => (
+                <Tooltip key={label}>
+                    <TooltipTrigger asChild>
+                        <span className="flex items-center gap-1" aria-label={`${label}: unavailable`}>
+                            <Icon className="size-3" aria-hidden="true" />
+                            N/A
+                        </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        {label} is unavailable. Per-resource performance collection is not implemented yet.
+                    </TooltipContent>
+                </Tooltip>
+            ))}
         </div>
     );
 }
@@ -684,13 +668,9 @@ function ResourceRow({
                         </div>
                     )}
                 </div>
-
-                {/* Performance stats (desktop) */}
-                {isStarted && <PerfDisplay resource={resource} className="hidden md:flex" />}
+                {isStarted && <PerfDisplay className="hidden md:flex" />}
             </div>
-
-            {/* Performance stats (compact viewports) */}
-            {isStarted && <PerfDisplay resource={resource} className="mt-1 pl-5 md:hidden" />}
+            {isStarted && <PerfDisplay className="mt-1 pl-5 md:hidden" />}
         </>
     );
 

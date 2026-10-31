@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { typeDefinedConfig } from './utils';
-import { SYM_FIXER_DEFAULT } from '@lib/symbols';
+import { SYM_FIXER_DEFAULT, SYM_FIXER_FATAL } from '@lib/symbols';
+import { CustomCommand, CustomCommandsArraySchema } from '@shared/customCommands';
 
 const AUTO_TAG_IDS = new Set(['staff', 'problematic', 'newplayer']);
 
@@ -164,6 +165,27 @@ const hideDefaultScheduledRestartWarning = typeDefinedConfig({
     fixer: SYM_FIXER_DEFAULT,
 });
 
+const combatLogEnabled = typeDefinedConfig({
+    name: 'Combat Log Enabled',
+    default: false,
+    validator: z.boolean(),
+    fixer: SYM_FIXER_DEFAULT,
+});
+
+const combatLogDamageSummaries = typeDefinedConfig({
+    name: 'Combat Log Damage Summaries',
+    default: true,
+    validator: z.boolean(),
+    fixer: SYM_FIXER_DEFAULT,
+});
+
+const combatLogEngagementWindow = typeDefinedConfig({
+    name: 'Combat Log Engagement Window (seconds)',
+    default: 10,
+    validator: z.number().int().min(3).max(60),
+    fixer: SYM_FIXER_DEFAULT,
+});
+
 const newplayerThreshold = typeDefinedConfig({
     name: 'New Player Tag Threshold (minutes)',
     default: 240,
@@ -200,6 +222,14 @@ const customTags = typeDefinedConfig({
     fixer: SYM_FIXER_DEFAULT,
 });
 
+const customCommands = typeDefinedConfig({
+    name: 'Custom Chat Commands',
+    default: [] as CustomCommand[],
+    validator: CustomCommandsArraySchema,
+    //NOTE: if the config file got manually broken, we don't want to wipe out the commands
+    fixer: SYM_FIXER_FATAL,
+});
+
 export default {
     reportsEnabled,
     ticketCategories,
@@ -221,6 +251,10 @@ export default {
     hideDefaultDirectMessage,
     hideDefaultWarning,
     hideDefaultScheduledRestartWarning,
+    combatLogEnabled,
+    combatLogDamageSummaries,
+    combatLogEngagementWindow,
     newplayerThreshold,
     customTags,
+    customCommands,
 } as const;

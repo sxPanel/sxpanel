@@ -37,40 +37,10 @@ describe('FxResources websocket updates', () => {
         fxResources.tmpUpdateResourceList([{ name: 'es_extended', status: 'stopped' }]);
         expect(buffer).toHaveBeenCalledWith('resources', {
             type: 'update',
-            updates: [{ name: 'es_extended', status: 'stopped', perf: undefined }],
+            updates: [{ name: 'es_extended', status: 'stopped' }],
         });
     });
 
-    it('skips repeated perf websocket updates when nobody is subscribed or values did not change', () => {
-        const fxResources = new FxResources();
-        const perfPayload = {
-            type: 'txAdminResourcePerf',
-            resources: [{ name: 'es_extended', cpu: 0, memory: 0, tickTime: 0 }],
-        } as const;
-
-        fxResources.handlePerfData(perfPayload);
-        expect(buffer).not.toHaveBeenCalled();
-
-        hasRoomListeners.mockReturnValue(true);
-        fxResources.handlePerfData(perfPayload);
-        expect(buffer).not.toHaveBeenCalled();
-
-        fxResources.handlePerfData({
-            type: 'txAdminResourcePerf',
-            resources: [{ name: 'es_extended', cpu: 1.234, memory: 128.4, tickTime: 2.345 }],
-        });
-
-        expect(buffer).toHaveBeenCalledWith('resources', {
-            type: 'update',
-            updates: [
-                {
-                    name: 'es_extended',
-                    status: 'started',
-                    perf: { cpu: 1.23, memory: 128, tickTime: 2.35 },
-                },
-            ],
-        });
-    });
 });
 
 describe('FxResources console update notices', () => {
@@ -103,7 +73,6 @@ describe('FxResources console update notices', () => {
                 {
                     name: 'ox_lib',
                     status: 'started',
-                    perf: undefined,
                     updateNotice: 'An update is available for ox_lib (current: 3.0.0)',
                 },
             ],

@@ -1,3 +1,8 @@
+-- Prevent running in monitor mode
+if not TX_SERVER_MODE then
+    return
+end
+
 --[[ Helper Functions ]]
 --
 local function logError(x)

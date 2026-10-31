@@ -16,6 +16,11 @@ suite('settings/saveConfigs', () => {
         vi.clearAllMocks();
 
         vi.stubGlobal('txConfig', {
+            gameFeatures: {
+                combatLogEnabled: false,
+                combatLogDamageSummaries: true,
+                combatLogEngagementWindow: 10,
+            },
             discordBot: {
                 enabled: true,
                 token: 'discord-bot-token',
@@ -103,5 +108,82 @@ suite('settings/saveConfigs', () => {
             type: 'success',
             title: 'FXServer Settings Saved!',
         });
+    });
+
+    it('should reject combat log changes from non-master admins on any card', async () => {
+        for (const card of ['game', 'general']) {
+            const { ctx, sentData } = createMockCtx({
+                permissions: ['settings.write'],
+                params: { card },
+                body: {
+                    resetKeys: [],
+                    changes: { gameFeatures: { combatLogEnabled: true } },
+                },
+            });
+            ctx.admin.isMaster = false;
+
+            await SaveSettingsConfigs(ctx);
+
+            expect(sentData[0]).toMatchObject({
+                type: 'error',
+                msg: 'Only the master admin can change the Combat Log settings.',
+            });
+        }
+        expect((globalThis as any).txCore.configStore.saveConfigs).not.toHaveBeenCalled();
+    });
+
+    it('should allow non-master admins to save cards that carry unchanged combat log values', async () => {
+        const { ctx } = createMockCtx({
+            permissions: ['settings.write'],
+            params: { card: 'game' },
+            body: {
+                resetKeys: [],
+                changes: {
+                    gameFeatures: { combatLogEnabled: false, combatLogEngagementWindow: 10, menuAlignRight: true },
+                },
+            },
+        });
+        ctx.admin.isMaster = false;
+
+        await SaveSettingsConfigs(ctx);
+
+        expect((globalThis as any).txCore.configStore.saveConfigs).toHaveBeenCalled();
+    });
+
+    it('should reject combat log resets from non-master admins', async () => {
+        (globalThis as any).txConfig.gameFeatures.combatLogEngagementWindow = 30;
+        const { ctx, sentData } = createMockCtx({
+            permissions: ['settings.write'],
+            params: { card: 'game' },
+            body: {
+                resetKeys: ['gameFeatures.combatLogEngagementWindow'],
+                changes: {},
+            },
+        });
+        ctx.admin.isMaster = false;
+
+        await SaveSettingsConfigs(ctx);
+
+        expect(sentData[0]).toMatchObject({ type: 'error' });
+        expect((globalThis as any).txCore.configStore.saveConfigs).not.toHaveBeenCalled();
+    });
+
+    it('should allow the master admin to change combat log settings', async () => {
+        const { ctx } = createMockCtx({
+            permissions: ['settings.write'],
+            params: { card: 'game' },
+            body: {
+                resetKeys: [],
+                changes: { gameFeatures: { combatLogEnabled: true, combatLogEngagementWindow: 15 } },
+            },
+        });
+        ctx.admin.isMaster = true;
+
+        await SaveSettingsConfigs(ctx);
+
+        expect((globalThis as any).txCore.configStore.saveConfigs).toHaveBeenCalledWith(
+            { gameFeatures: { combatLogEnabled: true, combatLogEngagementWindow: 15 } },
+            'testadmin',
+        );
     });
 });

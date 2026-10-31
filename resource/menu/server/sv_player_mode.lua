@@ -25,10 +25,14 @@ RegisterNetEvent('txsv:req:changePlayerMode', function(mode, nearbyPlayers)
     local allow = PlayerHasTxPermission(src, permMap[mode] or 'players.noclip')
     TriggerEvent('txsv:logger:menuEvent', src, 'playerModeChanged', allow, mode)
     if allow then
-        Player(src).state:set('txAdminPlayerMode', mode, true)
-        TriggerClientEvent('txcl:setPlayerMode', src, mode, IS_PTFX_ENABLED)
+        -- no particle effect when entering or leaving noclip
+        local prevMode = Player(src).state.txAdminPlayerMode
+        local showPtfx = IS_PTFX_ENABLED and mode ~= 'noclip' and prevMode ~= 'noclip'
 
-        if IS_PTFX_ENABLED and type(nearbyPlayers) == 'table' then
+        Player(src).state:set('txAdminPlayerMode', mode, true)
+        TriggerClientEvent('txcl:setPlayerMode', src, mode, showPtfx)
+
+        if showPtfx and type(nearbyPlayers) == 'table' then
             -- nearbyPlayers comes from the client; only relay to valid connected players
             for _, v in ipairs(nearbyPlayers) do
                 local targetId = tonumber(v)

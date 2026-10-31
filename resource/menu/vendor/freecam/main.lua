@@ -7,16 +7,64 @@ local SETTINGS = _G.CONTROL_SETTINGS
 local CONTROLS = _G.CONTROL_MAPPING
 
 -------------------------------------------------------------------------------
+-- Mouse wheel speed multiplier, kept between noclip sessions
+local scrollSpeed = 1.0
+local scrollSpeedShownUntil = 0
+local SCROLL_SPEED_DISPLAY_MS = 1500
+
+local function UpdateScrollSpeed()
+  -- Block weapon/radio switching so the wheel only affects noclip
+  for _, control in ipairs(CONTROLS.WHEEL_CONFLICTS) do
+    DisableControlAction(0, control, true)
+  end
+
+  local step = SETTINGS.SCROLL_SPEED_STEP
+  local newSpeed = scrollSpeed
+  if IsDisabledControlJustPressed(0, CONTROLS.SPEED_UP) then
+    newSpeed = newSpeed * step
+  end
+  if IsDisabledControlJustPressed(0, CONTROLS.SPEED_DOWN) then
+    newSpeed = newSpeed / step
+  end
+  newSpeed = Clamp(newSpeed, SETTINGS.SCROLL_SPEED_MIN, SETTINGS.SCROLL_SPEED_MAX)
+
+  if newSpeed ~= scrollSpeed then
+    scrollSpeed = newSpeed
+    scrollSpeedShownUntil = GetGameTimer() + SCROLL_SPEED_DISPLAY_MS
+  end
+end
+
+local function DrawScrollSpeed()
+  if not IS_FIVEM or GetGameTimer() > scrollSpeedShownUntil then
+    return
+  end
+  SetTextFont(4)
+  SetTextScale(0.0, 0.5)
+  SetTextColour(255, 255, 255, 230)
+  SetTextOutline()
+  SetTextCentre(true)
+  BeginTextCommandDisplayText('STRING')
+  local label = GetInstructionalLabel('noclip_speed_value', 'Speed: x%{speed}')
+  local speedText = ('%.2f'):format(scrollSpeed)
+  AddTextComponentSubstringPlayerName((label:gsub('%%{speed}', speedText)))
+  EndTextCommandDisplayText(0.5, 0.85)
+end
+
 local function GetSpeedMultiplier()
   local fastNormal = GetSmartControlNormal(CONTROLS.MOVE_FAST)
   local slowNormal = GetSmartControlNormal(CONTROLS.MOVE_SLOW)
 
   local baseSpeed = SETTINGS.BASE_MOVE_MULTIPLIER
-  local fastSpeed = 1 + ((SETTINGS.FAST_MOVE_MULTIPLIER - 1) * fastNormal)
   local slowSpeed = 1 + ((SETTINGS.SLOW_MOVE_MULTIPLIER - 1) * slowNormal)
+  -- Slow overrides any speed boost (fast key and scroll above x1), so it always slows down
+  local fastSpeed = 1 + ((SETTINGS.FAST_MOVE_MULTIPLIER - 1) * fastNormal * (1 - slowNormal))
+  local scrollBoost = scrollSpeed
+  if scrollSpeed > 1 then
+    scrollBoost = scrollSpeed + ((1 - scrollSpeed) * slowNormal)
+  end
 
   local frameMultiplier = GetFrameTime() * 60
-  local speedMultiplier = baseSpeed * fastSpeed / slowSpeed
+  local speedMultiplier = baseSpeed * scrollBoost * fastSpeed / slowSpeed
 
   return speedMultiplier * frameMultiplier
 end
@@ -27,6 +75,9 @@ local function UpdateCamera()
   end
 
   if not IsFreecamFrozen() then
+    UpdateScrollSpeed()
+    DrawScrollSpeed()
+
     local vecX, vecY = GetFreecamMatrix()
     local vecZ = vector3(0, 0, 1)
 
@@ -76,6 +127,7 @@ end
 -------------------------------------------------------------------------------
 local function buildFreecamKeysTable()
   return {
+    {GetInstructionalLabel('noclip_speed', 'Speed'), CONTROLS.SPEED_UP},
     {GetInstructionalLabel('noclip_slower', 'Slower'), CONTROLS.MOVE_SLOW},
     {GetInstructionalLabel('noclip_faster', 'Faster'), CONTROLS.MOVE_FAST},
     {GetInstructionalLabel('noclip_down', 'Down'), CONTROLS.MOVE_Z[2]},

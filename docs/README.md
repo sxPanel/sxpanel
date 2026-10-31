@@ -42,7 +42,6 @@
 
 - Live console with block-based buffer & lazy-loading
 - Server performance charts (CPU, memory, threads)
-- Per-resource runtime stats (CPU, memory, tick time)
 - CFG editor & validator with dark mode UI
 - Real-time playerlist with fuzzy search & tag filtering
 

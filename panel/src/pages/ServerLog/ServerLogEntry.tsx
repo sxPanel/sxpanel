@@ -5,6 +5,7 @@ import {
     LogOutIcon,
     MessageSquareIcon,
     SkullIcon,
+    SwordsIcon,
     MenuIcon,
     FlameIcon,
     TerminalIcon,
@@ -50,6 +51,12 @@ const typeConfig: Record<string, { icon: typeof LogInIcon; color: string; border
         label: 'Chat Message',
     },
     DeathNotice: { icon: SkullIcon, color: 'text-red-500', borderColor: 'border-l-red-500', label: 'Death Notice' },
+    CombatDamage: {
+        icon: SwordsIcon,
+        color: 'text-orange-500',
+        borderColor: 'border-l-orange-500',
+        label: 'Combat Damage',
+    },
     MenuEvent: { icon: MenuIcon, color: 'text-purple-400', borderColor: 'border-l-purple-400', label: 'Menu Event' },
     explosionEvent: {
         icon: FlameIcon,

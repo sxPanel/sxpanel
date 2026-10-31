@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Box, List, styled } from '@mui/material';
+import { useTranslate } from 'react-polyglot';
 import { MenuListItem, MenuListItemMulti } from './MenuListItem';
-import { ExpandMore } from '@mui/icons-material';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { fetchNui } from '../../utils/fetchNui';
 import { useIsMenuVisibleValue } from '../../state/visibility.state';
@@ -11,129 +11,131 @@ import { useVehicleActions } from './actions/useVehicleActions';
 import { useHealActions } from './actions/useHealActions';
 import { useMiscActions } from './actions/useMiscActions';
 import { useServerActions } from './actions/useServerActions';
+import { useStaffActions } from './actions/useStaffActions';
 
-const fadeHeight = 16;
-// Sized to comfortably fit all default main-page rows (Player Mode, Teleport,
-// Vehicle, Heal, Announcement, Reset World Area, Toggles) without scrolling.
-// This is a ceiling, not a fixed height, so it only kicks in (with scroll +
-// fades) if more rows are added later or labels wrap to extra lines.
-const listHeight = 280;
+const fadeHeight = 18;
+// Fill the screen height (minus the tab bar, card header and hint footer),
+// capped so the card does not become a wall on tall resolutions.
+const listMaxHeight = 'min(540px, calc(100vh - var(--menu-tabbar-height, 52px) - 200px))';
 
-interface ListWrapperProps {
-    fadeTop: boolean;
-    fadeBottom: boolean;
-}
-
-//The card is translucent glass, so overflow is hinted by masking the list
-//content itself (overlay gradients would stack on the surface and read as
-//dark bands over the blur).
-const ListWrapper = styled(Box, {
-    shouldForwardProp: (prop) => prop !== 'fadeTop' && prop !== 'fadeBottom',
-})<ListWrapperProps>(({ fadeTop, fadeBottom }) => {
-    const top = fadeTop ? `transparent 0, black ${fadeHeight}px` : 'black 0';
-    const bottom = fadeBottom ? `black calc(100% - ${fadeHeight}px), transparent 100%` : 'black 100%';
-    const mask = `linear-gradient(to bottom, ${top}, ${bottom})`;
-    return {
-        position: 'relative',
-        maxHeight: listHeight,
-        overflow: 'hidden',
-        maskImage: mask,
-        WebkitMaskImage: mask,
-    };
+const ListWrapper = styled(Box)({
+    position: 'relative',
+    overflow: 'hidden',
 });
 
-const BoxIcon = styled(Box)(({ theme }) => ({
-    color: theme.palette.text.secondary,
-    marginTop: 0,
-    display: 'flex',
-    justifyContent: 'center',
-    '& svg': {
-        fontSize: 18,
+const Fade = styled(Box)(({ theme }) => ({
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: fadeHeight,
+    pointerEvents: 'none',
+    zIndex: 2,
+    transition: 'opacity 120ms ease',
+    '&[data-edge="top"]': {
+        top: 0,
+        backgroundImage: `linear-gradient(to bottom, ${theme.tokens.surface}, transparent)`,
+    },
+    '&[data-edge="bottom"]': {
+        bottom: 0,
+        backgroundImage: `linear-gradient(to top, ${theme.tokens.surface}, transparent)`,
     },
 }));
 
 const StyledList = styled(List)({
-    maxHeight: listHeight,
+    maxHeight: listMaxHeight,
     overflow: 'auto',
-    // MUI's List defaults to 8px top/bottom padding, which was silently
-    // eating into the row-height savings below and keeping the list just
-    // tall enough to still need a scroll. Strip it so the cap above is the
-    // only thing governing height.
     padding: 0,
     '&::-webkit-scrollbar': {
         display: 'none',
     },
 });
 
-interface SectionLabelProps {
-    first: boolean;
-}
-
-//Non-interactive group heading — deliberately not part of menuListItems, so
-//arrow-key navigation and curSelected indexing skip straight over it.
-const SectionLabel = styled(Box, {
-    shouldForwardProp: (prop) => prop !== 'first',
-})<SectionLabelProps>(({ theme, first }) => ({
+const SectionHeader = styled('li')(({ theme }) => ({
+    listStyle: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    padding: '8px 2px 4px',
     fontSize: 10,
     fontWeight: 700,
-    letterSpacing: '0.06em',
+    letterSpacing: '0.08em',
     textTransform: 'uppercase',
     color: theme.tokens.textMuted,
-    padding: first ? '2px 4px 6px' : '10px 4px 6px',
-    marginTop: first ? 0 : 4,
-    borderTop: first ? 'none' : `1px solid ${theme.tokens.border}`,
+    '&:first-of-type': {
+        paddingTop: 2,
+    },
+    '&::after': {
+        content: '""',
+        flex: 1,
+        height: 1,
+        backgroundColor: theme.tokens.border,
+    },
 }));
 
+type MenuItemDef = Record<string, any>;
+
+interface MenuSection {
+    key: string;
+    items: MenuItemDef[];
+}
+
 export const MainPageList: React.FC = () => {
+    const t = useTranslate();
     const [curSelected, setCurSelected] = useState(0);
+    const [fades, setFades] = useState({ top: false, bottom: false });
+    const listRef = useRef<HTMLUListElement | null>(null);
     const menuVisible = useIsMenuVisibleValue();
 
-    const { playerMode, menuItem: playerModeItem } = usePlayerModeActions();
-    const { teleportMode, menuItem: teleportItem } = useTeleportActions();
-    const { vehicleMode, serverCtx, isRedm, menuItem: vehicleItem } = useVehicleActions();
-    const { healMode, menuItem: healItem } = useHealActions();
-    const { menuItems: miscItems } = useMiscActions();
+    const { menuItem: playerModeItem } = usePlayerModeActions();
+    const { menuItem: teleportItem } = useTeleportActions();
+    const { menuItem: vehicleItem } = useVehicleActions();
+    const { menuItem: healItem } = useHealActions();
+    const { announcementItem, clearAreaItem, togglesItem } = useMiscActions();
+    const { invisibleItem, cleanupVehiclesItem, devToolsItem, staffChatItem } = useStaffActions();
     const { menuItems: serverItems } = useServerActions();
-
-    //useMiscActions returns [announcement, clearArea, toggles] in that order
-    const [announcementItem, clearAreaItem, toggleMultiItem] = miscItems;
 
     useEffect(() => {
         if (!menuVisible) setCurSelected(0);
     }, [menuVisible]);
 
-    const groups: { label: string; items: any[] }[] = useMemo(
+    const sections: MenuSection[] = useMemo(
         () => [
-            { label: 'Player', items: [playerModeItem, healItem] },
-            { label: 'World', items: [teleportItem, vehicleItem, clearAreaItem] },
-            { label: 'Server', items: [announcementItem, toggleMultiItem, ...serverItems] },
+            { key: 'self', items: [playerModeItem, invisibleItem, healItem] },
+            { key: 'teleport', items: [teleportItem] },
+            { key: 'vehicle', items: [vehicleItem, cleanupVehiclesItem] },
+            { key: 'world', items: [clearAreaItem, togglesItem] },
+            { key: 'staff', items: [staffChatItem, announcementItem, devToolsItem] },
+            { key: 'server', items: serverItems },
         ],
         [
             playerModeItem,
+            invisibleItem,
             healItem,
             teleportItem,
             vehicleItem,
+            cleanupVehiclesItem,
             clearAreaItem,
+            togglesItem,
+            staffChatItem,
             announcementItem,
-            toggleMultiItem,
+            devToolsItem,
             serverItems,
         ],
     );
-
-    const menuListItems = useMemo(() => groups.flatMap((group) => group.items), [groups]);
+    const itemCount = sections.reduce((acc, section) => acc + section.items.length, 0);
 
     //=============================================
     const handleArrowDown = useCallback(() => {
         const next = curSelected + 1;
         fetchNui('playSound', 'move').catch();
-        setCurSelected(next >= menuListItems.length ? 0 : next);
-    }, [curSelected, menuListItems.length]);
+        setCurSelected(next >= itemCount ? 0 : next);
+    }, [curSelected, itemCount]);
 
     const handleArrowUp = useCallback(() => {
         const next = curSelected - 1;
         fetchNui('playSound', 'move').catch();
-        setCurSelected(next < 0 ? menuListItems.length - 1 : next);
-    }, [curSelected, menuListItems.length]);
+        setCurSelected(next < 0 ? itemCount - 1 : next);
+    }, [curSelected, itemCount]);
 
     useKeyboardNavigation({
         onDownDown: handleArrowDown,
@@ -141,20 +143,30 @@ export const MainPageList: React.FC = () => {
         disableOnFocused: true,
     });
 
-    const showTopFade = curSelected > 1;
-    const showBottomFade = curSelected < menuListItems.length - 2;
+    // Show the edge fades only when there is more content in that direction
+    const updateFades = useCallback(() => {
+        const el = listRef.current;
+        if (!el) return;
+        const top = el.scrollTop > 2;
+        const bottom = el.scrollTop + el.clientHeight < el.scrollHeight - 2;
+        setFades((prev) => (prev.top === top && prev.bottom === bottom ? prev : { top, bottom }));
+    }, []);
+    useEffect(() => {
+        updateFades();
+        window.addEventListener('resize', updateFades);
+        return () => window.removeEventListener('resize', updateFades);
+    }, [updateFades, itemCount]);
 
-    let runningIndex = 0;
-
+    let flatIndex = 0;
     return (
         <Box sx={{ pointerEvents: 'none' }}>
-            <ListWrapper fadeTop={showTopFade} fadeBottom={showBottomFade}>
-                <StyledList sx={{ pointerEvents: 'auto' }}>
-                    {groups.map((group, groupIndex) => (
-                        <React.Fragment key={group.label}>
-                            <SectionLabel first={groupIndex === 0}>{group.label}</SectionLabel>
-                            {group.items.map((item) => {
-                                const index = runningIndex++;
+            <ListWrapper>
+                <StyledList ref={listRef} onScroll={updateFades} sx={{ pointerEvents: 'auto' }}>
+                    {sections.map((section) => (
+                        <React.Fragment key={section.key}>
+                            <SectionHeader>{t(`nui_menu.page_main.sections.${section.key}`)}</SectionHeader>
+                            {section.items.map((item) => {
+                                const index = flatIndex++;
                                 return 'isMultiAction' in item && item.isMultiAction ? (
                                     // @ts-ignore
                                     <MenuListItemMulti key={index} selected={curSelected === index} {...item} />
@@ -166,10 +178,9 @@ export const MainPageList: React.FC = () => {
                         </React.Fragment>
                     ))}
                 </StyledList>
+                <Fade data-edge="top" style={{ opacity: fades.top ? 1 : 0 }} />
+                <Fade data-edge="bottom" style={{ opacity: fades.bottom ? 1 : 0 }} />
             </ListWrapper>
-            <BoxIcon display="flex" justifyContent="center">
-                <ExpandMore />
-            </BoxIcon>
         </Box>
     );
 };

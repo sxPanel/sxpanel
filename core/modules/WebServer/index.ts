@@ -24,6 +24,7 @@ import { SessionMemoryStorage, koaSessMw, socketioSessMw } from './middlewares/s
 import checkRateLimit from './middlewares/globalRateLimiter';
 import checkHttpLoad from './middlewares/httpLoadMonitor';
 import cacheControlMw from './middlewares/cacheControlMw';
+import rejectBrotliBodyMw from './middlewares/rejectBrotliBodyMw';
 import fatalError from '@lib/fatalError';
 import { isProxy } from 'node:util/types';
 import serveStaticMw from './middlewares/serveStaticMw';
@@ -134,6 +135,8 @@ export default class WebServer {
             }),
         );
 
+        //Must stay before the body parser - see CVE-2026-111497 note in the middleware
+        this.app.use(rejectBrotliBodyMw);
         this.app.use(
             KoaBodyParser({
                 // Heavy bodies can cause v8 mem exhaustion during a POST DDoS.
@@ -216,6 +219,23 @@ export default class WebServer {
                 res.end('Too Many Requests');
                 return;
             }
+
+            //CVE-2026-111497 mitigation (upstream txAdmin 1db5eb0)
+            //Reject inbound encoded bodies before Koa/Socket.IO decodes them.
+            //NOTE: only affects request decompression, response compression is unchanged.
+            const contentEncoding = req.headers['content-encoding'];
+            if (contentEncoding !== undefined) {
+                if (typeof contentEncoding !== 'string' || contentEncoding.trim().toLowerCase() !== 'identity') {
+                    res.statusCode = 415;
+                    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+                    res.setHeader('Accept-Encoding', 'identity');
+                    res.end('Unsupported Content-Encoding');
+                    return;
+                }
+                //Downstream parsers must also recognize case/whitespace variants
+                req.headers['content-encoding'] = 'identity';
+            }
+
             if (req.url.startsWith('/socket.io')) {
                 (this.io.engine as any).handleRequest(req, res);
             } else {

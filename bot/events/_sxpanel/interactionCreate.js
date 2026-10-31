@@ -1,4 +1,4 @@
-const { ActionRowBuilder, UserSelectMenuBuilder } = require('discord.js');
+const { ActionRowBuilder, MessageFlags, UserSelectMenuBuilder } = require('discord.js');
 const {
     normalizeInteractionUpdatePayload,
     normalizeMessageEditPayload,
@@ -566,6 +566,23 @@ module.exports = {
                 type: 'botCommandUsage',
                 commandName: interaction.commandName,
             });
+
+            // Ack immediately so a slow bridge/database round-trip inside command.execute()
+            // can never blow Discord's 3s interaction window ("The application did not respond").
+            // Command reply helpers (sendInteractionReply) know how to turn this into the
+            // right final message regardless of its eventual public/ephemeral visibility.
+            try {
+                await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+            } catch (error) {
+                // 40060: another bot instance already acknowledged this interaction. Let it handle it.
+                if (error?.code === 40060) {
+                    markCommandDenied(telemetryContext, 'invalid_request');
+                    console.warn(`[Bot] /${interaction.commandName} was already acknowledged by another instance.`);
+                    return;
+                }
+                throw error;
+            }
+
             await runWithCommandTelemetry(telemetryContext, async () => {
                 await command.execute(interaction, bridge);
             });

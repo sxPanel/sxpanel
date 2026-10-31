@@ -45,6 +45,7 @@ function parseHeapPercent(raw: string): number | null {
 }
 
 function CpuBadge({ cores, speed }: { cores: number; speed: number }) {
+    if (!speed) return null; //unknown speed, don't flag it
     if (speed <= 2.4) {
         return (
             <span className="bg-destructive text-destructive-foreground ml-1 rounded px-1.5 py-0.5 text-xs font-bold">
@@ -258,7 +259,9 @@ export default function DiagnosticsPage() {
                                         value={
                                             <>
                                                 {host.static.cpu.physicalCores}c / {host.static.cpu.cores}t @{' '}
-                                                {host.static.cpu.speedMin} GHz
+                                                {host.static.cpu.speedMin
+                                                    ? `${host.static.cpu.speedMin} GHz`
+                                                    : 'unknown speed'}
                                                 <CpuBadge
                                                     cores={host.static.cpu.cores}
                                                     speed={host.static.cpu.speedMin}
