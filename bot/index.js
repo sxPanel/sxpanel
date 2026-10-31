@@ -185,6 +185,8 @@ const setAddonLoadFailures = (kind, failures) => {
     pushRuntimeDiagnostics();
 };
 
+const commandSourcePaths = new WeakMap();
+
 const loadCommandFiles = async (
     filePaths,
     target,
@@ -200,10 +202,15 @@ const loadCommandFiles = async (
             const addonDescriptor = isAddonModuleFile(filePath) ? resolveAddonDescriptorForFile(filePath) : null;
 
             if (target.has(command.data.name)) {
-                console.warn(`[Bot] Skipping duplicate command /${command.data.name} from ${filePath}`);
+                const existing = target.get(command.data.name);
+                const firstPath = commandSourcePaths.get(existing) ?? 'unknown';
+                console.warn(
+                    `[Bot] Skipping duplicate command /${command.data.name} from ${filePath} (already loaded from ${firstPath})`,
+                );
                 continue;
             }
 
+            commandSourcePaths.set(command, filePath);
             target.set(command.data.name, command);
             if (addonDescriptor?.id) {
                 registerAddonCommandModule(client.sxpanel.addonRuntime, {
