@@ -3,12 +3,6 @@ title = "sxPanel gitleaks config"
 [extend]
 useDefault = true
 
-[[rules]]
-id = "sxpanel-test-passwords"
-description = "Exclude known test fixtures"
-regex = '''teste123|test-csrf-token|test-lua-com-token|JBSWY3DPEHPK3PXP'''
-paths = ['''\.test\.ts$''', '''auth\.integration\.test\.ts''']
-
 [allowlist]
 paths = [
     '''node_modules''',
@@ -16,4 +10,11 @@ paths = [
     '''\.git''',
     '''LIVE_SECURITY_RESULTS\.json''',
     '''THIRD-PARTY-LICENSES\.txt''',
+    # Test fixtures: fake passwords, Discord snowflakes and tokens
+    '''\.test\.ts$''',
+    '''(^|/)core/testing/''',
+    # Reviewed false positives (identifier names / UI strings, not credentials)
+    '''core/modules/DiscordBot/logBatcher\.ts$''',
+    '''nui/src/utils/constants\.ts$''',
+    '''panel/src/pages/PlayerDropsPage/PlayerDropsPage\.tsx$''',
 ]
