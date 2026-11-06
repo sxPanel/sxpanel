@@ -26,7 +26,7 @@
 
                 // ---- State ----
                 var pipelineReady = false;
-                var renderer, sceneRTT, cameraRTT, rtTexture, material;
+                var renderer, sceneRTT, cameraRTT, rtTexture, material, gameTexture, captureWrap;
                 var screenshotRequest = null;
                 var streamRequest = null;
                 var streamTimer = null;
@@ -39,7 +39,32 @@
                 // is warm after being idle.
                 var WARMUP_FRAMES = 3;
                 var loopRunning = false;
+                var rafId = null;
                 var warmFrames = 0;
+
+                // ---- WebGL context lifecycle ----
+                // All resources' NUI pages share one CEF renderer, and Chromium only keeps a
+                // limited number of WebGL contexts alive (~16) before it evicts the oldest one.
+                // So the context is created on demand, released after a period of inactivity,
+                // and rebuilt from scratch if the GPU/browser drops it.
+                var IDLE_RELEASE_MS = 30000;
+                var REINIT_DELAY_MS = 1000;
+                var MAX_REINIT_ATTEMPTS = 3;
+                var idleTimer = null;
+                var reinitTimer = null;
+                var reinitAttempts = 0;
+
+                function postNui(endpoint, payload) {
+                    return fetch('https://monitor/' + endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+                        body: JSON.stringify(payload),
+                    });
+                }
+
+                function hasPendingWork() {
+                    return !!(screenshotRequest || streamSessionId);
+                }
 
                 // ---- Pipeline setup (matches screenshot-basic exactly) ----
                 function initialize() {
@@ -72,7 +97,7 @@
                             type: T.UnsignedByteType,
                         });
 
-                        var gameTexture = new T.CfxTexture();
+                        gameTexture = new T.CfxTexture();
                         gameTexture.needsUpdate = true;
 
                         material = new T.ShaderMaterial({
@@ -102,21 +127,129 @@
                         renderer.setPixelRatio(window.devicePixelRatio);
                         renderer.setSize(w, h);
                         renderer.autoClear = false;
+                        renderer.domElement.addEventListener('webglcontextlost', onContextLost, false);
 
-                        var container = document.createElement('div');
-                        container.id = 'capture-wrap';
-                        container.style.display = 'none';
-                        document.body.appendChild(container);
-                        container.appendChild(renderer.domElement);
+                        captureWrap = document.createElement('div');
+                        captureWrap.style.display = 'none';
+                        document.body.appendChild(captureWrap);
+                        captureWrap.appendChild(renderer.domElement);
 
                         window.addEventListener('resize', resize);
                         pipelineReady = true;
+                        reinitAttempts = 0;
                         slog('Pipeline READY');
                         return true;
                     } catch (e) {
                         slog('INIT ERROR: ' + String(e));
+                        teardown(true);
                         return false;
                     }
+                }
+
+                /**
+                 * Destroys every GL resource and the canvas. With `release`, the context is
+                 * explicitly freed (idle/failed init) so it stops counting against Chromium's
+                 * limit. Listeners are removed first so three.js doesn't log a "Context Lost".
+                 */
+                function teardown(release) {
+                    if (rafId !== null) {
+                        cancelAnimationFrame(rafId);
+                        rafId = null;
+                    }
+                    loopRunning = false;
+                    window.removeEventListener('resize', resize);
+
+                    if (sceneRTT) {
+                        sceneRTT.children.forEach(function (child) {
+                            if (child.geometry) child.geometry.dispose();
+                        });
+                    }
+                    try {
+                        if (rtTexture) rtTexture.dispose();
+                        if (material) material.dispose();
+                        if (gameTexture) gameTexture.dispose();
+                    } catch (e) {}
+
+                    if (renderer) {
+                        renderer.domElement.removeEventListener('webglcontextlost', onContextLost, false);
+                        try {
+                            renderer.dispose();
+                        } catch (e) {}
+                        if (release) {
+                            try {
+                                renderer.forceContextLoss();
+                            } catch (e) {}
+                        }
+                    }
+                    if (captureWrap && captureWrap.parentNode) captureWrap.parentNode.removeChild(captureWrap);
+
+                    renderer = sceneRTT = cameraRTT = rtTexture = material = gameTexture = captureWrap = null;
+                    pipelineReady = false;
+                }
+
+                function onContextLost(event) {
+                    // The context is unrecoverable for our purposes: three.js' restore path keeps
+                    // stale texture/framebuffer handles, so rebuild everything from scratch instead.
+                    event.preventDefault();
+                    slog('WebGL context lost, rebuilding pipeline');
+                    teardown(false);
+                    if (hasPendingWork()) scheduleReinit();
+                }
+
+                function scheduleReinit() {
+                    if (reinitTimer) return;
+                    reinitTimer = setTimeout(function () {
+                        reinitTimer = null;
+                        if (!hasPendingWork()) return;
+
+                        if (initialize()) {
+                            ensureLoop();
+                            return;
+                        }
+                        reinitAttempts++;
+                        if (reinitAttempts < MAX_REINIT_ATTEMPTS) {
+                            scheduleReinit();
+                            return;
+                        }
+
+                        // Give up: report failure instead of leaving requests hanging.
+                        reinitAttempts = 0;
+                        if (screenshotRequest) {
+                            var req = screenshotRequest;
+                            screenshotRequest = null;
+                            postNui('screenshotResult', {
+                                requestId: req.requestId,
+                                error: 'WebGL context lost and could not be restored',
+                            }).catch(function () {});
+                        }
+                        if (streamSessionId) stopCapture();
+                    }, REINIT_DELAY_MS);
+                }
+
+                function clearIdleRelease() {
+                    if (idleTimer) {
+                        clearTimeout(idleTimer);
+                        idleTimer = null;
+                    }
+                }
+
+                function scheduleIdleRelease() {
+                    clearIdleRelease();
+                    idleTimer = setTimeout(function () {
+                        idleTimer = null;
+                        if (!hasPendingWork() && pipelineReady) {
+                            slog('Idle, releasing WebGL context');
+                            teardown(true);
+                        }
+                    }, IDLE_RELEASE_MS);
+                }
+
+                /** Makes sure the pipeline exists and the loop is running for a new request. */
+                function prepareForRequest() {
+                    clearIdleRelease();
+                    if (!pipelineReady && !initialize()) return false;
+                    ensureLoop();
+                    return true;
                 }
 
                 function resize() {
@@ -154,15 +287,27 @@
                     if (loopRunning) return;
                     loopRunning = true;
                     warmFrames = 0;
-                    requestAnimationFrame(animate);
+                    rafId = requestAnimationFrame(animate);
                 }
 
                 function animate() {
-                    if (!renderer || !sceneRTT || !cameraRTT || !rtTexture || (!screenshotRequest && !streamSessionId)) {
+                    rafId = null;
+                    if (!pipelineReady || !hasPendingWork()) {
                         loopRunning = false;
+                        if (pipelineReady) scheduleIdleRelease();
                         return;
                     }
-                    requestAnimationFrame(animate);
+
+                    // The lost event can arrive after the loss; never read pixels from a dead
+                    // context (they come back all zeros = black screenshot).
+                    var gl = renderer.getContext();
+                    if (gl && gl.isContextLost()) {
+                        teardown(false);
+                        scheduleReinit();
+                        return;
+                    }
+
+                    rafId = requestAnimationFrame(animate);
 
                     renderer.clear();
                     renderer.render(sceneRTT, cameraRTT, rtTexture, true);
@@ -207,11 +352,7 @@
                         var dataUrl = canvas.toDataURL(type, quality);
                         slog('Screenshot encoded len=' + dataUrl.length);
 
-                        fetch('https://monitor/screenshotResult', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-                            body: JSON.stringify({ requestId: req.requestId, data: dataUrl }),
-                        })
+                        postNui('screenshotResult', { requestId: req.requestId, data: dataUrl })
                             .then(function (r) {
                                 slog('Screenshot POST status=' + r.status);
                             })
@@ -220,11 +361,9 @@
                             });
                     } catch (e) {
                         slog('Screenshot ERROR: ' + e);
-                        fetch('https://monitor/screenshotResult', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-                            body: JSON.stringify({ requestId: req.requestId, error: String(e) }),
-                        }).catch(function () {});
+                        postNui('screenshotResult', { requestId: req.requestId, error: String(e) }).catch(
+                            function () {},
+                        );
                     }
                 }
 
@@ -259,11 +398,7 @@
                             slog('Frame #' + frameCount + ' len=' + dataUrl.length);
                         }
 
-                        fetch('https://monitor/spectateFrame', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-                            body: JSON.stringify({ sessionId: streamSessionId, frameData: dataUrl }),
-                        })
+                        postNui('spectateFrame', { sessionId: streamSessionId, frameData: dataUrl })
                             .then(function (r) {
                                 if (frameCount <= 3) slog('Frame POST status=' + r.status);
                             })
@@ -283,14 +418,15 @@
                         return;
                     }
 
-                    if (!pipelineReady && !initialize()) {
-                        slog('FAIL: Cannot start — init failed');
-                        return;
-                    }
-
                     streamSessionId = sessionId;
                     streamQuality = quality || 0.4;
                     frameCount = 0;
+
+                    if (!prepareForRequest()) {
+                        slog('FAIL: Cannot start — init failed');
+                        streamSessionId = null;
+                        return;
+                    }
 
                     var interval = Math.floor(1000 / (fps || 5));
                     streamTimer = setInterval(function () {
@@ -298,7 +434,6 @@
                     }, interval);
 
                     streamRequest = true;
-                    ensureLoop();
                     slog('Streaming started, interval=' + interval + 'ms');
                 }
 
@@ -313,53 +448,44 @@
                     }
                 }
 
+                function takeScreenshot(d) {
+                    screenshotRequest = {
+                        requestId: d.requestId,
+                        quality: d.quality || 0.92,
+                        encoding: d.encoding || 'jpg',
+                    };
+                    if (!prepareForRequest()) {
+                        slog('FAIL: takeScreenshot but init failed');
+                        screenshotRequest = null;
+                        postNui('screenshotResult', { requestId: d.requestId, error: 'Pipeline init failed' }).catch(
+                            function () {},
+                        );
+                    }
+                }
+
                 // ---- Message handler ----
                 window.addEventListener('message', function (event) {
                     var msg = event.data;
                     if (!msg || !msg.action) return;
 
-                    if (
-                        msg.action === 'startCapture' ||
-                        msg.action === 'stopCapture' ||
-                        msg.action === 'takeScreenshot'
-                    ) {
-                        slog('NUI msg: ' + msg.action + ' ' + JSON.stringify(msg.data || {}));
-                    }
-
                     if (msg.action === 'startCapture') {
-                        var d = msg.data || {};
-                        startCapture(d.sessionId, d.fps, d.quality);
+                        var start = msg.data || {};
+                        slog('NUI msg: startCapture ' + JSON.stringify(start));
+                        startCapture(start.sessionId, start.fps, start.quality);
                     } else if (msg.action === 'stopCapture') {
+                        slog('NUI msg: stopCapture');
                         stopCapture();
                     } else if (msg.action === 'takeScreenshot') {
-                        if (!pipelineReady && !initialize()) {
-                            var d = msg.data || {};
-                            slog('FAIL: takeScreenshot but init failed');
-                            fetch('https://monitor/screenshotResult', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-                                body: JSON.stringify({ requestId: d.requestId, error: 'Pipeline init failed' }),
-                            }).catch(function () {});
-                            return;
-                        }
-                        var d = msg.data || {};
-                        screenshotRequest = {
-                            requestId: d.requestId,
-                            quality: d.quality || 0.92,
-                            encoding: d.encoding || 'jpg',
-                        };
-                        ensureLoop();
+                        var shot = msg.data || {};
+                        slog('NUI msg: takeScreenshot ' + JSON.stringify(shot));
+                        takeScreenshot(shot);
                     }
                 });
 
-                // ---- Initialize immediately ----
-                window.__inlineCaptureEngine = true; // Signal to React hook: inline engine is active
+                // Signal to React hook: inline engine is active. The WebGL pipeline itself is
+                // created lazily on the first capture request (see prepareForRequest).
+                window.__inlineCaptureEngine = true;
                 slog('Script loaded, CFX_THREE=' + !!window.CFX_THREE);
-                if (initialize()) {
-                    slog('Init OK, render loop starts on first request');
-                } else {
-                    slog('Init deferred, will retry on first request');
-                }
             })();
         </script>
 
