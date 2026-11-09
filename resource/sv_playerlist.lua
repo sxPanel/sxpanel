@@ -273,6 +273,38 @@ AddEventHandler('playerDropped', function(reason, resource, category)
     emitFd3PlayerDropped(source, reason, resource, category)
 end)
 
+--[[ Handle renames done through the SET_PLAYER_NAME native.
+     Server-only event (never registered as a net event), and simply never fires on artifacts without the native. ]]
+AddEventHandler('onPlayerNameChanged', function()
+    local id = tonumber(source)
+    if not id or id <= 0 then return end
+
+    -- Renames during playerConnecting use a temp id; the final name is read at playerJoining
+    if not TX_FD3_REPORTED[id] then return end
+
+    -- Don't trust the event args, read the name straight from the server
+    local newName = GetPlayerName(id)
+    if type(newName) ~= 'string' then return end
+    newName = sub(newName, 1, MAX_PLAYER_NAME_LEN)
+
+    local entry = TX_PLAYERLIST[TxPlayerListKey(id)]
+    if type(entry) == 'table' then
+        if entry.name == newName then return end
+        entry.name = newName
+    end
+
+    PrintStructuredTrace(json.encode({
+        type = 'txAdminPlayerlistEvent',
+        event = 'playerNameChanged',
+        id = id,
+        name = newName,
+    }))
+
+    for adminID, _ in pairs(TX_ADMINS) do
+        TriggerClientEvent('txcl:plist:updatePlayer', adminID, id, newName)
+    end
+end)
+
 -- Handle getDetailedPlayerlist
 -- This event is only called when the menu "players" tab is opened, and every 5s while the tab is open
 RegisterNetEvent('txsv:req:plist:getDetailed', function(getPlayerNames)

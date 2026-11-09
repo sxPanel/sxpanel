@@ -420,6 +420,28 @@ export default class FxPlayerlist {
             } catch (error) {
                 console.verbose.warn(`playerDropped event error: ${emsg(error)}`);
             }
+        } else if (data.event === 'playerNameChanged') {
+            try {
+                const player = this.#playerlist[data.id];
+                if (!(player instanceof ServerPlayer) || !player.isConnected) throw new Error(`player id not found`);
+                const oldName = player.displayName;
+                if (!player.updateName(data.name)) return;
+
+                txCore.logger.server.write(
+                    [
+                        {
+                            type: 'playerNameChanged',
+                            src: data.id,
+                            ts: currTs,
+                            data: { oldName, newName: player.displayName },
+                        },
+                    ],
+                    mutex,
+                );
+                this.broadcastPlayerlistState();
+            } catch (error) {
+                console.verbose.warn(`playerNameChanged event error: ${emsg(error)}`);
+            }
         }
     }
 }

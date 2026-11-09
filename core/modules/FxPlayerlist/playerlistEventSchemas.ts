@@ -28,5 +28,20 @@ export const PlayerlistDroppedSchema = z.object({
 });
 export type PlayerlistDroppedType = z.infer<typeof PlayerlistDroppedSchema>;
 
-export const PlayerlistEventSchema = z.discriminatedUnion('event', [PlayerlistJoiningSchema, PlayerlistDroppedSchema]);
+/**
+ * Emitted when a resource renames a connected player with the SET_PLAYER_NAME native.
+ */
+export const PlayerlistNameChangedSchema = z.object({
+    type: z.literal('txAdminPlayerlistEvent'),
+    event: z.literal('playerNameChanged'),
+    id: zNetId,
+    name: z.string(),
+});
+export type PlayerlistNameChangedType = z.infer<typeof PlayerlistNameChangedSchema>;
+
+export const PlayerlistEventSchema = z.discriminatedUnion('event', [
+    PlayerlistJoiningSchema,
+    PlayerlistDroppedSchema,
+    PlayerlistNameChangedSchema,
+]);
 export type PlayerlistEventType = z.infer<typeof PlayerlistEventSchema>;

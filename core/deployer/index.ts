@@ -10,7 +10,7 @@ import { outputFile } from '@lib/fs';
 import consoleFactory from '@lib/console';
 import recipeParser from './recipeParser';
 import { getTimeHms } from '@lib/misc';
-import { makeTemplateRecipe } from './utils';
+import { ensureSteamAuthEnforced, makeTemplateRecipe } from './utils';
 import { RECIPE_DEPLOYER_VERSION } from './consts';
 import type { DeployerStep, DeployerContext, ParsedRecipe, RecipeEngineMap } from './recipeTypes';
 const console = consoleFactory(modulename);
@@ -247,6 +247,22 @@ export class Deployer {
         } catch (error) {
             this.customLogError(`Failed to replace all vars in server.cfg: ${emsg(error)}`);
             return await this.markFailedDeploy();
+        }
+
+        //Recipes that require Steam identifiers must enforce the linked Steam account
+        if (this.recipe.steamRequired) {
+            try {
+                const cfgPath = path.join(this.deployPath, 'server.cfg');
+                const original = await fsp.readFile(cfgPath, 'utf8');
+                const changed = ensureSteamAuthEnforced(original);
+                if (changed !== original) {
+                    await fsp.writeFile(cfgPath, changed);
+                    this.customLog('Setting sv_enforceSteamAuth in server.cfg... ✔️');
+                }
+            } catch (error) {
+                this.customLogError(`Failed to set sv_enforceSteamAuth in server.cfg: ${emsg(error)}`);
+                return await this.markFailedDeploy();
+            }
         }
 
         //Success

@@ -44,6 +44,12 @@ const typeConfig: Record<string, { icon: typeof LogInIcon; color: string; border
         borderColor: 'border-l-orange-400',
         label: 'Player Dropped',
     },
+    playerNameChanged: {
+        icon: TextIcon,
+        color: 'text-muted-foreground',
+        borderColor: 'border-l-muted-foreground',
+        label: 'Name Changed',
+    },
     ChatMessage: {
         icon: MessageSquareIcon,
         color: 'text-blue-400',

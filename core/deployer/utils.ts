@@ -23,6 +23,26 @@ export const validateTargetPath = async (deployPath: string) => {
 };
 
 /**
+ * Makes sure a server.cfg of a recipe that requires Steam identifiers sets sv_enforceSteamAuth.
+ * Since 2026-11-04 Steam identifiers come from the Steam account linked to the player's Cfx.re account,
+ * steam_webApiKey has no effect anymore, and sv_enforceSteamAuth (FXServer 38004+) is what requires them.
+ * If the recipe already sets the convar (to any value), the config is left untouched.
+ */
+export const ensureSteamAuthEnforced = (serverCfg: string) => {
+    if (/^[ \t]*(?:set[sr]?[ \t]+)?["']?sv_enforceSteamAuth\b/im.test(serverCfg)) {
+        return serverCfg;
+    }
+    const eol = serverCfg.includes('\r\n') ? '\r\n' : '\n';
+    return [
+        serverCfg.trimEnd(),
+        '',
+        '# Deployer Note: this recipe requires Steam identifiers (needs FXServer 38004 or newer).',
+        'set sv_enforceSteamAuth true',
+        '',
+    ].join(eol);
+};
+
+/**
  * Create a template recipe file
  */
 export const makeTemplateRecipe = (serverName: string, author: string) =>
