@@ -26,6 +26,11 @@ const eventFormatters = {
         const reason = eventData.data.reason || 'UNKNOWN REASON';
         return `disconnected (${reason})`;
     },
+    playerNameChanged(eventData) {
+        const oldName = eventData?.data?.oldName ?? 'unknown';
+        const newName = eventData?.data?.newName ?? 'unknown';
+        return `changed name from "${oldName}" to "${newName}"`;
+    },
     playerJoinDenied(eventData) {
         const reason = eventData.data.reason ?? 'UNKNOWN REASON';
         return `player join denied due to ${reason}`;

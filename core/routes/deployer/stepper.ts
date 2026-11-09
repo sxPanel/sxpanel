@@ -59,7 +59,7 @@ export default async function DeployerStepper(ctx: AuthedCtx) {
 
         const knownVarDescriptions: Record<string, string> = {
             steam_webApiKey:
-                'The Steam Web API Key is used to authenticate players when they join.\nYou can get one at https://steamcommunity.com/dev/apikey.',
+                'No longer needed, you can leave this empty: FXServer ignores Steam Web API keys since November 2026.\nSteam identifiers now come from the Steam account players link to their Cfx.re account (sv_enforceSteamAuth).',
         };
         const recipeVars = txManager.deployer.getRecipeVars();
         data.inputVars = Object.keys(recipeVars).map((name) => {

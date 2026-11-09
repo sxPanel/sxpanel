@@ -14,6 +14,7 @@ const EVENT_TYPES = [
     'playerJoining',
     'playerJoinDenied',
     'playerDropped',
+    'playerNameChanged',
     'ChatMessage',
     'DeathNotice',
     'CombatDamage',
@@ -61,7 +62,7 @@ export const EVENT_FILTERS: EventFilterConfig[] = [
     {
         key: 'system',
         label: 'System',
-        types: ['LoggerStarted', 'DebugMessage'],
+        types: ['LoggerStarted', 'DebugMessage', 'playerNameChanged'],
         color: 'text-muted-foreground',
         icon: 'Settings',
     },

@@ -282,6 +282,34 @@ export class ServerPlayer extends BasePlayer {
     }
 
     /**
+     * Applies a mid-session rename (SET_PLAYER_NAME native) to this player and the database.
+     * Returns false if the cleaned name did not change.
+     */
+    updateName(rawName: string) {
+        const { displayName, pureName } = cleanPlayerName(rawName);
+        if (displayName === this.displayName && pureName === this.pureName) return false;
+        this.displayName = displayName;
+        this.pureName = pureName;
+
+        if (this.isConnected && this.isRegistered && this.license) {
+            try {
+                const dbData = this.getDbData();
+                if (dbData) {
+                    const nameHistory = dbData.nameHistory ?? [dbData.displayName];
+                    if (!nameHistory.includes(displayName)) {
+                        nameHistory.push(displayName);
+                    }
+                    this.mutateDbData({ displayName, pureName, nameHistory });
+                }
+            } catch (error) {
+                console.error(`Failed to save the new name of player ${displayName} to the database with error:`);
+                console.dir(error);
+            }
+        }
+        return true;
+    }
+
+    /**
      * Sets the dbData.
      * Used when some other player instance mutates the database and we need to sync all players
      * with the same license.

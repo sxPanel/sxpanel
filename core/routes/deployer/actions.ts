@@ -89,16 +89,8 @@ async function handleSetVariables(ctx: AuthedCtx) {
         return ctx.send({ type: 'danger', message: 'The Server License does not appear to be valid.' });
     }
 
-    //Validating steam api key requirement
-    if (
-        txManager.deployer!.recipe.steamRequired &&
-        (typeof userVars.steam_webApiKey !== 'string' || userVars.steam_webApiKey.length < 24)
-    ) {
-        return ctx.send({
-            type: 'danger',
-            message: 'This recipe requires steam_webApiKey to be set and valid.',
-        });
-    }
+    //NOTE: recipes with $steamRequired used to demand a valid steam_webApiKey here, but FXServer ignores
+    // that convar since 2026-11-04. The deployer now sets sv_enforceSteamAuth in the server.cfg instead.
 
     //DB Stuff
     if (typeof userVars.dbDelete !== 'undefined') {
