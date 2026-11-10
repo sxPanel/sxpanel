@@ -34,3 +34,41 @@ export type ResourcesWsEventType = {
     resources?: ResourceStatusEvent[];
     updates?: ResourceStatusEvent[];
 };
+
+// Resource config editor (web panel + in-game menu)
+export type ResourceConfigFileEntry = {
+    path: string; // relative to the resource folder, forward slashes
+    size: number;
+    tooLarge: boolean;
+};
+
+export type ResourceConfigFilesResp =
+    | {
+          files: ResourceConfigFileEntry[];
+          truncated: boolean;
+          maxFileBytes: number;
+      }
+    | { error: string };
+
+export type ResourceConfigFileResp =
+    | {
+          name: string;
+          file: string;
+          contents: string;
+      }
+    | { error: string };
+
+export type ResourceConfigSaveReq = {
+    name: string;
+    path?: string; // resource folder hint from the resources list
+    file: string;
+    contents: string;
+};
+
+export type ResourceConfigSaveResp =
+    | {
+          success: true;
+          file: string;
+          backupFile: string;
+      }
+    | { error: string };

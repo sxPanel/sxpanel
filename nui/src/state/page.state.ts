@@ -6,28 +6,35 @@ export enum txAdminMenuPage {
     Stats,
     Reports,
     PlayerModalOnly,
+    //Appended so the numeric values of the pages above stay stable
+    Resources,
+}
+
+export interface MenuPageFlags {
+    /** Reports is gated by serverCtx */
+    reportsEnabled: boolean;
+    /** Resources is gated by the admin's `commands.resources` permission */
+    resourcesEnabled: boolean;
 }
 
 /**
- * Returns the highest cycleable page given the enabled optional tabs.
- * Stats is always enabled (unlike Reports, which is gated by serverCtx).
+ * Returns the cycleable pages, in tab order, given the enabled optional tabs.
+ * Main, Players and Stats are always enabled.
  */
-export const getMaxMenuPage = (reportsEnabled: boolean): txAdminMenuPage => {
-    if (reportsEnabled) return txAdminMenuPage.Reports;
-    return txAdminMenuPage.Stats;
+export const getEnabledMenuPages = ({ reportsEnabled, resourcesEnabled }: MenuPageFlags): txAdminMenuPage[] => {
+    const pages = [txAdminMenuPage.Main, txAdminMenuPage.Players, txAdminMenuPage.Stats];
+    if (resourcesEnabled) pages.push(txAdminMenuPage.Resources);
+    if (reportsEnabled) pages.push(txAdminMenuPage.Reports);
+    return pages;
 };
 
 /**
  * Returns the next page in the Tab-key cycle, skipping disabled tabs.
  */
-export const getNextMenuPage = (prevPage: txAdminMenuPage, reportsEnabled: boolean): txAdminMenuPage => {
-    const maxPage = getMaxMenuPage(reportsEnabled);
-    if (prevPage >= maxPage) return txAdminMenuPage.Main;
-    const nextPage = prevPage + 1;
-    if (nextPage === txAdminMenuPage.Reports && !reportsEnabled) {
-        return txAdminMenuPage.Main;
-    }
-    return nextPage;
+export const getNextMenuPage = (prevPage: txAdminMenuPage, flags: MenuPageFlags): txAdminMenuPage => {
+    const pages = getEnabledMenuPages(flags);
+    //indexOf() is -1 for a page outside the cycle, which wraps to Main
+    return pages[(pages.indexOf(prevPage) + 1) % pages.length];
 };
 
 const pageState = atom<txAdminMenuPage>(txAdminMenuPage.Main);

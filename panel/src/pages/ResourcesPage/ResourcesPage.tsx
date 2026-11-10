@@ -21,6 +21,7 @@ import {
     XIcon,
     FilterXIcon,
     ArrowUpCircleIcon,
+    FileCogIcon,
 } from 'lucide-react';
 import { useBackendApi, ApiTimeout } from '@/hooks/fetch';
 import { txToast } from '@/components/TxToaster';
@@ -48,6 +49,7 @@ import {
 import { ApiToastResp } from '@shared/genericApiTypes';
 import { getSocket, joinSocketRoom, leaveSocketRoom, submitAuthedDownload, cn } from '@/lib/utils';
 import { ResourcesHeaderBand } from './ResourcesHeaderBand';
+import { ResourceConfigDialog } from './ResourceConfigDialog';
 
 type StatusFilter = 'all' | 'started' | 'stopped' | 'updates';
 
@@ -107,6 +109,9 @@ export default function ResourcesPage() {
     const { hasPerm } = useAdminPerms();
     const canControl = hasPerm('commands.resources');
     const canDownload = hasPerm('commands.resources.download') && window.txConsts.resourceDownloadEnabled;
+    //Mirrors the backend gate in core/routes/resources/config.ts (which is the one that counts)
+    const canEditConfig = canControl && hasPerm('server.cfg.editor');
+    const [configResource, setConfigResource] = useState<ResourceItemData | null>(null);
 
     const setViewField = <K extends keyof ResourcesViewState>(key: K, value: ResourcesViewState[K]) => {
         setViewState((prev) => ({ ...prev, [key]: value }));
@@ -474,6 +479,7 @@ export default function ResourcesPage() {
                                         canControl={canControl}
                                         canDownload={canDownload}
                                         onAction={handleResourceAction}
+                                        onEditConfig={canEditConfig ? setConfigResource : undefined}
                                     />
                                 ))}
                             </div>
@@ -481,6 +487,12 @@ export default function ResourcesPage() {
                     </div>
                 </div>
             </TooltipProvider>
+
+            <ResourceConfigDialog
+                resource={configResource}
+                onClose={() => setConfigResource(null)}
+                onRestart={(name) => handleResourceAction('restart_res', name)}
+            />
         </div>
     );
 }
@@ -492,6 +504,7 @@ function ResourceGroupSection({
     canControl,
     canDownload,
     onAction,
+    onEditConfig,
 }: {
     group: ResourceGroup;
     expanded: boolean;
@@ -499,6 +512,7 @@ function ResourceGroupSection({
     canControl: boolean;
     canDownload: boolean;
     onAction: (action: string, name: string) => void;
+    onEditConfig?: (resource: ResourceItemData) => void;
 }) {
     const startedCount = group.resources.filter((r) => r.status === 'started').length;
     const updateCount = group.resources.filter((r) => !!r.updateNotice).length;
@@ -548,6 +562,7 @@ function ResourceGroupSection({
                             canControl={canControl}
                             canDownload={canDownload}
                             onAction={onAction}
+                            onEditConfig={onEditConfig}
                         />
                     ))}
                 </div>
@@ -586,12 +601,15 @@ function ResourceRow({
     canControl,
     canDownload,
     onAction,
+    onEditConfig,
 }: {
     resource: ResourceItemData;
     canControl: boolean;
     canDownload: boolean;
     onAction: (action: string, name: string) => void;
+    onEditConfig?: (resource: ResourceItemData) => void;
 }) {
+    const { t } = useLocale();
     const csrfToken = useCsrfToken();
     const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
 
@@ -724,6 +742,12 @@ function ResourceRow({
                                     <DropdownMenuItem onClick={() => onAction('start_res', resource.name)}>
                                         <PlayIcon className="mr-2 size-4" />
                                         Start
+                                    </DropdownMenuItem>
+                                )}
+                                {onEditConfig && (
+                                    <DropdownMenuItem onClick={() => onEditConfig(resource)}>
+                                        <FileCogIcon className="mr-2 size-4" />
+                                        {t('panel.resources_config.menu_item')}
                                     </DropdownMenuItem>
                                 )}
                             </>

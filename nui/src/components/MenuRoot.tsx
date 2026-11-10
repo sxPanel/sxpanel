@@ -11,6 +11,9 @@ import { MENU_MAIN_COLUMN_WIDTH } from '@nui/src/styles/theme';
 
 const PlayersPage = lazy(() => import('./PlayersPage/PlayersPage').then((module) => ({ default: module.PlayersPage })));
 const StatsPage = lazy(() => import('./StatsPage/StatsPage').then((module) => ({ default: module.StatsPage })));
+const ResourcesPage = lazy(() =>
+    import('./ResourcesPage/ResourcesPage').then((module) => ({ default: module.ResourcesPage })),
+);
 const ReportsTab = lazy(() => import('./ReportsTab/ReportsTab').then((module) => ({ default: module.ReportsTab })));
 
 const MenuRoot: React.FC = () => {
@@ -37,6 +40,7 @@ const MenuRoot: React.FC = () => {
             </Box>
             <Suspense fallback={null}>{curPage === txAdminMenuPage.Players && <PlayersPage visible />}</Suspense>
             <Suspense fallback={null}>{curPage === txAdminMenuPage.Stats && <StatsPage visible />}</Suspense>
+            <Suspense fallback={null}>{curPage === txAdminMenuPage.Resources && <ResourcesPage visible />}</Suspense>
             {serverCtx.reportsEnabled && (
                 <Suspense fallback={null}>{curPage === txAdminMenuPage.Reports && <ReportsTab visible />}</Suspense>
             )}
