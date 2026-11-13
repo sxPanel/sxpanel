@@ -47,7 +47,8 @@ export function DeployerRecipeChooser({
                         className="text-primary underline"
                     >
                         citizenfx/txAdmin-recipes
-                    </a>
+                    </a>{' '}
+                    plus official framework recipes
                 </p>
             </div>
 
