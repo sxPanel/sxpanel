@@ -26,6 +26,7 @@ const KNOWN_RECIPE_AUTHORS: Record<string, string> = {
     'Qbox-project': 'Qbox',
     'qbcore-framework': 'QBCore',
     'qbcore-fivem': 'QBCore',
+    KoraFiveM: 'Kora',
     overextended: 'Overextended',
     'ND-Framework': 'ND Framework',
     'Rexshack-RedM': 'Rexshack Gaming',
@@ -50,6 +51,14 @@ const EXTRA_RECIPES: RawTxAdminRecipeEntry[] = window.txConsts.fxsIsGen9
               name: 'QBCore Framework',
               description: 'An advanced FiveM RP framework including jobs, gangs, housing & more!',
               url: 'https://raw.githubusercontent.com/qbcore-fivem/txAdminRecipe/main/qbcore.yaml',
+              tags: ['fivem', 'roleplay'],
+          },
+          {
+              engine: 3,
+              name: 'Kora Framework (Alpha)',
+              description:
+                  'The official Kora recipe, a QBCore-compatible RP framework. Early alpha, may not deploy cleanly.',
+              url: 'https://raw.githubusercontent.com/KoraFiveM/txAdminRecipe/main/recipe.yaml',
               tags: ['fivem', 'roleplay'],
           },
           {
