@@ -16,12 +16,28 @@ const selectedPlayerDataAtom = atom<Promise<PlayerModalResp | undefined>>(async 
     if (!assocPlayer) return;
     const assocPlayerId = assocPlayer.id;
 
-    const res: any = await fetchWebPipe<PlayerModalResp>(`/player?mutex=current&netid=${assocPlayerId}`, {
-        mockData: MockedPlayerDetails,
-    });
+    //A rejected fetch (eg. the webpipe timing out, which aborts the request) must not
+    //reject this atom: PlayerModal reads it outside its own error boundary, so the
+    //rejection would take down the whole menu instead of showing the modal error view.
+    let res: any;
+    try {
+        res = await fetchWebPipe<PlayerModalResp>(`/player?mutex=current&netid=${assocPlayerId}`, {
+            mockData: MockedPlayerDetails,
+        });
+    } catch (error) {
+        debugLog('FetchWebPipe', error, 'PlayerFetch');
+        const isTimeout = error instanceof DOMException && error.name === 'AbortError';
+        return {
+            error: isTimeout
+                ? 'Timed out loading this player. Check that sxPanel is running and try again.'
+                : `Failed to load this player: ${error instanceof Error ? error.message : String(error)}`,
+        };
+    }
     debugLog('FetchWebPipe', res, 'PlayerFetch');
 
-    if (res.error) {
+    if (!res) {
+        return { error: 'Unknown error :(' };
+    } else if (res.error) {
         return { error: (res as GenericApiErrorResp).error };
     } else if (res.player) {
         const player = (res as PlayerModalSuccess).player;
