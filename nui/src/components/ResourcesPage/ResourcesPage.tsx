@@ -1,6 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { alpha, styled } from '@mui/material/styles';
-import { Box, Button, IconButton, InputAdornment, MenuItem, Select, Typography, useTheme } from '@mui/material';
+import {
+    Box,
+    Button,
+    IconButton,
+    InputAdornment,
+    MenuItem,
+    Select,
+    Tooltip,
+    Typography,
+    useTheme,
+} from '@mui/material';
 import {
     ArrowBack,
     Check,
@@ -220,6 +230,37 @@ const EditorArea = styled('textarea')(({ theme }) => ({
 // Resource row
 // =============================================
 
+interface ActionButtonProps {
+    label: string;
+    disabled?: boolean;
+    onClick: () => void;
+    children: React.ReactNode;
+}
+
+/**
+ * Icon button with a real hover tooltip: native `title` tooltips are not
+ * rendered by the game's NUI browser, so the label must be drawn in-page.
+ */
+const ActionButton: React.FC<ActionButtonProps> = ({ label, disabled, onClick, children }) => {
+    const { tokens } = useTheme();
+    return (
+        <Tooltip title={label} arrow placement="top" disableInteractive>
+            {/* span: MUI tooltips do not fire on disabled buttons */}
+            <span>
+                <IconButton
+                    size="small"
+                    aria-label={label}
+                    disabled={disabled}
+                    onClick={onClick}
+                    sx={{ color: tokens.textMuted, '&:hover': { color: tokens.textPrimary } }}
+                >
+                    {children}
+                </IconButton>
+            </span>
+        </Tooltip>
+    );
+};
+
 interface ResourceRowProps {
     resource: ResourceItemData;
     busy: boolean;
@@ -238,11 +279,13 @@ const ResourceRow: React.FC<ResourceRowProps> = React.memo(
         const statusLabel = t(
             isStarted ? 'nui_resources.started' : isStarting ? 'nui_resources.starting' : 'nui_resources.stopped',
         );
-        const actionSx = { color: tokens.textMuted, '&:hover': { color: tokens.textPrimary } };
+        //Stop/restart (and ensure on a running resource, which restarts it) need a second click
+        const [pendingAction, setPendingAction] = useState<ResourceAction | null>(null);
+        const confirmButtonSx = { minWidth: 0, py: 0.25, px: 1, fontSize: '0.72rem' };
 
         return (
             <Row>
-                <StatusDot color={statusColor} title={statusLabel} />
+                <StatusDot color={statusColor} />
                 <Box minWidth={0} flex={1}>
                     <Box display="flex" alignItems="center" gap={0.75} minWidth={0}>
                         <Typography noWrap sx={{ fontSize: '0.82rem', fontWeight: 600 }}>
@@ -263,57 +306,77 @@ const ResourceRow: React.FC<ResourceRowProps> = React.memo(
                         </Typography>
                     )}
                 </Box>
-                <Box display="flex" alignItems="center" flexShrink={0}>
-                    {isStarted ? (
-                        <IconButton
+                {pendingAction ? (
+                    <Box display="flex" alignItems="center" gap={0.5} flexShrink={0}>
+                        <Typography sx={{ fontSize: '0.72rem', color: tokens.warning, mr: 0.5 }}>
+                            {t(`nui_resources.confirm.${pendingAction}`)}
+                        </Typography>
+                        <Button
                             size="small"
+                            color="warning"
+                            variant="contained"
+                            onClick={() => {
+                                setPendingAction(null);
+                                onAction(pendingAction, resource);
+                            }}
+                            sx={confirmButtonSx}
+                        >
+                            {t('nui_resources.confirm.yes')}
+                        </Button>
+                        <Button
+                            size="small"
+                            color="inherit"
+                            onClick={() => setPendingAction(null)}
+                            sx={confirmButtonSx}
+                        >
+                            {t('nui_resources.confirm.cancel')}
+                        </Button>
+                    </Box>
+                ) : (
+                    <Box display="flex" alignItems="center" flexShrink={0}>
+                        {isStarted ? (
+                            <ActionButton
+                                label={t('nui_resources.tooltip.stop')}
+                                disabled={busy}
+                                onClick={() => setPendingAction('stop_res')}
+                            >
+                                <Stop fontSize="small" />
+                            </ActionButton>
+                        ) : (
+                            <ActionButton
+                                label={t('nui_resources.tooltip.start')}
+                                disabled={busy}
+                                onClick={() => onAction('start_res', resource)}
+                            >
+                                <PlayArrow fontSize="small" />
+                            </ActionButton>
+                        )}
+                        <ActionButton
+                            label={t('nui_resources.tooltip.restart')}
                             disabled={busy}
-                            title={t('nui_resources.stop')}
-                            onClick={() => onAction('stop_res', resource)}
-                            sx={actionSx}
+                            onClick={() => setPendingAction('restart_res')}
                         >
-                            <Stop fontSize="small" />
-                        </IconButton>
-                    ) : (
-                        <IconButton
-                            size="small"
+                            <RestartAlt fontSize="small" />
+                        </ActionButton>
+                        <ActionButton
+                            label={t('nui_resources.tooltip.ensure')}
                             disabled={busy}
-                            title={t('nui_resources.start')}
-                            onClick={() => onAction('start_res', resource)}
-                            sx={actionSx}
+                            onClick={() =>
+                                isStarted ? setPendingAction('ensure_res') : onAction('ensure_res', resource)
+                            }
                         >
-                            <PlayArrow fontSize="small" />
-                        </IconButton>
-                    )}
-                    <IconButton
-                        size="small"
-                        disabled={busy}
-                        title={t('nui_resources.restart')}
-                        onClick={() => onAction('restart_res', resource)}
-                        sx={actionSx}
-                    >
-                        <RestartAlt fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                        size="small"
-                        disabled={busy}
-                        title={t('nui_resources.ensure')}
-                        onClick={() => onAction('ensure_res', resource)}
-                        sx={actionSx}
-                    >
-                        <TaskAlt fontSize="small" />
-                    </IconButton>
-                    {canEditConfig && (
-                        <IconButton
-                            size="small"
-                            title={t('nui_resources.edit_config')}
-                            onClick={() => onEditConfig(resource)}
-                            sx={actionSx}
-                        >
-                            <DescriptionOutlined fontSize="small" />
-                        </IconButton>
-                    )}
-                </Box>
+                            <TaskAlt fontSize="small" />
+                        </ActionButton>
+                        {canEditConfig && (
+                            <ActionButton
+                                label={t('nui_resources.tooltip.edit_config')}
+                                onClick={() => onEditConfig(resource)}
+                            >
+                                <DescriptionOutlined fontSize="small" />
+                            </ActionButton>
+                        )}
+                    </Box>
+                )}
             </Row>
         );
     },
@@ -764,15 +827,9 @@ export const ResourcesPage: React.FC<{ visible: boolean }> = ({ visible }) => {
                                 <span style={{ opacity: 0.7 }}>{chip.count ?? '—'}</span>
                             </FilterChip>
                         ))}
-                        <IconButton
-                            size="small"
-                            onClick={handleRefresh}
-                            disabled={loading}
-                            title={t('nui_resources.refresh')}
-                            sx={{ color: tokens.textMuted, flexShrink: 0 }}
-                        >
+                        <ActionButton label={t('nui_resources.refresh')} disabled={loading} onClick={handleRefresh}>
                             <Refresh fontSize="small" />
-                        </IconButton>
+                        </ActionButton>
                     </Box>
 
                     <TextField

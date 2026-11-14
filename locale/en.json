@@ -4228,12 +4228,22 @@
         "started": "Started",
         "starting": "Starting",
         "stopped": "Stopped",
-        "start": "Start",
-        "stop": "Stop",
         "restart": "Restart",
-        "ensure": "Ensure",
-        "edit_config": "Edit config files",
         "back": "Back",
+        "tooltip": {
+            "start": "Start resource",
+            "stop": "Stop resource",
+            "restart": "Restart resource",
+            "ensure": "Ensure resource (start it, or restart it if already running)",
+            "edit_config": "Edit config files"
+        },
+        "confirm": {
+            "stop_res": "Stop this resource?",
+            "restart_res": "Restart this resource?",
+            "ensure_res": "Restart this resource?",
+            "yes": "Confirm",
+            "cancel": "Cancel"
+        },
         "sent": {
             "start_res": "Start command sent for %{name}.",
             "stop_res": "Stop command sent for %{name}.",
