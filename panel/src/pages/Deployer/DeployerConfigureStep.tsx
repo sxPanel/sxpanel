@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon, XIcon } from 'lucide-react';
 import { LazyMonacoEditor } from '@/components/LazyMonacoEditor';
 import { deployerStepActionsClass, deployerStepBodyClass } from './deployerLayout';
@@ -31,6 +32,21 @@ export function DeployerConfigureStep({
                                 : 'Deploy finished — edit server.cfg, then save and start FXServer.'}
                         </p>
                     </div>
+                    <Alert className="border-info/30 bg-info/10 shrink-0 py-2">
+                        <AlertDescription className="text-xs">
+                            The public server list no longer reads its name, description, tags, language or
+                            banners from server.cfg. Set them in the{' '}
+                            <a
+                                href="https://portal.cfx.re/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-foreground font-medium underline underline-offset-2"
+                            >
+                                Cfx Portal
+                            </a>
+                            , or your server will be listed as &quot;Missing server data&quot;.
+                        </AlertDescription>
+                    </Alert>
                     <div className="border-border/60 relative min-h-0 flex-1 overflow-hidden rounded-md border">
                         <div className="absolute inset-0">
                             <LazyMonacoEditor

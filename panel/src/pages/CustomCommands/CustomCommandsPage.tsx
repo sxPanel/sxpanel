@@ -31,6 +31,7 @@ import {
     SaveCustomCommandsReq,
     SaveCustomCommandsResp,
     customCommandMenuActions,
+    getBuiltinChatCommands,
     getMenuActionDef,
     isPrivilegedCustomCommand,
 } from '@shared/customCommands';
@@ -189,6 +190,21 @@ export default function CustomCommandsPage() {
         }
         return [...groups.entries()];
     }, []);
+    //Menu actions whose built-in command is active (no custom command took the name)
+    const activeBuiltins = useMemo(() => {
+        const map = new Map<string, string>();
+        for (const cmd of getBuiltinChatCommands(commands ?? [])) {
+            if (cmd.action.type === 'menuAction') map.set(cmd.action.actionId, cmd.name);
+        }
+        return map;
+    }, [commands]);
+    const handleDisableBuiltin = (def: CustomCommandMenuActionDef) => {
+        if (!commands) return;
+        //A disabled custom command holding the name is what turns the built-in off
+        const draft = { ...draftFromMenuAction(def, commands), enabled: false };
+        if (draft.name !== def.suggestedName) return;
+        saveCommands((prev) => [...prev, draft], `Turned off /${draft.name}.`);
+    };
     const hasMenuCommands = commands?.some((cmd) => cmd.enabled && cmd.action.type === 'menuAction');
     const isBusy = saveStatus === 'saving';
 
@@ -363,7 +379,9 @@ export default function CustomCommandsPage() {
                         <InfoIcon className="text-muted-foreground mt-0.5 size-4 shrink-0" />
                         <p className="text-muted-foreground text-xs leading-relaxed">
                             Commands are checked server-side against the selected permission, and /tx menu actions
-                            re-check their own permission too. If another resource registers a command with the same
+                            re-check their own permission too. Most /tx menu actions already work as built-in commands
+                            (see the other tab); a command you create with the same name replaces the built-in one, and
+                            disabling it turns that name off. If another resource registers a command with the same
                             name, whichever registers last wins.
                         </p>
                     </div>
@@ -380,6 +398,7 @@ export default function CustomCommandsPage() {
                                 <ul className="divide-border/50 divide-y">
                                     {actions.map((action) => {
                                         const usedBy = usedMenuActions.get(action.id) ?? [];
+                                        const builtinName = activeBuiltins.get(action.id);
                                         return (
                                             <li key={action.id} className="flex items-center gap-3 px-1 py-2.5">
                                                 <div className="min-w-0 flex-1">
@@ -389,6 +408,15 @@ export default function CustomCommandsPage() {
                                                             <Badge variant="outline-solid">
                                                                 {permLabel(action.permission)}
                                                             </Badge>
+                                                        )}
+                                                        {builtinName && (
+                                                            <span
+                                                                className="border-success/30 bg-success/10 text-success-inline inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-xs"
+                                                                title="Built-in command, works without any setup"
+                                                            >
+                                                                <CheckIcon className="size-3" />/{builtinName}
+                                                                <span className="font-sans opacity-70">built-in</span>
+                                                            </span>
                                                         )}
                                                         {usedBy.map((cmd) => (
                                                             <button
@@ -413,6 +441,17 @@ export default function CustomCommandsPage() {
                                                     </p>
                                                 </div>
                                                 <div className="flex shrink-0 gap-1.5">
+                                                    {builtinName && (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            disabled={!canEdit || isBusy || !commands}
+                                                            onClick={() => handleDisableBuiltin(action)}
+                                                            title={`Stops /${builtinName} from being registered by sxPanel`}
+                                                        >
+                                                            Turn off
+                                                        </Button>
+                                                    )}
                                                     <Button
                                                         size="sm"
                                                         variant="ghost"
@@ -426,13 +465,17 @@ export default function CustomCommandsPage() {
                                                     </Button>
                                                     <Button
                                                         size="sm"
-                                                        variant={usedBy.length ? 'outline' : 'default'}
+                                                        variant={usedBy.length || builtinName ? 'outline' : 'default'}
                                                         disabled={!canEdit || isBusy || !commands}
                                                         onClick={() => handleQuickEnable(action)}
-                                                        title={`Adds /${action.suggestedName}`}
+                                                        title={
+                                                            builtinName
+                                                                ? 'Adds another command for this action'
+                                                                : `Adds /${action.suggestedName}`
+                                                        }
                                                     >
                                                         <ZapIcon className="mr-1 size-3.5" />
-                                                        {usedBy.length ? 'Add another' : 'Enable'}
+                                                        {usedBy.length || builtinName ? 'Add another' : 'Enable'}
                                                     </Button>
                                                 </div>
                                             </li>

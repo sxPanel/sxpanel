@@ -98,10 +98,13 @@ local function syncServerCtx()
     ServerCtxObj.sxPanelVersion = sxPanelVersion
 
     -- Default '' in fxServer
+    -- Server list metadata moved to the Cfx Portal, so sv_projectname is often unset now;
+    -- fall back to the server name configured in sxPanel.
     local svProjectName = GetConvar('sv_projectname', '')
-    if svProjectName ~= '' then
-        ServerCtxObj.projectName = svProjectName
+    if svProjectName == '' then
+        svProjectName = GetConvar('txAdmin-serverName', '')
     end
+    ServerCtxObj.projectName = svProjectName ~= '' and svProjectName or nil
 
     -- Default 30 in fxServer
     local svMaxClients = GetConvarInt('sv_maxclients', 30)

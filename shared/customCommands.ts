@@ -490,6 +490,47 @@ export const CustomCommandsArraySchema = z.array(CustomCommandSchema).superRefin
 });
 
 /**
+ * MARK: Built-in commands
+ * Every /tx menu action is available as a chat command out of the box, under its suggested name.
+ * A custom command using the same name (or alias) always takes its place, so:
+ *  - existing custom commands keep working unchanged;
+ *  - a disabled custom command with that name turns the built-in off.
+ */
+const BUILTIN_EXCLUDED_ACTIONS = new Set<string>([
+    // These run without a confirmation dialog, a typo in chat should not take the server down
+    'restartServer',
+    'stopServer',
+    // No permission attached, it would be suggested to every player
+    'openPlayersPage',
+]);
+
+/** Menu actions that get a built-in chat command */
+export const builtinCommandMenuActions: readonly CustomCommandMenuActionDef[] = customCommandMenuActions.filter(
+    (action) => !BUILTIN_EXCLUDED_ACTIONS.has(action.id),
+);
+
+export const getBuiltinCommandId = (actionId: string) => `builtin:${actionId}`;
+
+/**
+ * Returns the built-in commands that are active given the saved custom commands.
+ */
+export const getBuiltinChatCommands = (customCommands: readonly CustomCommand[]): CustomCommand[] => {
+    const taken = new Set(customCommands.flatMap((cmd) => [cmd.name, ...cmd.aliases]));
+    return builtinCommandMenuActions
+        .filter((action) => !taken.has(action.suggestedName))
+        .map((action) => ({
+            id: getBuiltinCommandId(action.id),
+            name: action.suggestedName,
+            aliases: [],
+            description: action.description,
+            enabled: true,
+            permission: action.permission,
+            cooldownSeconds: 0,
+            action: { type: 'menuAction', actionId: action.id as CustomCommandMenuActionId },
+        }));
+};
+
+/**
  * Whether saving this command requires console write access.
  * Console commands run arbitrary server commands, and server events can reach any resource handler.
  */
