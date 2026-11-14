@@ -92,6 +92,20 @@ describe('isAllowedResourceConfigFile', () => {
         expect(isAllowedResourceConfigFile(['shared', 'sh_config.lua'])).toBe(true);
         expect(isAllowedResourceConfigFile(['config', 'client.lua'])).toBe(true);
         expect(isAllowedResourceConfigFile(['settings.js'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['cfg.lua'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['sv_config.lua'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['config.client.lua'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['client-settings.js'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['configuration.lua'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['esxconfig.lua'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['locale.lua'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['locale_en.lua'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['locales', 'en.lua'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['Locales', 'de.lua'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['lang', 'fr.js'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['translations', 'es.lua'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['data', 'items.lua'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['shared', 'config', 'jobs.lua'])).toBe(true);
         expect(isAllowedResourceConfigFile(['data', 'items.json'])).toBe(true);
         expect(isAllowedResourceConfigFile(['perms.cfg'])).toBe(true);
         expect(isAllowedResourceConfigFile(['locales.yml'])).toBe(true);
@@ -100,6 +114,11 @@ describe('isAllowedResourceConfigFile', () => {
     it('rejects arbitrary code, manifests and other file types', () => {
         expect(isAllowedResourceConfigFile(['server', 'main.lua'])).toBe(false);
         expect(isAllowedResourceConfigFile(['client.js'])).toBe(false);
+        expect(isAllowedResourceConfigFile(['shared', 'utils.lua'])).toBe(false);
+        expect(isAllowedResourceConfigFile(['client', 'language_menu.lua'])).toBe(true);
+        expect(isAllowedResourceConfigFile(['client', 'slang.lua'])).toBe(false);
+        expect(isAllowedResourceConfigFile(['server', 'conference.lua'])).toBe(false);
+        expect(isAllowedResourceConfigFile(['server', 'optionsmenu.lua'])).toBe(false);
         expect(isAllowedResourceConfigFile(['fxmanifest.lua'])).toBe(false);
         expect(isAllowedResourceConfigFile(['__resource.lua'])).toBe(false);
         expect(isAllowedResourceConfigFile(['package.json'])).toBe(false);

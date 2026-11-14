@@ -17,10 +17,55 @@ import { RESOURCE_ZIP_SKIP_DIRECTORY_NAMES, getAllowedResourceRoots, resolveReso
 export const RESOURCE_CONFIG_DATA_EXTENSIONS = ['.cfg', '.json', '.yml', '.yaml', '.toml', '.ini'] as const;
 
 /**
- * Script formats: only editable when the file is clearly a config file
- * (eg. `config.lua`, `sh_config.lua`, `config/client.lua`), never arbitrary code.
+ * Script formats: only editable when the file follows one of the common
+ * FiveM config conventions below (eg. `config.lua`, `sh_config.lua`,
+ * `locales/en.lua`, `data/items.lua`), never arbitrary code.
  */
 export const RESOURCE_CONFIG_SCRIPT_EXTENSIONS = ['.lua', '.js'] as const;
+
+/**
+ * Words that mark a script file as a config when they appear in its name,
+ * as a whole word (`config.lua`, `sv_config.lua`, `client-settings.js`,
+ * `locale_en.lua`) or as a prefix/suffix (`configuration.lua`, `esxconfig.lua`).
+ */
+export const RESOURCE_CONFIG_SCRIPT_NAME_KEYWORDS = [
+    'config',
+    'configs',
+    'configuration',
+    'cfg',
+    'conf',
+    'settings',
+    'options',
+    'locale',
+    'locales',
+    'lang',
+    'langs',
+    'language',
+    'languages',
+    'translation',
+    'translations',
+    'i18n',
+] as const;
+
+/** Folders whose script files are config/locale/data definitions by convention. */
+export const RESOURCE_CONFIG_SCRIPT_DIRECTORY_NAMES = [
+    'config',
+    'configs',
+    'configuration',
+    'cfg',
+    'conf',
+    'settings',
+    'locale',
+    'locales',
+    'lang',
+    'langs',
+    'language',
+    'languages',
+    'translation',
+    'translations',
+    'i18n',
+    'data',
+] as const;
 
 /** Files that match the patterns above but are not resource configs. */
 export const RESOURCE_CONFIG_DENIED_FILE_NAMES = [
@@ -42,8 +87,17 @@ const DATA_EXTENSION_SET = new Set<string>(RESOURCE_CONFIG_DATA_EXTENSIONS);
 const SCRIPT_EXTENSION_SET = new Set<string>(RESOURCE_CONFIG_SCRIPT_EXTENSIONS);
 const DENIED_FILE_NAME_SET = new Set<string>(RESOURCE_CONFIG_DENIED_FILE_NAMES);
 const SKIPPED_DIRECTORY_SET = new Set<string>(RESOURCE_ZIP_SKIP_DIRECTORY_NAMES);
-const CONFIG_SCRIPT_STEM_REGEX = /(config|cfg|settings)/i;
-const CONFIG_DIRECTORY_NAMES = new Set(['config', 'configs', 'cfg', 'settings']);
+const CONFIG_SCRIPT_KEYWORD_SET = new Set<string>(RESOURCE_CONFIG_SCRIPT_NAME_KEYWORDS);
+const CONFIG_DIRECTORY_NAMES = new Set<string>(RESOURCE_CONFIG_SCRIPT_DIRECTORY_NAMES);
+//Unambiguous enough to also match glued to other text (`esxconfig`, `configuration_client`)
+const CONFIG_SCRIPT_GLUED_KEYWORDS = ['config', 'settings', 'locale', 'translation'];
+
+const isConfigScriptStem = (stem: string): boolean => {
+    //Split on separators and camelCase/dot boundaries: `sv_config`, `client-settings`, `config.client`
+    const words = stem.split(/[^a-z0-9]+/).filter(Boolean);
+    if (words.some((word) => CONFIG_SCRIPT_KEYWORD_SET.has(word))) return true;
+    return words.some((word) => CONFIG_SCRIPT_GLUED_KEYWORDS.some((kw) => word.startsWith(kw) || word.endsWith(kw)));
+};
 //Control chars, Windows-reserved chars and `:` (drive letters / NTFS alternate data streams)
 // eslint-disable-next-line no-control-regex
 const FORBIDDEN_SEGMENT_CHARS_REGEX = /[\u0000-\u001f<>:"|?*]/;
@@ -77,7 +131,7 @@ export const isAllowedResourceConfigFile = (segments: string[]): boolean => {
     if (!SCRIPT_EXTENSION_SET.has(ext)) return false;
 
     const stem = lowerName.slice(0, -ext.length);
-    if (CONFIG_SCRIPT_STEM_REGEX.test(stem)) return true;
+    if (isConfigScriptStem(stem)) return true;
     return segments.slice(0, -1).some((dirName) => CONFIG_DIRECTORY_NAMES.has(dirName.toLowerCase()));
 };
 
