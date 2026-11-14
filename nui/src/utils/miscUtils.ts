@@ -2,8 +2,16 @@ import { ResolvablePermission } from '../state/permissions.state';
 import { TxAdminActionRespType } from '@nui/src/components/PlayerModal/Tabs/DialogActionView';
 import { VariantType } from 'notistack';
 
+/**
+ * Coerces a value that should be an array into one. Lua tables lose their
+ * array-ness over the NUI bridge when empty (`{}` arrives as an object) and
+ * nil fields are omitted entirely, so array-typed event payloads must be
+ * normalized before reaching render code.
+ */
+export const asArray = <T>(value: unknown): T[] => (Array.isArray(value) ? (value as T[]) : []);
+
 export const userHasPerm = (perm: ResolvablePermission, permsState: ResolvablePermission[]): boolean => {
-    const userPerms = permsState ?? [];
+    const userPerms = asArray<ResolvablePermission>(permsState);
     return userPerms.includes(perm) || userPerms.includes('all_permissions');
 };
 

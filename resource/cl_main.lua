@@ -220,6 +220,13 @@ end)
 --  Helper to protect the NUI callbacks from CSRF attacks
 --  NOTE: This is a temporary fix for the NUI callback Origin issue
 -- =============================================
+--- Origins derived from the actual running resource name (not hardcoded to 'monitor') so this
+--- keeps working if the resource is ever loaded under a different name (eg. FXServer gen9/
+--- FiveM Enhanced, which upstream txAdmin loads as 'txadmin' instead of 'monitor').
+local TX_SELF_RESOURCE_NAME = GetCurrentResourceName()
+local TX_VALID_NUI_ORIGIN_CFX = 'https://cfx-nui-' .. TX_SELF_RESOURCE_NAME
+local TX_VALID_NUI_ORIGIN_LEGACY = 'https://' .. TX_SELF_RESOURCE_NAME
+
 --- Check if a NUI callback is from the correct Origin
 --- technically no request should come from nui://monitor, since the manifest version is cerulean
 ---@param headers table
@@ -235,10 +242,10 @@ function IsNuiRequestOriginValid(headers)
         return false --no clue
     end
 
-    if headers['Origin'] == 'https://cfx-nui-monitor' then
+    if headers['Origin'] == TX_VALID_NUI_ORIGIN_CFX then
         return true --probably self
     end
-    if headers['Origin'] == 'https://monitor' then
+    if headers['Origin'] == TX_VALID_NUI_ORIGIN_LEGACY then
         return true --probably legacy iframe inside web iframe
     end
 

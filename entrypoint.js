@@ -10,6 +10,27 @@ try {
     process.exit(999);
 }
 
+//Bridge FXServer's injected natives onto the real Node globalThis.
+//NOTE: on FXServer gen9, natives are only visible to this top-level script's own execution
+//context, NOT to require()'d modules (confirmed by a live "GetConvar is not defined" crash
+//inside core/index.js despite it working fine right above this comment) - almost certainly the
+//same context boundary referenced by the file-level note above about global scope pollution
+//being invisible to Object.keys(global). Copying them onto globalThis here makes them visible
+//to core/index.js. typeof-guarded since referencing an unbound identifier directly would throw.
+try {
+    if (typeof ExecuteCommand === 'function') globalThis.ExecuteCommand = ExecuteCommand;
+    if (typeof GetConvar === 'function') globalThis.GetConvar = GetConvar;
+    if (typeof GetCurrentResourceName === 'function') globalThis.GetCurrentResourceName = GetCurrentResourceName;
+    if (typeof GetResourceMetadata === 'function') globalThis.GetResourceMetadata = GetResourceMetadata;
+    if (typeof GetResourcePath === 'function') globalThis.GetResourcePath = GetResourcePath;
+    if (typeof IsDuplicityVersion === 'function') globalThis.IsDuplicityVersion = IsDuplicityVersion;
+    if (typeof PrintStructuredTrace === 'function') globalThis.PrintStructuredTrace = PrintStructuredTrace;
+    if (typeof RegisterCommand === 'function') globalThis.RegisterCommand = RegisterCommand;
+    if (typeof ScanResourceRoot === 'function') globalThis.ScanResourceRoot = ScanResourceRoot;
+} catch (error) {
+    //non-fatal - downstream code has its own typeof-guards for natives that end up missing
+}
+
 //Checking monitor mode and starting
 try {
     if (GetConvar('monitorMode', 'false') == 'true') {

@@ -91,8 +91,20 @@ const txCoreEndpoint = txHostConfig.netInterface
     : `127.0.0.1:${txHostConfig.txaPort}`;
 let osSpawnVars: OsSpawnVars;
 if (txEnv.isWindows) {
+    //NOTE: gen9 (FiveM Enhanced) ships as cfx-server.exe instead of FXServer.exe. fxsPath is
+    //already the binary's own directory for gen9 (derived from process.argv0, see
+    //globalData.ts), same as the citizen_root-derived path is for gen8.
     osSpawnVars = {
-        bin: `${txEnv.fxsPath}/FXServer.exe`,
+        bin: `${txEnv.fxsPath}/${txEnv.fxsIsGen9 ? 'cfx-server.exe' : 'FXServer.exe'}`,
+        args: [],
+    };
+} else if (txEnv.fxsIsGen9) {
+    //NOTE: unverified - only the Windows gen9 binary name has been confirmed against a real
+    //deployment so far. Spawning directly (no musl loader indirection) since fxsPath already
+    //points straight at the binary's own directory for gen9; revisit if this doesn't work on
+    //an actual gen9 Linux server.
+    osSpawnVars = {
+        bin: `${txEnv.fxsPath}/cfx-server`,
         args: [],
     };
 } else {

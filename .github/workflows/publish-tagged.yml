@@ -61,7 +61,7 @@ jobs:
                   tag_version="${GITHUB_REF_NAME#v}"
                   grep -F "version '${tag_version}'" monitor/fxmanifest.lua
 
-            - name: Package monitor.zip
+            - name: Package monitor.zip and txadmin.zip
               run: npm run package:zip
 
             - name: Publish GitHub release
@@ -83,6 +83,8 @@ jobs:
                   gh release create "$GITHUB_REF_NAME" \
                       monitor.zip \
                       monitor.zip.sha256 \
+                      txadmin.zip \
+                      txadmin.zip.sha256 \
                       --title "$GITHUB_REF_NAME" \
                       "${notes_args[@]}" \
                       "${prerelease_args[@]}"

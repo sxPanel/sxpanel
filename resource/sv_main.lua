@@ -16,7 +16,7 @@ function ReplaceSemicolon(x)
     return new
 end
 
-if GetCurrentResourceName() ~= 'monitor' then
+if TX_RESOURCE_NAME ~= 'monitor' and TX_RESOURCE_NAME ~= 'txadmin' then
     logError('This resource should not be installed separately, it already comes with fxserver.')
     return
 end
@@ -56,7 +56,7 @@ function TxPlayerListKey(id)
 end
 TX_LUACOMHOST = GetConvar('txAdmin-luaComHost', 'invalid')
 TX_LUACOMTOKEN = GetConvar('txAdmin-luaComToken', 'invalid')
-TX_VERSION = GetResourceMetadata('monitor', 'version', 0) -- for now, only used in the start print
+TX_VERSION = GetResourceMetadata(TX_RESOURCE_NAME, 'version', 0) -- for now, only used in the start print
 TX_IS_SERVER_SHUTTING_DOWN = false
 
 -- Checking convars
@@ -1129,7 +1129,7 @@ CreateThread(function()
     Wait(30000)
     while true do
         local runtimeCounts = {}
-        local hasNative = pcall(GetResourceRuntimes, 'monitor') ---@diagnostic disable-line: undefined-global
+        local hasNative = pcall(GetResourceRuntimes, TX_RESOURCE_NAME) ---@diagnostic disable-line: undefined-global
         if hasNative then
             local max = GetNumResources() - 1
             for i = 0, max do

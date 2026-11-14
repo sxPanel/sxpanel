@@ -1,5 +1,5 @@
 import React from 'react';
-import { AccessibilityNew, AirlineStops, ControlCamera, Security } from '@mui/icons-material';
+import { AccessibilityNewOutlined, AirlineStopsOutlined, ControlCameraOutlined, SecurityOutlined } from '@mui/icons-material';
 import { fetchNui } from '../../../utils/fetchNui';
 import { useTranslate } from 'react-polyglot';
 import { useSnackbar } from 'notistack';
@@ -13,13 +13,13 @@ export function usePlayerModeActions() {
     const handlePlayermodeToggle = (targetMode: PlayerMode) => {
         if (targetMode === playerMode || targetMode === PlayerMode.DEFAULT) {
             setPlayerMode(PlayerMode.DEFAULT);
-            fetchNui('playerModeChanged', PlayerMode.DEFAULT);
+            fetchNui('playerModeChanged', PlayerMode.DEFAULT).catch(() => {});
             enqueueSnackbar(t('nui_menu.page_main.player_mode.normal.success'), {
                 variant: 'success',
             });
         } else {
             setPlayerMode(targetMode);
-            fetchNui('playerModeChanged', targetMode);
+            fetchNui('playerModeChanged', targetMode).catch(() => {});
         }
     };
 
@@ -34,7 +34,7 @@ export function usePlayerModeActions() {
                     name: t('nui_menu.page_main.player_mode.noclip.title'),
                     label: t('nui_menu.page_main.player_mode.noclip.label'),
                     value: PlayerMode.NOCLIP,
-                    icon: <ControlCamera />,
+                    icon: <ControlCameraOutlined />,
                     requiredPermission: 'players.noclip',
                     onSelect: () => {
                         handlePlayermodeToggle(PlayerMode.NOCLIP);
@@ -44,7 +44,7 @@ export function usePlayerModeActions() {
                     name: t('nui_menu.page_main.player_mode.godmode.title'),
                     label: t('nui_menu.page_main.player_mode.godmode.label'),
                     value: PlayerMode.GOD_MODE,
-                    icon: <Security />,
+                    icon: <SecurityOutlined />,
                     requiredPermission: 'players.godmode',
                     onSelect: () => {
                         handlePlayermodeToggle(PlayerMode.GOD_MODE);
@@ -54,7 +54,7 @@ export function usePlayerModeActions() {
                     name: t('nui_menu.page_main.player_mode.superjump.title'),
                     label: t('nui_menu.page_main.player_mode.superjump.label'),
                     value: PlayerMode.SUPER_JUMP,
-                    icon: <AirlineStops />,
+                    icon: <AirlineStopsOutlined />,
                     requiredPermission: 'players.superjump',
                     onSelect: () => {
                         handlePlayermodeToggle(PlayerMode.SUPER_JUMP);
@@ -64,7 +64,7 @@ export function usePlayerModeActions() {
                     name: t('nui_menu.page_main.player_mode.normal.title'),
                     label: t('nui_menu.page_main.player_mode.normal.label'),
                     value: PlayerMode.DEFAULT,
-                    icon: <AccessibilityNew />,
+                    icon: <AccessibilityNewOutlined />,
                     onSelect: () => {
                         handlePlayermodeToggle(PlayerMode.DEFAULT);
                     },

@@ -33,7 +33,7 @@ import got from '@lib/got';
 import { resolveTelemetryPanelUrl } from '@lib/panelPublicUrl';
 import { fetchFreshResourceReport, getCachedResourceReport, isValidResourceName } from './resources/shared';
 import { randomUUID } from 'node:crypto';
-import { getMenuActionDef } from '@shared/customCommands';
+import { getBuiltinChatCommands, getMenuActionDef } from '@shared/customCommands';
 const console = consoleFactory(modulename);
 
 const STATS_INVENTORY_REPORT_TIMEOUT_MS = 5000;
@@ -793,8 +793,10 @@ export default async function Intercom(ctx: InitializedCtx) {
             const v = validateBody('customCommands');
             if (!v.ok) return ctx.utils.error(400, v.errorMsg);
             //Only the enabled ones are relevant to the game server
+            //The built-in commands (menu actions under their default name) are added unless a custom command took the name
             //The chat suggestion params are attached here so the resource doesn't need its own catalog
-            const commands = txConfig.gameFeatures.customCommands
+            const savedCommands = txConfig.gameFeatures.customCommands;
+            const commands = [...savedCommands, ...getBuiltinChatCommands(savedCommands)]
                 .filter((cmd) => cmd.enabled)
                 .map((cmd) => ({
                     ...cmd,

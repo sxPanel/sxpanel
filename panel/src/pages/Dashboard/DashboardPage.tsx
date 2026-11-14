@@ -84,7 +84,7 @@ function DashboardPageInner() {
                     <FullPerfCard />
                 </div>
             </div>
-            <div className="flex w-full flex-col gap-4 lg:flex-row">
+            <div className="flex w-full flex-1 flex-col gap-4 lg:flex-row">
                 <DashboardRecentActions />
                 <DashboardOnlineNow />
             </div>

@@ -191,6 +191,14 @@ export default () => {
     router.get('/resources/list', apiAuthMw, wrapRoute('ResourcesList', routes.resources_list));
     router.get('/resources/download', apiAuthMw, wrapRoute('ResourcesDownload', routes.resources_download));
     router.post('/resources/download', apiAuthMw, wrapRoute('ResourcesDownload', routes.resources_download));
+    router.get('/resources/config/files', apiAuthMw, wrapRoute('ResourcesConfigFiles', routes.resources_configFiles));
+    router.get('/resources/config/file', apiAuthMw, wrapRoute('ResourcesConfigFile', routes.resources_configFile));
+    router.post(
+        '/resources/config/save',
+        apiAuthMw,
+        mutationLimiter,
+        wrapRoute('ResourcesConfigSave', routes.resources_configSave),
+    );
 
     //Control routes
     router.post('/intercom/:scope', intercomAuthMw, routes.intercom);

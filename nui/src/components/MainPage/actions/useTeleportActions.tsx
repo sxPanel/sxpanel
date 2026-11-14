@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileCopy, GpsFixed, PersonPinCircle, Restore } from '@mui/icons-material';
+import { FileCopyOutlined, GpsFixedOutlined, PersonPinCircleOutlined, RestoreOutlined } from '@mui/icons-material';
 import { useDialogContext } from '../../../provider/DialogProvider';
 import { fetchNui } from '../../../utils/fetchNui';
 import { copyToClipboard } from '../../../utils/copyToClipboard';
@@ -31,7 +31,7 @@ export function useTeleportActions() {
                 }
 
                 enqueueSnackbar(t('nui_menu.page_main.teleport.generic_success'), { variant: 'success' });
-                fetchNui('tpToCoords', { x, y, z });
+                fetchNui('tpToCoords', { x, y, z }).catch(() => {});
                 if (autoClose) {
                     closeMenu();
                 }
@@ -43,7 +43,7 @@ export function useTeleportActions() {
     });
 
     const handleTeleportBack = () => {
-        fetchNui('tpBack');
+        fetchNui('tpBack').catch(() => {});
     };
 
     const handleCopyCoords = () => {
@@ -84,17 +84,17 @@ export function useTeleportActions() {
                     name: t('nui_menu.page_main.teleport.waypoint.title'),
                     label: t('nui_menu.page_main.teleport.waypoint.label'),
                     value: TeleportMode.WAYPOINT,
-                    icon: <PersonPinCircle />,
+                    icon: <PersonPinCircleOutlined />,
                     onSelect: () => {
                         setTeleportMode(TeleportMode.WAYPOINT);
-                        fetchNui('tpToWaypoint', {});
+                        fetchNui('tpToWaypoint', {}).catch(() => {});
                     },
                 },
                 {
                     name: t('nui_menu.page_main.teleport.coords.title'),
                     label: t('nui_menu.page_main.teleport.coords.label'),
                     value: TeleportMode.COORDINATES,
-                    icon: <GpsFixed />,
+                    icon: <GpsFixedOutlined />,
                     onSelect: () => {
                         setTeleportMode(TeleportMode.COORDINATES);
                         handleTeleportCoords();
@@ -104,14 +104,14 @@ export function useTeleportActions() {
                     name: t('nui_menu.page_main.teleport.back.title'),
                     label: t('nui_menu.page_main.teleport.back.label'),
                     value: TeleportMode.PREVIOUS,
-                    icon: <Restore />,
+                    icon: <RestoreOutlined />,
                     onSelect: handleTeleportBack,
                 },
                 {
                     name: t('nui_menu.page_main.teleport.copy.title'),
                     label: t('nui_menu.page_main.teleport.copy.label'),
                     value: TeleportMode.COPY,
-                    icon: <FileCopy />,
+                    icon: <FileCopyOutlined />,
                     onSelect: handleCopyCoords,
                 },
             ],

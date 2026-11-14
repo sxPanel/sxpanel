@@ -27,6 +27,7 @@ import {
     Send,
 } from '@mui/icons-material';
 import { useNuiEvent } from '../../hooks/useNuiEvent';
+import { asArray } from '../../utils/miscUtils';
 import { fetchNui } from '../../utils/fetchNui';
 import { txAdminMenuPage, usePageValue } from '../../state/page.state';
 import type { MenuTokens } from '../../styles/theme';
@@ -103,14 +104,17 @@ interface TicketDetail {
 
 const RootStyled = styled(Box)(({ theme }) => ({
     backgroundColor: theme.tokens.surface,
+    boxShadow: theme.tokens.shadowCard,
     border: `1px solid ${theme.tokens.border}`,
     color: theme.tokens.textPrimary,
-    height: '52vh',
+    //Hugs its content up to maxHeight instead of always claiming a fixed
+    //52vh — with few/no tickets that used to leave a large empty panel.
+    height: 'fit-content',
+    maxHeight: '52vh',
     minHeight: 380,
     minWidth: 0,
     boxSizing: 'border-box',
     borderRadius: theme.tokens.radiusCard,
-    flex: 1,
     flexDirection: 'column',
     overflow: 'hidden',
 }));
@@ -155,7 +159,8 @@ const DetailPane = styled(Box)(({ theme }) => ({
     minWidth: 0,
     minHeight: 0,
     paddingLeft: 16,
-    backgroundColor: alpha(theme.tokens.surfaceRaised, 0.35),
+    //surfaceRaised is already a subtle alpha wash in the glass theme
+    backgroundColor: theme.tokens.surfaceRaised,
     borderRadius: theme.tokens.radiusRow,
 }));
 
@@ -884,7 +889,15 @@ export const ReportsTab: React.FC<{ visible: boolean }> = ({ visible }) => {
             return;
         }
         setTicketError(null);
-        if (data.tickets) setTickets(data.tickets);
+        //Normalize Lua-bridge payloads: empty tables arrive as `{}`, nil fields are omitted
+        if (data.tickets) {
+            setTickets(
+                asArray<TicketListItem>(data.tickets).map((ticket) => ({
+                    ...ticket,
+                    targetNames: asArray(ticket.targetNames),
+                })),
+            );
+        }
     });
 
     // Listen for admin ticket detail
@@ -895,7 +908,16 @@ export const ReportsTab: React.FC<{ visible: boolean }> = ({ visible }) => {
             return;
         }
         setTicketError(null);
-        if (data.ticket) setTicketDetail(data.ticket);
+        if (data.ticket) {
+            setTicketDetail({
+                ...data.ticket,
+                targets: asArray(data.ticket.targets),
+                messages: asArray<TicketMessage>(data.ticket.messages).map((message) => ({
+                    ...message,
+                    imageUrls: message.imageUrls === undefined ? undefined : asArray(message.imageUrls),
+                })),
+            });
+        }
     });
 
     // Listen for admin message result

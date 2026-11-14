@@ -3,7 +3,7 @@ import { alpha, styled } from '@mui/material/styles';
 import { Box, Paper, Theme, Tooltip, Typography } from '@mui/material';
 import { DirectionsBoat, DirectionsWalk, DriveEta, LiveHelp, TwoWheeler, Flight } from '@mui/icons-material';
 import { useSetAssociatedPlayer } from '../../state/playerDetails.state';
-import { formatDistance } from '../../utils/miscUtils';
+import { asArray, formatDistance } from '../../utils/miscUtils';
 import { useTranslate } from 'react-polyglot';
 import { PlayerData, VehicleStatus } from '../../hooks/usePlayerListListener';
 import { useSetPlayerModalVisibility } from '@nui/src/state/playerModal.state';
@@ -48,7 +48,7 @@ const deriveTagColors = (hex: string) => {
 
 const buildPlayerTagDisplay = (tags: PlayerTag[], definitions: TagDefinition[]) => {
     const lookup: Record<string, TagDefinition> = { ...FALLBACK_TAG_LOOKUP };
-    for (const definition of definitions) {
+    for (const definition of asArray<TagDefinition>(definitions)) {
         if (definition.enabled === false) {
             delete lookup[definition.id];
         } else {
@@ -65,9 +65,9 @@ const buildPlayerTagDisplay = (tags: PlayerTag[], definitions: TagDefinition[]) 
 
 const StyledBox = styled(Box)(({ theme }) => ({
     [`& .${classes.paper}`]: {
-        padding: 20,
+        padding: '12px 14px',
         borderRadius: theme.tokens.radiusRow,
-        border: `1px solid ${theme.tokens.border}`,
+        border: '1px solid transparent',
         backgroundColor: theme.tokens.surfaceRaised,
         cursor: 'pointer',
         transition: 'background-color 120ms ease, border-color 120ms ease',
@@ -78,9 +78,15 @@ const StyledBox = styled(Box)(({ theme }) => ({
         },
     },
 
+    //Vehicle status is passive metadata — keep it neutral, not brand-colored
     [`& .${classes.icon}`]: {
         paddingRight: 7,
-        color: theme.palette.primary.main,
+        color: theme.tokens.textMuted,
+        display: 'inline-flex',
+        alignItems: 'center',
+        '& svg': {
+            fontSize: 18,
+        },
     },
 
     [`& .${classes.tooltipOverride}`]: {
@@ -105,13 +111,6 @@ const StyledBox = styled(Box)(({ theme }) => ({
     },
 }));
 
-const determineHealthBGColor = (val: number, theme: Theme) => {
-    if (val === -1) return theme.tokens.surfaceHover;
-    else if (val <= 20) return alpha(theme.palette.error.main, 0.28);
-    else if (val <= 60) return alpha(theme.palette.warning.main, 0.28);
-    else return alpha(theme.palette.success.main, 0.28);
-};
-
 const determineHealthColor = (val: number, theme: Theme) => {
     if (val === -1) return theme.tokens.textMuted;
     else if (val <= 20) return theme.palette.error.main;
@@ -119,11 +118,11 @@ const determineHealthColor = (val: number, theme: Theme) => {
     else return theme.palette.success.main;
 };
 
-const HealthBarBackground = styled(Box, {
-    shouldForwardProp: (prop) => prop !== 'healthVal',
-})<{ healthVal: number }>(({ theme, healthVal }) => ({
-    background: determineHealthBGColor(healthVal, theme),
-    height: 5,
+//Neutral track — only the fill carries the status color, so the grid
+//doesn't turn into a wall of competing colored bars.
+const HealthBarBackground = styled(Box)(({ theme }) => ({
+    background: theme.tokens.surfaceHover,
+    height: 4,
     borderRadius: 10,
     overflow: 'hidden',
 }));
@@ -132,9 +131,11 @@ const HealthBar = styled(Box, {
     shouldForwardProp: (prop) => prop !== 'healthVal',
 })<{ healthVal: number }>(({ theme, healthVal }) => ({
     background: determineHealthColor(healthVal, theme),
-    height: 5,
+    boxShadow: `0 0 6px ${alpha(determineHealthColor(healthVal, theme), 0.5)}`,
+    height: 4,
     borderRadius: 10,
     overflow: 'hidden',
+    transition: 'width 300ms ease',
 }));
 
 const PlayerCard: React.FC<{ playerData: PlayerData }> = ({ playerData }) => {
@@ -192,23 +193,25 @@ const PlayerCard: React.FC<{ playerData: PlayerData }> = ({ playerData }) => {
                             >
                                 <span className={classes.icon}>{statusIcon[playerData.vType]}</span>
                             </Tooltip>
-                            <Typography style={{ marginRight: 5 }} variant="subtitle1" color="textSecondary">
-                                {playerData.id}
-                            </Typography>
-                            <Typography variant="subtitle1" color="textSecondary">
-                                |
+                            <Typography style={{ marginRight: 6, fontWeight: 500 }} variant="subtitle1" color="textSecondary">
+                                #{playerData.id}
                             </Typography>
                             <Typography
-                                style={{ marginLeft: 5 }}
                                 noWrap
                                 variant="subtitle1"
                                 color="textPrimary"
-                                sx={{ flexShrink: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}
+                                sx={{
+                                    fontWeight: 600,
+                                    flexShrink: 1,
+                                    minWidth: 0,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                }}
                             >
                                 {playerData.displayName}
                             </Typography>
                             <Typography
-                                style={{ marginLeft: 7, minWidth: 'fit-content' }}
+                                style={{ marginLeft: 'auto', paddingLeft: 7, minWidth: 'fit-content', fontSize: 11 }}
                                 noWrap
                                 variant="subtitle1"
                                 color="textSecondary"
@@ -235,7 +238,7 @@ const PlayerCard: React.FC<{ playerData: PlayerData }> = ({ playerData }) => {
                                 tooltip: classes.tooltipOverride,
                             }}
                         >
-                            <HealthBarBackground healthVal={playerData.health}>
+                            <HealthBarBackground>
                                 <HealthBar width={`${healthBarSize}%`} healthVal={playerData.health} />
                             </HealthBarBackground>
                         </Tooltip>

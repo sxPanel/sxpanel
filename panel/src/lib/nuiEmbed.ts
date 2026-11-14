@@ -1,5 +1,5 @@
-import consts from '@shared/consts';
 import { isCefPanelEmbed } from '@/cef-compat/runtime';
+import { NUI_PANEL_ASSET_BASE } from '@/lib/nuiGen';
 
 /**
  * Helpers for when the panel SPA runs embedded inside the in-game NUI menu
@@ -29,7 +29,7 @@ export const resolvePanelAssetUrl = (assetPath: string): string => {
     if (window.txConsts.isWebInterface) {
         return `/${normalized}`;
     }
-    return `${consts.nuiPanelAssetBase}${normalized}`;
+    return `${NUI_PANEL_ASSET_BASE}${normalized}`;
 };
 
 /**

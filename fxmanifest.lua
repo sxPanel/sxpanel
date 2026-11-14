@@ -36,6 +36,7 @@ server_scripts({
     'resource/menu/server/sv_webpipe.lua',
     'resource/menu/server/sv_functions.lua',
     'resource/menu/server/sv_main_page.lua',
+    'resource/menu/server/sv_stats.lua',
     'resource/menu/server/sv_vehicle.lua',
     'resource/menu/server/sv_freeze_player.lua',
     'resource/menu/server/sv_trollactions.lua',
@@ -59,6 +60,7 @@ client_scripts({
     'resource/cl_custom_commands.lua',
     'resource/menu/client/cl_instructional_ui.lua',
     'resource/menu/client/cl_main_page.lua',
+    'resource/menu/client/cl_stats.lua',
     'resource/menu/client/cl_vehicle.lua',
     'resource/menu/client/cl_player_ids.lua',
     'resource/menu/client/cl_map_blips.lua',
@@ -76,7 +78,7 @@ client_scripts({
 
 -- Cache-bust query prevents FiveM's CEF from serving stale NUI files.
 -- Bump the version whenever dist/nui content changes.
-ui_page 'nui/index.html?v=7'
+ui_page 'nui/index.html?v=9'
 
 files {
     'locale/*.json',

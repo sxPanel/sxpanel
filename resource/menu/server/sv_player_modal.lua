@@ -63,19 +63,55 @@ RegisterNetEvent('txsv:req:bringPlayer', function(id)
     if type(id) ~= 'number' then
         return
     end
+    -- Bringing yourself is a no-op (same as tpToPlayer)
+    if id == src then
+        return
+    end
     local allow = PlayerHasTxPermission(src, 'players.teleport')
-    if allow then
+    if not allow then
+        -- Never fail silently: the menu already told the admin the player is being summoned
+        TriggerClientEvent('txcl:staffTools:notify', src, 'error', 'nui_menu.misc.no_perms')
+    else
         -- ensure both peds exist (GetPlayerPed returns 0, truthy in Lua, when invalid)
         local ped = GetPlayerPed(id)
         local srcPed = GetPlayerPed(src)
-        if ped and ped > 0 and srcPed and srcPed > 0 then
+        if not ped or ped <= 0 then
+            -- The menu shows its "summoning" snackbar right away, so tell the admin it did not happen
+            TriggerClientEvent(
+                'txcl:staffTools:notify',
+                src,
+                'error',
+                'nui_menu.player_modal.misc.target_not_found',
+                { target = id }
+            )
+        elseif srcPed and srcPed > 0 then
+            local key = tostring(id)
+            local srcBucket = GetPlayerRoutingBucket(src)
+            local tgtBucket = GetPlayerRoutingBucket(id)
+
+            -- If the player is still where a previous bring left them, keep the bucket they
+            -- originally came from so "return" does not strand them in the admin's bucket
+            local previous = preBringLocations[key]
+            local originBucket = tgtBucket
+            if previous and previous.broughtToBucket == tgtBucket then
+                originBucket = previous.bucket
+            end
+
             local fromCoords = GetEntityCoords(ped)
-            preBringLocations[tostring(id)] = {
+            preBringLocations[key] = {
                 x = fromCoords[1],
                 y = fromCoords[2],
                 z = fromCoords[3],
-                bucket = GetPlayerRoutingBucket(id),
+                bucket = originBucket,
+                broughtToBucket = srcBucket,
             }
+
+            -- Without this the player is teleported but stays invisible to the admin
+            -- whenever they are in different routing buckets (instances, apartments, etc)
+            if tgtBucket ~= srcBucket then
+                SetPlayerRoutingBucket(id, srcBucket)
+            end
+
             local coords = GetEntityCoords(srcPed)
             TriggerClientEvent('txcl:tpToCoords', id, coords[1], coords[2], coords[3])
         end

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Build, DeleteForever, DirectionsCar, RocketLaunch } from '@mui/icons-material';
+import { BuildOutlined, DeleteForeverOutlined, DirectionsCarOutlined, RocketLaunchOutlined } from '@mui/icons-material';
 import { useDialogContext } from '../../../provider/DialogProvider';
 import { fetchNui } from '../../../utils/fetchNui';
 import { useTranslate } from 'react-polyglot';
@@ -35,7 +35,7 @@ export function useVehicleActions() {
             suggestions: dialogData.shortcuts,
             onSubmit: (modelName: string) => {
                 modelName = vehiclePlaceholderReplacer(modelName, dialogData.shortcutsData);
-                fetchNui('spawnVehicle', { model: modelName });
+                fetchNui('spawnVehicle', { model: modelName }).catch(() => {});
                 if (autoClose) {
                     closeMenu();
                 }
@@ -47,7 +47,7 @@ export function useVehicleActions() {
     });
 
     const handleFixVehicle = () => {
-        fetchNui('fixVehicle');
+        fetchNui('fixVehicle').catch(() => {});
     };
 
     const handleDeleteVehicle = () => {
@@ -73,7 +73,7 @@ export function useVehicleActions() {
     };
 
     const handleBoostVehicle = () => {
-        fetchNui('boostVehicle');
+        fetchNui('boostVehicle').catch(() => {});
     };
 
     return {
@@ -89,7 +89,7 @@ export function useVehicleActions() {
                     name: t('nui_menu.page_main.vehicle.spawn.title'),
                     label: t('nui_menu.page_main.vehicle.spawn.label'),
                     value: VehicleMode.SPAWN,
-                    icon: <DirectionsCar />,
+                    icon: <DirectionsCarOutlined />,
                     requiredPermission: 'menu.vehicle.spawn',
                     onSelect: () => {
                         setVehicleMode(VehicleMode.SPAWN);
@@ -100,7 +100,7 @@ export function useVehicleActions() {
                     name: t('nui_menu.page_main.vehicle.fix.title'),
                     label: t('nui_menu.page_main.vehicle.fix.label'),
                     value: VehicleMode.FIX,
-                    icon: <Build />,
+                    icon: <BuildOutlined />,
                     requiredPermission: 'menu.vehicle.fix',
                     onSelect: () => {
                         setVehicleMode(VehicleMode.FIX);
@@ -111,7 +111,7 @@ export function useVehicleActions() {
                     name: t('nui_menu.page_main.vehicle.delete.title'),
                     label: t('nui_menu.page_main.vehicle.delete.label'),
                     value: VehicleMode.DELETE,
-                    icon: <DeleteForever />,
+                    icon: <DeleteForeverOutlined />,
                     requiredPermission: 'menu.vehicle.delete',
                     onSelect: () => {
                         setVehicleMode(VehicleMode.DELETE);
@@ -122,7 +122,7 @@ export function useVehicleActions() {
                     name: t('nui_menu.page_main.vehicle.boost.title'),
                     label: t('nui_menu.page_main.vehicle.boost.label'),
                     value: VehicleMode.BOOST,
-                    icon: <RocketLaunch />,
+                    icon: <RocketLaunchOutlined />,
                     requiredPermission: 'menu.vehicle.boost',
                     onSelect: () => {
                         setVehicleMode(VehicleMode.BOOST);

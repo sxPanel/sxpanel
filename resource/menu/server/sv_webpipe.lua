@@ -24,6 +24,15 @@ end
 local _pipeLastReject
 local _pipeFastCache = {}
 
+-- Derived from the actual running resource name (not hardcoded to 'monitor') so this keeps
+-- working if the resource is ever loaded under a different name (eg. FXServer gen9/FiveM
+-- Enhanced, which upstream txAdmin loads as 'txadmin' instead of 'monitor').
+local TX_SELF_RESOURCE_NAME = GetCurrentResourceName()
+local TX_WEBPIPE_CSP_FRAME_ANCESTORS = ('frame-ancestors https://%s/ https://cfx-nui-%s/ nui://game/'):format(
+    TX_SELF_RESOURCE_NAME,
+    TX_SELF_RESOURCE_NAME
+)
+
 -- Check if we should use latent events
 local useLatentEvents = GetConvarBool('sv_enableNetEventReassembly', true)
 if not useLatentEvents then
@@ -136,8 +145,7 @@ RegisterNetEvent('txsv:webpipe:req', function(callbackId, method, path, headers,
         data = data or ''
         resultHeaders['x-badcast-fix'] = 'https://youtu.be/LDU_Txk06tM' -- fixed in artifact v3996
         --https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
-        resultHeaders['Content-Security-Policy'] =
-            'frame-ancestors https://monitor/ https://cfx-nui-monitor/ nui://game/'
+        resultHeaders['Content-Security-Policy'] = TX_WEBPIPE_CSP_FRAME_ANCESTORS
         -- Strip X-Frame-Options so the NUI Panel tab can frame piped responses.
         -- Per spec, browsers ignore XFO when CSP frame-ancestors is present, but
         -- CEF behavior is not guaranteed across versions — strip it explicitly.

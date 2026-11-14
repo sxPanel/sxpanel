@@ -4,6 +4,11 @@
 if not TX_SERVER_MODE then
     return
 end
+-- sv_main.lua bails out early on manual monitor restarts (erased luaComToken)
+-- and never defines TX_EVENT_HANDLERS — bail out with it instead of erroring.
+if type(TX_EVENT_HANDLERS) ~= 'table' then
+    return
+end
 
 local reportIntercomUrl = 'http://' .. TX_LUACOMHOST .. '/intercom/'
 

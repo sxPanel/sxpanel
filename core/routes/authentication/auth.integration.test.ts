@@ -49,8 +49,6 @@ vi.stubGlobal('txManager', {
         loginMethods: { count: vi.fn() },
     },
 });
-vi.stubGlobal('VerifyPasswordHash', (pass: string, hash: string) => pass === 'teste123');
-
 // Mock for InitializedCtx
 function createInitCtx(
     overrides: {

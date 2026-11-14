@@ -3,8 +3,10 @@ import { isValidPerfThreadName, type SvRtPerfBoundariesType, type SvRtPerfCounts
 
 //Consts
 const REGEX_BUCKET_BOUNDARIE = /le="(\d+(\.\d+)?|\+Inf)"/;
+//NOTE: gen9 (FiveM Enhanced) can prefix the metric with an optional instance="..." label when
+//      exposing tick time for multiple server instances - the group is optional for gen8 compat.
 const REGEX_PERF_LINE =
-    /tickTime_(count|sum|bucket)\{name="(svSync|svNetwork|svMain)"(,le="(\d+(\.\d+)?|\+Inf)")?\}\s(\S+)/;
+    /tickTime_(count|sum|bucket)\{(?:instance="([^"]+)",)?name="(svSync|svNetwork|svMain)"(?:,le="(\d+(?:\.\d+)?|\+Inf)")?\}\s(\S+)/;
 
 /**
  * Returns if the given thread name is a valid SvRtPerfThreadNamesType
@@ -64,18 +66,18 @@ export const parseRawPerf = (rawData: string) => {
     const lines = rawData.trim().split('\n');
     const perfMetrics: SvRtPerfCountsType = {
         svSync: {
-            count: 0,
-            sum: 0,
+            count: Number.NaN,
+            sum: Number.NaN,
             buckets: [],
         },
         svNetwork: {
-            count: 0,
-            sum: 0,
+            count: Number.NaN,
+            sum: Number.NaN,
             buckets: [],
         },
         svMain: {
-            count: 0,
-            sum: 0,
+            count: Number.NaN,
+            sum: Number.NaN,
             buckets: [],
         },
     };
@@ -113,10 +115,13 @@ export const parseRawPerf = (rawData: string) => {
         const parsed = line.match(REGEX_PERF_LINE);
         if (parsed === null) continue;
         const regType = parsed[1];
-        const thread = parsed[2];
+        const instance = parsed[2];
+        const thread = parsed[3];
         const bucket = parsed[4];
-        const value = parsed[6];
+        const value = parsed[5];
         if (!isValidPerfThreadName(thread)) continue;
+        //Gen9 can expose the same thread metric for multiple server instances.
+        if (instance !== undefined && instance !== 'GameServer') continue;
 
         if (regType == 'count') {
             const count = parseInt(value);
@@ -144,9 +149,7 @@ export const parseRawPerf = (rawData: string) => {
     const invalid = Object.values(perfMetrics).filter((thread) => {
         return (
             !Number.isInteger(thread.count) ||
-            thread.count === 0 ||
             !Number.isFinite(thread.sum) ||
-            thread.sum === 0 ||
             thread.buckets.length !== PERF_DATA_BUCKET_COUNT
         );
     });

@@ -16,6 +16,10 @@ for (const match of tsconfig.matchAll(aliasRegex)) {
 }
 
 export default defineConfig({
+    define: {
+        TX_PRERELEASE_EXPIRATION: JSON.stringify('0'),
+        TX_RELEASE_VERSION: JSON.stringify('0.0.0-test'),
+    },
     test: {
         globalSetup: './testing/globalSetup.ts',
         setupFiles: ['./testing/fileSetup.ts'],

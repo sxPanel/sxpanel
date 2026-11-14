@@ -100,6 +100,9 @@ export const getPrimaryPlayerTag = (
     tags: PlayerTag[],
     lookup: Record<string, Pick<TagDefinition, 'priority'>>,
 ): string | undefined => {
+    //Guard against non-array input — empty Lua tables cross the NUI bridge as `{}`
+    if (!Array.isArray(tags)) return undefined;
+
     let bestTag: string | undefined;
     let bestPriority = Infinity;
 

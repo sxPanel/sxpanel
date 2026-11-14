@@ -3,15 +3,14 @@ import { randomBytes } from 'node:crypto';
 //Helper function to get convars WITHOUT a fallback value.
 //Sentinel must be unpredictable — if a convar can be crafted to equal the
 //sentinel, the getter will falsely report it as unset.
+//NOTE: the GetConvar native is not reliably callable on FXServer gen9 (FiveM Enhanced) at this
+//      point in boot - guarded here instead of crashing, since ConVar-based config is gen8-only
+//      either way (see globalData.ts for how gen9 resolves version/resource name/path instead).
 const undefinedKey = 'UNDEFINED:CONVAR:' + randomBytes(16).toString('base64url');
 const getConvarString = (convarName: string) => {
+    if (typeof GetConvar !== 'function') return undefined;
     const cvar = GetConvar(convarName, undefinedKey);
     return cvar !== undefinedKey ? cvar.trim() : undefined;
-};
-
-//Helper to clean up the resource native responses which apparently might be 'null'
-const cleanNativeResp = (resp: any) => {
-    return typeof resp === 'string' && resp !== 'null' && resp.length ? resp : undefined;
 };
 
 //Deprecated ConVars and their TXHOST_* replacements
@@ -31,12 +30,6 @@ export const getNativeVars = () => {
     //FXServer
     const fxsVersion = getConvarString('version');
     const fxsCitizenRoot = getConvarString('citizen_root');
-
-    //Resource
-    const resourceName = cleanNativeResp(GetCurrentResourceName());
-    if (!resourceName) throw new Error('GetCurrentResourceName() failed');
-    const txaResourceVersion = cleanNativeResp(GetResourceMetadata(resourceName, 'version', 0));
-    const txaResourcePath = cleanNativeResp(GetResourcePath(resourceName));
 
     //Profile Convar - with warning
     const txAdminProfile = getConvarString('serverProfile');
@@ -62,9 +55,6 @@ export const getNativeVars = () => {
     return {
         fxsVersion,
         fxsCitizenRoot,
-        resourceName,
-        txaResourceVersion,
-        txaResourcePath,
         txAdminProfile,
     };
 };

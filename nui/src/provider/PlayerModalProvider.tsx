@@ -52,7 +52,7 @@ export const PlayerModalProvider: React.FC<PlayerModalProviderProps> = ({ childr
     const closeMenu = useCallback(() => {
         setModalOpen(false);
         setMenuVisible(false);
-        fetchNui('closeMenu');
+        fetchNui('closeMenu').catch(() => {});
     }, []);
 
     const showNoPerms = useCallback((opt: string) => {

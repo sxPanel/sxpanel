@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { test, expect } from 'vitest';
-import { parseFxserverVersion } from './fxsVersionParser';
+import { parseFxserverVersion, parseGen9RuntimeArgs, isGen9Runtime } from './fxsVersionParser';
 const p = parseFxserverVersion;
 
 test('normal versions', () => {
@@ -65,5 +65,42 @@ test('invalids', () => {
         build: null,
         branch: null,
         platform: 'linux',
+    });
+});
+
+test('gen9 runtime detection', () => {
+    //Primary signal: binary name (argv0)
+    expect(isGen9Runtime('/opt/cfx-server/cfx-server', [])).toBe(true);
+    expect(isGen9Runtime('C:\\fivem\\cfx-server.exe', [])).toBe(true);
+    expect(isGen9Runtime('/opt/cfx-server/FXServer', [])).toBe(false);
+    expect(isGen9Runtime('C:\\fivem\\FXServer.exe', [])).toBe(false);
+    //Fallback signal: argv flag, for unrecognized/test argv0 (eg. 'node')
+    expect(isGen9Runtime('node', ['node', 'index.js'])).toBe(false);
+    expect(
+        isGen9Runtime('node', ['node', '--runtime-branch', 'early-access', '--runtime-version', 'b50']),
+    ).toBe(true);
+});
+
+test('gen9 runtime args parsing', () => {
+    expect(
+        parseGen9RuntimeArgs(['--runtime-branch "early-access" --runtime-version "b50"']).valid,
+    ).toBe(true);
+    expect(parseGen9RuntimeArgs(['--runtime-branch "early-access" --runtime-version "b50"'])).toEqual({
+        valid: true,
+        branch: 'early-access',
+        build: 50,
+        platform: expect.any(String),
+    });
+    expect(parseGen9RuntimeArgs(['--runtime-version b123'])).toEqual({
+        valid: true,
+        branch: 'unknown',
+        build: 123,
+        platform: expect.any(String),
+    });
+    expect(parseGen9RuntimeArgs(['node', 'index.js'])).toEqual({
+        valid: false,
+        branch: null,
+        build: null,
+        platform: expect.any(String),
     });
 });

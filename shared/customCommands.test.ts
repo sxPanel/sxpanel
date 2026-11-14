@@ -6,6 +6,7 @@ import {
     CustomCommandsArraySchema,
     customCommandMenuActions,
     findCustomCommandConflicts,
+    getBuiltinChatCommands,
     isPrivilegedCustomCommand,
 } from './customCommands';
 import { registeredPermissions } from './permissions';
@@ -99,6 +100,46 @@ describe('menu action catalog', () => {
             const cmd = makeCmd({ name: action.suggestedName, action: { type: 'menuAction', actionId: action.id } });
             expect(CustomCommandSchema.safeParse(cmd).success, action.id).toBe(true);
         }
+    });
+});
+
+describe('getBuiltinChatCommands', () => {
+    const names = (cmds: CustomCommand[]) => cmds.map((c) => c.name);
+
+    it('exposes the menu actions under their suggested names', () => {
+        const builtins = getBuiltinChatCommands([]);
+        expect(names(builtins)).toContain('bring');
+        expect(names(builtins)).toContain('heal');
+        expect(builtins.find((c) => c.name === 'bring')).toMatchObject({
+            enabled: true,
+            permission: 'players.teleport',
+            action: { type: 'menuAction', actionId: 'bringPlayer' },
+        });
+        expect(new Set(names(builtins)).size).toBe(builtins.length);
+    });
+
+    it('leaves out the actions that are unsafe as defaults', () => {
+        const builtins = names(getBuiltinChatCommands([]));
+        expect(builtins).not.toContain('restartserver');
+        expect(builtins).not.toContain('stopserver');
+        expect(builtins).not.toContain('players');
+    });
+
+    it('never requires less than the menu action permission', () => {
+        for (const cmd of getBuiltinChatCommands([])) {
+            expect(cmd.permission, cmd.name).not.toBe('');
+        }
+    });
+
+    it('yields to custom commands using the same name or alias, even disabled ones', () => {
+        const custom = [
+            makeCmd({ id: 'aaaaaaaaaaaaaaaa', name: 'bring', enabled: false }),
+            makeCmd({ id: 'bbbbbbbbbbbbbbbb', name: 'revive', aliases: ['heal'] }),
+        ];
+        const builtins = names(getBuiltinChatCommands(custom));
+        expect(builtins).not.toContain('bring');
+        expect(builtins).not.toContain('heal');
+        expect(builtins).toContain('return');
     });
 });
 

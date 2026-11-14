@@ -95,6 +95,36 @@ suite('parseRawPerf', () => {
         ]);
     });
 
+    it('should select the GameServer instance when a thread has multiple instances', () => {
+        const gameServerPerf = perfValidExample.replaceAll(
+            '{name="svNetwork"',
+            '{instance="GameServer",name="svNetwork"',
+        );
+        const voiceServerPerf = perfValidExample
+            .split('\n')
+            .filter((line) => line.includes('{name="svNetwork"'))
+            .map((line) =>
+                line.replace('{name="svNetwork"', '{instance="VoiceServer",name="svNetwork"').replace(/\s\S+$/, ' 42'),
+            )
+            .join('\n');
+
+        const result = parseRawPerf(`${voiceServerPerf}\n${gameServerPerf}`);
+        expect(result.perfMetrics.svNetwork.count).toBe(1840805);
+        expect(result.perfMetrics.svNetwork.sum).toBe(76.39499999999963);
+    });
+
+    it('should accept zero-valued metrics while the server is starting', () => {
+        const perfWithZeroNetworkMetrics = perfValidExample
+            .split('\n')
+            .map((line) => (line.includes('{name="svNetwork"') ? line.replace(/\s\S+$/, ' 0') : line))
+            .join('\n');
+
+        const result = parseRawPerf(perfWithZeroNetworkMetrics);
+        expect(result.perfMetrics.svNetwork.count).toBe(0);
+        expect(result.perfMetrics.svNetwork.sum).toBe(0);
+        expect(result.perfMetrics.svNetwork.buckets).toEqual(Array(15).fill(0));
+    });
+
     it('should detect bad perf output', () => {
         expect(() => parseRawPerf(null as any)).toThrow('string expected');
         expect(() => parseRawPerf('bad data')).toThrow('missing tickTime_');

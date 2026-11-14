@@ -1,5 +1,6 @@
 import { debugLog } from './debugLog';
 import { isBrowserEnv } from '@nui/src/utils/miscUtils';
+import { NUI_CALLBACK_URL } from '@nui/src/utils/nuiGen';
 
 type OptsWithMockData<T> = Partial<RequestInit & { mockResp: T }>;
 
@@ -27,7 +28,7 @@ export async function fetchNui<T = any>(eventName: string, data: unknown = {}, o
     if (isBrowserEnv() && opts?.mockResp) return opts.mockResp;
 
     try {
-        const resp = await fetch(`https://monitor/${eventName}`, options);
+        const resp = await fetch(`${NUI_CALLBACK_URL}/${eventName}`, options);
         return await resp.json();
     } catch (error) {
         if (error instanceof Error && error.name === 'SyntaxError') {

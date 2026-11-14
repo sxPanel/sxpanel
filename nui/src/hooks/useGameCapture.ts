@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { startCapture, stopCapture, captureSingleFrame, warmupPipeline } from '../utils/gameCapture';
+import { NUI_CALLBACK_URL } from '../utils/nuiGen';
 
 /**
  * Hook that listens for NUI messages from Lua and delegates to the
@@ -32,7 +33,7 @@ export function useGameCapture() {
                 startCapture(
                     data.sessionId,
                     (sessionId: string, frameData: string) => {
-                        fetch(`https://monitor/spectateFrame`, {
+                        fetch(`${NUI_CALLBACK_URL}/spectateFrame`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
                             body: JSON.stringify({ sessionId, frameData }),
@@ -62,7 +63,7 @@ export function useGameCapture() {
                     ? { requestId: data.requestId, data: frame }
                     : { requestId: data.requestId, error: error ?? 'Unknown capture error.' };
 
-                fetch(`https://monitor/screenshotResult`, {
+                fetch(`${NUI_CALLBACK_URL}/screenshotResult`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json; charset=UTF-8' },
                     body: JSON.stringify(payload),

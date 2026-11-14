@@ -145,6 +145,10 @@ end, false)
 local function reqVehicleDelete(_, cb)
     local veh = getPedVehicle()
     if veh == nil then
+        -- the menu shows this error itself when the callback reports no success
+        if cb then
+            return cb({ success = false })
+        end
         return SendSnackbarMessage('error', 'nui_menu.page_main.vehicle.not_in_veh_error', true)
     end
     local vehNetId = NetworkGetNetworkIdFromEntity(veh)
@@ -167,7 +171,12 @@ end, false)
 local function reqVehicleFix(_, cb)
     local veh = getPedVehicle()
     if veh == nil then
-        return SendSnackbarMessage('error', 'nui_menu.page_main.vehicle.not_in_veh_error', true)
+        SendSnackbarMessage('error', 'nui_menu.page_main.vehicle.not_in_veh_error', true)
+        -- always answer the NUI callback, otherwise its fetch never settles
+        if cb then
+            cb({})
+        end
+        return
     end
     TriggerServerEvent('txsv:req:vehicle:fix')
     if cb then
@@ -188,7 +197,12 @@ end, false)
 local function reqVehicleBoost(_, cb)
     local veh = getPedVehicle()
     if veh == nil then
-        return SendSnackbarMessage('error', 'nui_menu.page_main.vehicle.not_in_veh_error', true)
+        SendSnackbarMessage('error', 'nui_menu.page_main.vehicle.not_in_veh_error', true)
+        -- always answer the NUI callback, otherwise its fetch never settles
+        if cb then
+            cb({})
+        end
+        return
     end
     TriggerServerEvent('txsv:req:vehicle:boost')
     if cb then

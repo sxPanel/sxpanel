@@ -16,14 +16,30 @@ import { TextField } from '../misc/TextField';
 import { useDebounce } from '@nui/src/hooks/useDebouce';
 
 const TypographyTitle = styled(Typography)(({ theme }) => ({
-    fontWeight: 600,
+    fontWeight: 700,
+    color: theme.tokens.textPrimary,
     overflowWrap: 'anywhere',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    //Accent dot — the only brand color in the header
+    '&::before': {
+        content: '""',
+        width: 8,
+        height: 8,
+        borderRadius: '50%',
+        background: theme.tokens.accentGradient,
+        boxShadow: theme.tokens.accentGlow,
+        flexShrink: 0,
+    },
 }));
 
 const TypographyPlayerCount = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.secondary,
     fontWeight: 500,
+    fontSize: 12,
     overflowWrap: 'anywhere',
+    paddingLeft: 18,
 }));
 
 const InputAdornmentIcon = styled(InputAdornment)(({ theme }) => ({
@@ -90,9 +106,7 @@ export const PlayerPageHeader: React.FC = () => {
     return (
         <Box display="flex" justifyContent="space-between" gap={2} minWidth={0} flexWrap="wrap">
             <Box px={2} minWidth={0} flex="1 1 220px">
-                <TypographyTitle variant="h5" color="primary">
-                    {t('nui_menu.page_players.misc.online_players')}
-                </TypographyTitle>
+                <TypographyTitle variant="h5">{t('nui_menu.page_players.misc.online_players')}</TypographyTitle>
                 <TypographyPlayerCount>{playerCountText}</TypographyPlayerCount>
             </Box>
             <Box display="flex" alignItems="center" justifyContent="flex-end" gap={3} flexWrap="wrap" minWidth={0}>

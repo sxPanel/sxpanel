@@ -7,6 +7,7 @@ import GenericSpinner from '@/components/GenericSpinner';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { contentRefreshKeyAtom, pageErrorStatusAtom, useSetPageTitle } from '@/hooks/pages';
 import { navigate as setLocation } from 'wouter/use-browser-location';
+import { NUI_GEN } from '@/lib/nuiGen';
 
 const NotFound = lazy(() => import('@/pages/NotFound'));
 const UnauthorizedPage = lazy(() => import('@/pages/UnauthorizedPage'));
@@ -327,7 +328,7 @@ function NuiBlockedRoutePage({ pageName, routePath }: { pageName: string; routeP
     const { t } = useLocale();
 
     const handleOpenInBrowser = () => {
-        openExternalLink(`https://monitor${routePath}`);
+        openExternalLink(`https://${NUI_GEN.resourceName}${routePath}`);
     };
 
     return (

@@ -7,7 +7,8 @@ import { translateApiError } from '@/lib/translateApiError';
 import { ApiTimeout } from '@/lib/fetchWithTimeout';
 import type { ApiAccessDeniedResp, GenericApiErrorResp } from '@shared/genericApiTypes';
 import { useCallback, useEffect, useRef } from 'react';
-const WEBPIPE_PATH = 'https://monitor/WebPipe';
+import { NUI_WEBPIPE_BASE } from '@/lib/nuiGen';
+const WEBPIPE_PATH = NUI_WEBPIPE_BASE;
 const headeruserAgent = `txAdminPanel/v${window.txConsts.txaVersion} (atop FXServer/b${window.txConsts.fxsVersion})`;
 const defaultHeaders = {
     'Content-Type': 'application/json; charset=UTF-8',
@@ -132,6 +133,12 @@ type ApiCallOpts<RespType, ReqType> = {
 };
 
 export const useBackendApi = <RespType = any, ReqType = NonNullable<Object>>(hookOpts: HookOpts) => {
+    //NOTE: destructured to stable primitives (instead of depending on `hookOpts` itself, which
+    //is a fresh object literal on every render at most call sites) so the useCallback below
+    //actually returns a stable function reference. A caller using this hook's return value as a
+    //useEffect dependency (eg. status polling loops) would otherwise have that effect re-run on
+    //every render, immediately re-firing requests in a tight loop with no polling delay - this
+    //is exactly what caused the deployer status endpoint to be hammered thousands of times/min.
     const { method, path, abortOnUnmount = false, throwGenericErrors = false } = hookOpts;
     const abortController = useRef<AbortController | undefined>(undefined);
     const currentToastId = useRef<string | undefined>(undefined);

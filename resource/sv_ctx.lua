@@ -25,7 +25,7 @@ local ServerCtxObj = {
 }
 
 local function getCustomLocaleData()
-    local fileData = LoadResourceFile('monitor', '.runtime/locale.json')
+    local fileData = LoadResourceFile(TX_RESOURCE_NAME, '.runtime/locale.json')
     if type(fileData) ~= 'string' then
         TxPrint("^1WARNING: failed to load custom 'locale.json' file.")
         return false
@@ -98,10 +98,13 @@ local function syncServerCtx()
     ServerCtxObj.sxPanelVersion = sxPanelVersion
 
     -- Default '' in fxServer
+    -- Server list metadata moved to the Cfx Portal, so sv_projectname is often unset now;
+    -- fall back to the server name configured in sxPanel.
     local svProjectName = GetConvar('sv_projectname', '')
-    if svProjectName ~= '' then
-        ServerCtxObj.projectName = svProjectName
+    if svProjectName == '' then
+        svProjectName = GetConvar('txAdmin-serverName', '')
     end
+    ServerCtxObj.projectName = svProjectName ~= '' and svProjectName or nil
 
     -- Default 30 in fxServer
     local svMaxClients = GetConvarInt('sv_maxclients', 30)
@@ -113,7 +116,7 @@ local function syncServerCtx()
     if txAdminLocale == 'custom' then
         ServerCtxObj.localeData = getCustomLocaleData()
         if ServerCtxObj.localeData then
-            local customFile = LoadResourceFile('monitor', '.runtime/locale.json')
+            local customFile = LoadResourceFile(TX_RESOURCE_NAME, '.runtime/locale.json')
             if type(customFile) == 'string' then
                 local customLocale = json.decode(customFile)
                 ServerCtxObj.instructionalLabels = extractInstructionalLabels(customLocale)
@@ -121,7 +124,7 @@ local function syncServerCtx()
         end
     else
         -- Load the built-in locale file and send only NUI sections
-        local localeFile = LoadResourceFile('monitor', 'locale/' .. txAdminLocale .. '.json')
+        local localeFile = LoadResourceFile(TX_RESOURCE_NAME, 'locale/' .. txAdminLocale .. '.json')
         if type(localeFile) == 'string' then
             local locale = json.decode(localeFile)
             if locale and type(locale['$meta']) == 'table' then

@@ -124,7 +124,11 @@ const buildOptions: BuildOptions = {
     format: 'cjs', //typescript builds to esm and esbuild converts it to cjs
     charset: 'utf8',
     inject: [path.join('scripts', 'build', 'importMetaUrlShim.js')],
-    define: { TX_PRERELEASE_EXPIRATION: preReleaseExpiration, 'import.meta.url': 'import_meta_url' },
+    define: {
+        TX_PRERELEASE_EXPIRATION: preReleaseExpiration,
+        TX_RELEASE_VERSION: JSON.stringify(txVersion),
+        'import.meta.url': 'import_meta_url',
+    },
 };
 const plugins: BuildOptions['plugins'] = [
     {

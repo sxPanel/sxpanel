@@ -17,8 +17,8 @@ export const useExitListener = () => {
             if (!shouldListen) return;
             if (['Escape', 'Backspace'].includes(e.code)) {
                 setVisible(false);
-                fetchNui('closeMenu');
-                fetchNui('playSound', 'enter');
+                fetchNui('closeMenu').catch(() => {});
+                fetchNui('playSound', 'enter').catch(() => {});
             }
         };
 

@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { argon2id, argon2Verify } from 'hash-wasm';
+import bcrypt from 'bcryptjs';
 
 const ARGON2_PARAMS = {
     parallelism: 1,
@@ -27,12 +28,15 @@ export async function hashAdminPassword(password: string): Promise<string> {
 
 /**
  * Verifies a plaintext password against a bcrypt (legacy) or Argon2 hash.
+ * NOTE: legacy bcrypt verification is done via bcryptjs (pure JS) rather than the FXServer
+ * VerifyPasswordHash native, since native availability isn't guaranteed across FXServer
+ * generations (gen8 vs gen9/Enhanced).
  */
 export async function verifyAdminPassword(password: string, hash: string): Promise<boolean> {
     if (!isValidAdminPasswordHash(hash)) return false;
 
     if (isLegacyBcryptHash(hash)) {
-        return VerifyPasswordHash(password, hash);
+        return bcrypt.compare(password, hash);
     }
 
     try {

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
     hashAdminPassword,
     isArgon2Hash,
@@ -7,7 +7,8 @@ import {
     verifyAdminPassword,
 } from './adminPassword';
 
-vi.stubGlobal('VerifyPasswordHash', (password: string, _hash: string) => password === 'legacy-plain');
+//NOTE: this is a real bcrypt hash (not a native/mock) for the plaintext 'teste123'
+const bcryptHash = '$2b$11$K3HwDzkoUfhU6.W.tScfhOLEtR5uNc9qpQ685emtERx3dZ7fmgXCy';
 
 describe('adminPassword', () => {
     it('detects legacy bcrypt hashes', () => {
@@ -15,9 +16,8 @@ describe('adminPassword', () => {
         expect(isArgon2Hash('$2b$11$abcdefghijklmnopqrstuv')).toBe(false);
     });
 
-    it('verifies legacy bcrypt via native', async () => {
-        const bcryptHash = '$2b$11$K3HwDzkoUfhU6.W.tScfhOLEtR5uNc9qpQ685emtERx3dZ7fmgXCy';
-        expect(await verifyAdminPassword('legacy-plain', bcryptHash)).toBe(true);
+    it('verifies legacy bcrypt via bcryptjs', async () => {
+        expect(await verifyAdminPassword('teste123', bcryptHash)).toBe(true);
         expect(await verifyAdminPassword('wrong', bcryptHash)).toBe(false);
     });
 
@@ -29,10 +29,9 @@ describe('adminPassword', () => {
     });
 
     it('migrates legacy bcrypt to argon2', async () => {
-        const bcryptHash = '$2b$11$K3HwDzkoUfhU6.W.tScfhOLEtR5uNc9qpQ685emtERx3dZ7fmgXCy';
-        const migrated = await migrateLegacyPasswordHash('legacy-plain', bcryptHash);
+        const migrated = await migrateLegacyPasswordHash('teste123', bcryptHash);
         expect(migrated).toBeTruthy();
         expect(isArgon2Hash(migrated!)).toBe(true);
-        expect(await verifyAdminPassword('legacy-plain', migrated!)).toBe(true);
+        expect(await verifyAdminPassword('teste123', migrated!)).toBe(true);
     });
 });

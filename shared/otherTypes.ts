@@ -119,6 +119,7 @@ export type InjectedTxConsts = {
     //Env
     fxsVersion: string;
     fxsOutdated: UpdateDataType;
+    fxsIsGen9: boolean;
     txaVersion: string;
     txaOutdated: UpdateDataType;
 

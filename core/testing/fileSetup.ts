@@ -26,10 +26,6 @@ vi.stubGlobal('GetConvar', (varName: string, defaultValue: string) => {
 vi.stubGlobal('GetCurrentResourceName', () => {
     return 'monitor';
 });
-vi.stubGlobal('GetPasswordHash', (password: string) => {
-    //bcrypt hash for 'teste123'
-    return '$2b$11$K3HwDzkoUfhU6.W.tScfhOLEtR5uNc9qpQ685emtERx3dZ7fmgXCy';
-});
 vi.stubGlobal('GetResourceMetadata', (resourceName: string, metadataKey: string, index: number) => {
     if (resourceName === 'monitor' && metadataKey === 'version' && index === 0) {
         return '9.9.9';
@@ -52,9 +48,6 @@ vi.stubGlobal('PrintStructuredTrace', (payload: string) => {
 });
 vi.stubGlobal('ScanResourceRoot', (rootPath: string, callback: (data: object) => void) => {
     throw new Error(`not implemented`);
-});
-vi.stubGlobal('VerifyPasswordHash', (password: string, hash: string) => {
-    return true;
 });
 vi.stubGlobal('Intl.getCanonicalLocales', (locales?: string | readonly string[] | undefined) => {
     return Array.isArray(locales) ? locales : [locales];

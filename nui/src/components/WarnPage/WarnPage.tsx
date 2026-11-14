@@ -12,6 +12,7 @@ import { ReportProblemOutlined } from '@mui/icons-material';
 const boxClasses = {
     root: `WarnBox-root`,
     inner: `WarnBox-inner`,
+    iconBadge: `WarnBox-iconBadge`,
     title: `WarnBox-title`,
     message: `WarnBox-message`,
     author: `WarnBox-author`,
@@ -21,27 +22,47 @@ const boxClasses = {
 const WarnInnerStyles = styled('div')(({ theme }) => ({
     color: theme.tokens.textPrimary,
     transition: 'transform 300ms ease-in-out',
-    maxWidth: '700px',
+    maxWidth: '640px',
     width: 'calc(100vw - 48px)',
     boxSizing: 'border-box',
     overflowWrap: 'anywhere',
 
+    //Dark solid card floating over the red backdrop
     [`& .${boxClasses.inner}`]: {
-        padding: 32,
-        border: `3px dashed ${theme.tokens.textPrimary}`,
+        padding: '36px 40px 28px',
+        backgroundColor: 'rgba(10, 6, 8, 0.94)',
+        border: '1px solid rgba(255, 255, 255, 0.14)',
         borderRadius: theme.tokens.radiusCard,
+        boxShadow: '0 24px 60px rgba(0, 0, 0, 0.55)',
+        textAlign: 'center',
+    },
+    [`& .${boxClasses.iconBadge}`]: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 64,
+        height: 64,
+        margin: '0 auto 14px auto',
+        borderRadius: '50%',
+        backgroundColor: 'rgba(255, 174, 0, 0.14)',
+        border: '1px solid rgba(255, 174, 0, 0.4)',
+        boxShadow: '0 0 24px rgba(255, 174, 0, 0.25)',
+        '& svg': {
+            color: theme.palette.warning.light,
+            fontSize: 34,
+        },
     },
     [`& .${boxClasses.title}`]: {
-        display: 'flex',
-        margin: '-20px auto 18px auto',
+        display: 'block',
+        margin: '0 auto 18px auto',
         width: 'fit-content',
         maxWidth: '100%',
-        borderBottom: `2px solid ${theme.tokens.textPrimary}`,
-        paddingBottom: 5,
-        fontWeight: 700,
-        letterSpacing: '0.02em',
-        alignItems: 'center',
+        fontWeight: 800,
+        letterSpacing: '0.14em',
+        textTransform: 'uppercase',
         overflowWrap: 'normal',
+        paddingBottom: 14,
+        borderBottom: `1px solid rgba(255, 255, 255, 0.14)`,
     },
     [`& .${boxClasses.message}`]: {
         fontSize: '1.5em',
@@ -49,10 +70,8 @@ const WarnInnerStyles = styled('div')(({ theme }) => ({
         overflowWrap: 'anywhere',
     },
     [`& .${boxClasses.author}`]: {
-        textAlign: 'right',
         fontSize: '0.8em',
-        marginTop: 15,
-        marginBottom: -15,
+        marginTop: 18,
     },
     [`& .${boxClasses.instruction}`]: {
         marginTop: '1em',
@@ -69,19 +88,6 @@ interface WarnInnerComp {
     resetCounter: number;
 }
 
-const WarningIcon = () => {
-    const theme = useTheme();
-    return (
-        <ReportProblemOutlined
-            style={{
-                color: theme.palette.warning.light,
-                padding: '0 4px 0 4px',
-                height: '3rem',
-                width: '3rem',
-            }}
-        />
-    );
-};
 
 const WarnInnerComp: React.FC<WarnInnerComp> = ({ message, warnedBy, isWarningNew, secsRemaining, resetCounter }) => {
     const t = useTranslate();
@@ -114,15 +120,16 @@ const WarnInnerComp: React.FC<WarnInnerComp> = ({ message, warnedBy, isWarningNe
         <>
             <WarnInnerStyles className={boxClasses.root}>
                 <Box className={boxClasses.inner}>
+                    <Box className={boxClasses.iconBadge}>
+                        <ReportProblemOutlined />
+                    </Box>
                     <Box className={boxClasses.title}>
-                        <WarningIcon />
-                        <Typography variant="h3" style={{ fontWeight: 700 }}>
+                        <Typography variant="h3" style={{ fontWeight: 800, letterSpacing: 'inherit' }}>
                             {t('nui_warning.title')}
                         </Typography>
-                        <WarningIcon />
                     </Box>
                     <Typography
-                        letterSpacing={1}
+                        letterSpacing={0.5}
                         variant="h5"
                         style={{
                             textAlign: 'center',
@@ -133,11 +140,9 @@ const WarnInnerComp: React.FC<WarnInnerComp> = ({ message, warnedBy, isWarningNe
                         {message}
                     </Typography>
                     <Typography
-                        letterSpacing={1}
+                        className={boxClasses.author}
                         style={{
-                            textAlign: 'right',
-                            marginBottom: -20,
-                            opacity: 0.85,
+                            opacity: 0.75,
                             overflowWrap: 'anywhere',
                             wordBreak: 'break-word',
                         }}
@@ -195,6 +200,8 @@ const MainPageStyles = styled('div')(({ theme }) => {
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: alpha(warnRed, 0.95),
+            //Vignette overlay — the pulse animation runs on backgroundColor beneath it
+            backgroundImage: 'radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.4) 100%)',
         },
         '@keyframes miniBounce': {
             '0%': {

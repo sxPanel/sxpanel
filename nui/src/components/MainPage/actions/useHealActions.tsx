@@ -1,5 +1,5 @@
 import React from 'react';
-import { CenterFocusWeak, Favorite, LocalHospital } from '@mui/icons-material';
+import { CenterFocusWeakOutlined, FavoriteOutlined, LocalHospitalOutlined } from '@mui/icons-material';
 import { useDialogContext } from '../../../provider/DialogProvider';
 import { fetchNui } from '../../../utils/fetchNui';
 import { useTranslate } from 'react-polyglot';
@@ -13,11 +13,11 @@ export function useHealActions() {
     const [healMode, setHealMode] = useHealMode();
 
     const handleHealMyself = () => {
-        fetchNui('healMyself');
+        fetchNui('healMyself').catch(() => {});
     };
 
     const handleHealAllPlayers = () => {
-        fetchNui('healAllPlayers');
+        fetchNui('healAllPlayers').catch(() => {});
         enqueueSnackbar(t('nui_menu.page_main.heal.everyone.success'), {
             variant: 'info',
         });
@@ -36,7 +36,7 @@ export function useHealActions() {
                     return enqueueSnackbar(t('nui_menu.page_main.heal.radius.dialog_error'), { variant: 'error' });
                 }
 
-                fetchNui('healRadius', { radius: parsedRadius });
+                fetchNui('healRadius', { radius: parsedRadius }).catch(() => {});
                 enqueueSnackbar(t('nui_menu.page_main.heal.radius.success'), {
                     variant: 'info',
                 });
@@ -56,7 +56,7 @@ export function useHealActions() {
                     name: t('nui_menu.page_main.heal.myself.title'),
                     label: t('nui_menu.page_main.heal.myself.label'),
                     value: HealMode.SELF,
-                    icon: <Favorite />,
+                    icon: <FavoriteOutlined />,
                     onSelect: () => {
                         setHealMode(HealMode.SELF);
                         handleHealMyself();
@@ -66,7 +66,7 @@ export function useHealActions() {
                     name: t('nui_menu.page_main.heal.everyone.title'),
                     label: t('nui_menu.page_main.heal.everyone.label'),
                     value: HealMode.ALL,
-                    icon: <LocalHospital />,
+                    icon: <LocalHospitalOutlined />,
                     onSelect: () => {
                         setHealMode(HealMode.ALL);
                         handleHealAllPlayers();
@@ -76,7 +76,7 @@ export function useHealActions() {
                     name: t('nui_menu.page_main.heal.radius.title'),
                     label: t('nui_menu.page_main.heal.radius.label'),
                     value: HealMode.RADIUS,
-                    icon: <CenterFocusWeak />,
+                    icon: <CenterFocusWeakOutlined />,
                     onSelect: () => {
                         setHealMode(HealMode.RADIUS);
                         handleHealRadius();

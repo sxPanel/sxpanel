@@ -32,6 +32,12 @@ const classes = {
 const StyledList = styled(List)(({ theme }) => ({
     [`& .${classes.listItem}`]: {
         marginBottom: 6,
+        '&.Mui-selected .MuiListItemIcon-root': {
+            color: theme.palette.primary.main,
+        },
+        '&.Mui-selected .MuiListItemText-primary': {
+            fontWeight: 600,
+        },
     },
 
     //Danger treatment for the Ban tab, driven by the error palette
@@ -82,14 +88,40 @@ const PlayerModal: React.FC<PlayerModalProps> = ({ onClose }) => {
                 <Box
                     component="span"
                     sx={{
-                        display: 'block',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
                         minWidth: 0,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
                     }}
                 >
-                    [{assocPlayer.id}] {playerName}
+                    <Box
+                        component="span"
+                        sx={{
+                            flexShrink: 0,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            lineHeight: 1,
+                            color: tokens.textMuted,
+                            backgroundColor: tokens.surfaceRaised,
+                            border: `1px solid ${tokens.border}`,
+                            borderRadius: `${tokens.radiusPill}px`,
+                            padding: '4px 9px',
+                        }}
+                    >
+                        #{assocPlayer.id}
+                    </Box>
+                    <Box
+                        component="span"
+                        sx={{
+                            minWidth: 0,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            fontWeight: 700,
+                        }}
+                    >
+                        {playerName}
+                    </Box>
                 </Box>
                 <StyledCloseButton onClick={onClose} size="large">
                     <Close />

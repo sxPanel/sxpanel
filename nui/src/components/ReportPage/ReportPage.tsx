@@ -19,6 +19,7 @@ import {
 import { Chat, Close, Image, Send, Star } from '@mui/icons-material';
 import { useNuiEvent } from '../../hooks/useNuiEvent';
 import { fetchNui } from '../../utils/fetchNui';
+import { asArray } from '../../utils/miscUtils';
 import { useSetListenForExit } from '../../state/keys.state';
 import type { MenuTokens } from '../../styles/theme';
 import { useTranslate } from 'react-polyglot';
@@ -67,6 +68,7 @@ const Panel = styled(Box)(({ theme }) => ({
     maxHeight: 'calc(100vh - 40px)',
     boxSizing: 'border-box',
     background: theme.tokens.surface,
+    boxShadow: theme.tokens.shadowCard,
     borderRadius: theme.tokens.radiusCard,
     border: `1px solid ${theme.tokens.border}`,
     display: 'flex',
@@ -836,10 +838,11 @@ export const ReportPage: React.FC = () => {
         /** Browser-dev only — Lua never sends this. */
         initialView?: View;
     }>('openTicketUI', (data) => {
-        setPlayers(data.players || []);
-        setCategories(data.categories || []);
+        //Normalize Lua-bridge payloads: empty tables arrive as `{}`, nil fields are omitted
+        setPlayers(asArray(data.players));
+        setCategories(asArray(data.categories));
         setPriorityEnabled(data.priorityEnabled ?? false);
-        if (data.tickets) setTickets(data.tickets);
+        if (data.tickets) setTickets(asArray(data.tickets));
         setIsOpen(true);
         setView(data.initialView ?? 'menu');
         setListenForExit(false);
@@ -853,9 +856,10 @@ export const ReportPage: React.FC = () => {
     // Listen for ticket list updates
     useNuiEvent<{ tickets?: PlayerTicketSummary[]; error?: string }>('ticketMyList', (data) => {
         if (data.tickets) {
-            setTickets(data.tickets);
+            const ticketList = asArray<PlayerTicketSummary>(data.tickets);
+            setTickets(ticketList);
             if (selectedTicket) {
-                const updated = data.tickets.find((t) => t.id === selectedTicket.id);
+                const updated = ticketList.find((t) => t.id === selectedTicket.id);
                 if (updated) setSelectedTicket(updated);
             }
         }
@@ -889,7 +893,7 @@ export const ReportPage: React.FC = () => {
 
     // Listen for full message list (fetched on ticket open)
     useNuiEvent<{ messages?: TicketMessage[]; error?: string }>('ticketMessages', (data) => {
-        if (data.messages) setTicketMessages(data.messages);
+        if (data.messages) setTicketMessages(asArray(data.messages));
     });
 
     // Listen for a real-time message push (from admin panel, in-game admin, or Discord)

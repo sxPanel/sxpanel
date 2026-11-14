@@ -419,6 +419,12 @@ export const systemLogActionDefinitions = [
         description: 'Download a server resource as a zip archive.',
     },
     {
+        id: 'resource.config.edit',
+        category: 'action',
+        label: 'Edit Resource Config',
+        description: 'Edit a config file inside a server resource folder.',
+    },
+    {
         id: 'scheduler.restart.enable',
         category: 'action',
         label: 'Re-enable Scheduled Restart',

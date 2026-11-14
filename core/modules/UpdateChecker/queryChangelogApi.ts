@@ -75,9 +75,13 @@ export const queryChangelogApi = async () => {
     }
 
     //Checking FXServer version
+    //NOTE: gen9 (FiveM Enhanced) uses its own unrelated build-numbering scheme, which this
+    //      changelog API doesn't have thresholds for yet, so the comparison is skipped entirely.
     let fxsUpdateData: UpdateDataType | undefined;
     try {
-        if (txEnv.fxsVersion < apiResponse.critical) {
+        if (txEnv.fxsIsGen9) {
+            //no-op, nothing to compare gen9 build numbers against yet
+        } else if (txEnv.fxsVersion < apiResponse.critical) {
             if (apiResponse.critical > apiResponse.recommended) {
                 fxsUpdateData = {
                     version: apiResponse.critical.toString(),

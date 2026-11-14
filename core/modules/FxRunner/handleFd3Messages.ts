@@ -3,6 +3,7 @@ import { ServerPlayer } from '@lib/player/playerClasses';
 import { applyPlayerTagChange } from '@lib/player/playerTags';
 import { emsg } from '@shared/emsg';
 import consoleFactory from '@lib/console';
+import { txEnv } from '@core/globalData';
 import { CommandBridgeSchema, PlayerTagChangeSchema } from './fd3Schemas';
 const console = consoleFactory('FXProc:FD3');
 
@@ -310,7 +311,11 @@ const handleFd3Messages = (mutex: string, trace: StructuredTraceType) => {
     // }
 
     //Handle script traces
-    if (channel === 'citizen-server-impl' && data.type === 'script_structured_trace' && data.resource === 'monitor') {
+    if (
+        channel === 'citizen-server-impl'
+        && data.type === 'script_structured_trace'
+        && data.resource === txEnv.txaResourceName
+    ) {
         const tracePayload = resolveMonitorTracePayload(data.payload);
         if (!tracePayload || typeof tracePayload.type !== 'string') return;
 

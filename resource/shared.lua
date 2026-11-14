@@ -2,6 +2,11 @@
 --  Truly global
 -- =============================================
 
+--- The actual resource name at runtime: 'monitor' on gen8, 'txadmin' on FXServer gen9
+--- (FiveM Enhanced) - not hardcoded, since it varies by generation. Used instead of a literal
+--- wherever a native call needs the resource's own name (LoadResourceFile, etc).
+TX_RESOURCE_NAME = GetCurrentResourceName()
+
 function GetConvarBool(cvName, defaultConvarValue)
     if not cvName then
         return false
@@ -125,9 +130,9 @@ local function _translatorLoadLocale()
 
     local fileData
     if lang == 'custom' then
-        fileData = LoadResourceFile('monitor', '.runtime/locale.json')
+        fileData = LoadResourceFile(TX_RESOURCE_NAME, '.runtime/locale.json')
     else
-        fileData = LoadResourceFile('monitor', 'locale/' .. lang .. '.json')
+        fileData = LoadResourceFile(TX_RESOURCE_NAME, 'locale/' .. lang .. '.json')
     end
 
     if type(fileData) ~= 'string' then

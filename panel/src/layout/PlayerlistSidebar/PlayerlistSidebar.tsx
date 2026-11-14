@@ -110,9 +110,11 @@ export function PlayerlistSidebar({ isSheet }: PlayerSidebarProps) {
                     isSheet
                         ? 'flex h-screen w-full'
                         : cn(
-                              'tx-sidebar min-h-contentvh shell-lg:flex relative hidden',
+                              'tx-sidebar shell-lg:flex relative hidden',
                               'bg-background border-border/80 rounded-xl border',
-                              isCollapsed ? 'w-(--tx-playerlist-collapsed-width)' : 'w-(--tx-playerlist-width)',
+                              isCollapsed
+                                  ? 'h-auto w-(--tx-playerlist-collapsed-width)'
+                                  : 'min-h-contentvh w-(--tx-playerlist-width)',
                           ),
                 )}
             >

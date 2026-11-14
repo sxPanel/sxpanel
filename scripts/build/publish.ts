@@ -29,7 +29,11 @@ try {
         minifyWhitespace: true,
         charset: 'utf8',
         inject: [path.join('scripts', 'build', 'importMetaUrlShim.js')],
-        define: { TX_PRERELEASE_EXPIRATION: preReleaseExpiration, 'import.meta.url': 'import_meta_url' },
+        define: {
+            TX_PRERELEASE_EXPIRATION: preReleaseExpiration,
+            TX_RELEASE_VERSION: JSON.stringify(txVersion),
+            'import.meta.url': 'import_meta_url',
+        },
         banner: { js: licenseBanner(undefined, true) },
         //To satisfy the license's "full text" requirement, it will be generated
         //by another npm script and it is referenced in the banner.

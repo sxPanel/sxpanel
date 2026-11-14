@@ -1,6 +1,7 @@
 import { isBrowserEnv } from '@nui/src/utils/miscUtils';
+import { NUI_WEBPIPE_URL } from '@nui/src/utils/nuiGen';
 
-const WEBPIPE_PATH = 'https://monitor/WebPipe';
+const WEBPIPE_PATH = NUI_WEBPIPE_URL;
 
 type ValidPath = `/${string}`;
 

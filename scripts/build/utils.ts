@@ -159,6 +159,13 @@ const formatLuaSection = (name: string, scripts: string[]) => {
 /**
  * Edits the ./monitor/fxmanifest.lua to include the txAdmin version
  * and auto-generate script lists from the resource directory.
+ *
+ * NOTE: repo-owned scripts (resource/) are globbed from the repo working tree,
+ * not from targetPath — the copy step wipes and repopulates targetPath, so a
+ * concurrent or partially-failed copy (e.g. EBUSY from a running FXServer on
+ * Windows) would make a targetPath glob silently produce a truncated manifest.
+ * Addons are still globbed from targetPath because default addons can be
+ * copied in from outside the repo.
  */
 const setupDistFxmanifest = (targetPath: string, txVersion: string) => {
     const fxManifestPath = path.join(targetPath, 'fxmanifest.lua');
@@ -166,9 +173,10 @@ const setupDistFxmanifest = (targetPath: string, txVersion: string) => {
     fxManifestContent = replaceFxmanifestVersion(fxManifestContent, txVersion);
 
     // Auto-generate script lists using fs.globSync (Node 22+)
-    const findScripts = (pattern: string) =>
+    const repoPath = process.cwd();
+    const findScripts = (pattern: string, cwd: string = repoPath) =>
         fs
-            .globSync(pattern, { cwd: targetPath })
+            .globSync(pattern, { cwd })
             .map((f) => f.replaceAll('\\', '/'))
             .sort();
 
@@ -176,7 +184,10 @@ const setupDistFxmanifest = (targetPath: string, txVersion: string) => {
 
     // Server scripts: entrypoint.js first, then sv_main.lua, then rest sorted
     const serverLuaScripts = findScripts('resource/**/sv_*.lua');
-    const addonServerScripts = findScripts('addons/**/resource/sv_*.lua');
+    const addonServerScripts = findScripts('addons/**/resource/sv_*.lua', targetPath);
+    if (!serverLuaScripts.includes('resource/sv_main.lua')) {
+        throw new Error('fxmanifest generation: resource/sv_main.lua missing from glob results — refusing to write a broken manifest.');
+    }
     const svMainIdx = serverLuaScripts.findIndex((f) => f === 'resource/sv_main.lua');
     if (svMainIdx > 0) {
         const [svMain] = serverLuaScripts.splice(svMainIdx, 1);
@@ -189,6 +200,9 @@ const setupDistFxmanifest = (targetPath: string, txVersion: string) => {
     // cl_ptfx.lua must load before cl_player_mode.lua
     // vendor scripts must be ordered: utils → config → main → camera
     const clientLuaScripts = findScripts('resource/**/cl_*.lua');
+    if (!clientLuaScripts.includes('resource/cl_main.lua')) {
+        throw new Error('fxmanifest generation: resource/cl_main.lua missing from glob results — refusing to write a broken manifest.');
+    }
     const clMainIdx = clientLuaScripts.findIndex((f) => f === 'resource/cl_main.lua');
     if (clMainIdx > 0) {
         const [clMain] = clientLuaScripts.splice(clMainIdx, 1);
@@ -202,7 +216,7 @@ const setupDistFxmanifest = (targetPath: string, txVersion: string) => {
         const bIdx = vendorOrder.indexOf(bName);
         return (aIdx === -1 ? 99 : aIdx) - (bIdx === -1 ? 99 : bIdx);
     });
-    const addonClientScripts = findScripts('addons/**/resource/cl_*.lua');
+    const addonClientScripts = findScripts('addons/**/resource/cl_*.lua', targetPath);
     const clientScripts = [...clientLuaScripts, ...addonClientScripts, ...vendorScripts];
     const ptfxIdx = clientScripts.findIndex((f) => f.includes('cl_ptfx.lua'));
     const playerModeIdx = clientScripts.findIndex((f) => f.includes('cl_player_mode.lua'));

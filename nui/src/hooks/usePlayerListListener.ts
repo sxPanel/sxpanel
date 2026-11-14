@@ -106,6 +106,11 @@ export const usePlayerListListener = () => {
     const setPlayerList = useSetPlayersState();
 
     useNuiEvent<LuaPlayerData[]>('setPlayerList', (playerList) => {
+        //Empty Lua tables arrive as `{}` objects over the NUI bridge
+        if (!Array.isArray(playerList)) {
+            setPlayerList([]);
+            return;
+        }
         const newPlayerList = playerList.map((player) => {
             let displayName = 'Unknown';
             let pureName = 'unknown';
@@ -124,7 +129,7 @@ export const usePlayerListListener = () => {
                 dist: player.dist,
                 health: player.health,
                 admin: player.admin,
-                tags: player.tags ?? [],
+                tags: Array.isArray(player.tags) ? player.tags : [],
             } satisfies PlayerData;
         });
         setPlayerList(dedupePlayerListById(newPlayerList));

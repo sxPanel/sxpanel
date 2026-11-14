@@ -5,6 +5,11 @@ export { default as intercom } from './intercom.js';
 export { default as resources } from './resources';
 export { default as resources_list } from './resources/list';
 export { default as resources_download } from './resources/download';
+export {
+    ResourcesConfigFiles as resources_configFiles,
+    ResourcesConfigFile as resources_configFile,
+    ResourcesConfigSave as resources_configSave,
+} from './resources/config';
 export { default as perfChart } from './perfChart';
 export { default as playerDrops } from './playerDrops';
 export { default as systemLogPartial } from './systemLogPartial';

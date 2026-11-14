@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { fetchWebPipe } from '../utils/fetchWebPipe';
 import { useIsMenuVisibleValue } from '../state/visibility.state';
+import { NUI_WEBPIPE_URL } from '../utils/nuiGen';
 
 interface AddonNuiDescriptor {
     id: string;
@@ -22,7 +23,7 @@ let loadPromise: Promise<void> | null = null;
  * Routing through the WebPipe lets CEF fetch them from the HTTP server
  * (which reads directly from the addon source directory).
  */
-const WEBPIPE_PATH = 'https://monitor/WebPipe';
+const WEBPIPE_PATH = NUI_WEBPIPE_URL;
 function toResourceUrl(relativePath: string): string {
     return `${WEBPIPE_PATH}/${relativePath}`;
 }

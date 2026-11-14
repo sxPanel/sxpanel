@@ -396,6 +396,7 @@ export default async function getReactIndex(ctx: CtxWithVars | AuthedCtx) {
         //env
         fxsVersion: txEnv.fxsVersionTag,
         fxsOutdated: txCore.updateChecker.fxsUpdateData,
+        fxsIsGen9: txEnv.fxsIsGen9,
         txaVersion: txEnv.txaVersion,
         txaOutdated: txCore.updateChecker.txaUpdateData,
         serverTimezone,
