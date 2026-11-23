@@ -187,6 +187,13 @@ export default () => {
     router.get('/cfgEditor/files', apiAuthMw, routes.cfgEditor_listFiles);
     router.post('/cfgEditor/save', apiAuthMw, routes.cfgEditor_save);
 
+    //Database
+    router.get('/database/status', apiAuthMw, wrapRoute('DatabaseStatus', routes.database_status));
+    router.get('/database/tables', apiAuthMw, wrapRoute('DatabaseTables', routes.database_tables));
+    router.get('/database/table', apiAuthMw, wrapRoute('DatabaseTableData', routes.database_tableData));
+    router.post('/database/query', apiAuthMw, mutationLimiter, wrapRoute('DatabaseQuery', routes.database_query));
+    router.post('/database/row', apiAuthMw, mutationLimiter, wrapRoute('DatabaseRowAction', routes.database_row));
+
     //Resources
     router.get('/resources/list', apiAuthMw, wrapRoute('ResourcesList', routes.resources_list));
     router.get('/resources/download', apiAuthMw, wrapRoute('ResourcesDownload', routes.resources_download));

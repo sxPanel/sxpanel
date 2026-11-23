@@ -28,6 +28,7 @@ const SelfUpdaterPage = lazy(() => import('@/pages/SelfUpdater/SelfUpdaterPage')
 const DeployerPage = lazy(() => import('@/pages/Deployer/DeployerPage'));
 const DiagnosticsPage = lazy(() => import('@/pages/Diagnostics/DiagnosticsPage'));
 const CfgEditorPage = lazy(() => import('@/pages/CfgEditorPage'));
+const DatabasePage = lazy(() => import('@/pages/Database/DatabasePage'));
 import { useAdminPerms } from '@/hooks/auth';
 import { useAddonLoader, type AddonPageRoute } from '@/hooks/addons';
 import { useLocale } from '@/hooks/locale';
@@ -251,6 +252,13 @@ const allRoutes: RouteType[] = [
         permission: 'server.cfg.editor',
         featureFlag: 'cfgEditorPage',
         Page: CfgEditorPage,
+    },
+    {
+        path: '/server/database',
+        titleKey: 'panel.routes.database',
+        permission: 'database.view',
+        featureFlag: 'databasePage',
+        Page: DatabasePage,
     },
     {
         path: '/server/setup',

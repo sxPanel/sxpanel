@@ -108,6 +108,7 @@ export const PANEL_FEATURE_KEYS = [
     'reportAnalyticsPage',
     'resourcesPage',
     'cfgEditorPage',
+    'databasePage',
     'serverLogPage',
     'actionLogPage',
     'consoleLogPage',

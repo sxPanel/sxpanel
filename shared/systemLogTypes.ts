@@ -93,6 +93,7 @@ const configChangeLogFieldDefinitions = [
     ['panelFeatures.reportAnalyticsPage', 'Report Analytics Page Enabled'],
     ['panelFeatures.resourcesPage', 'Resources Page Enabled'],
     ['panelFeatures.cfgEditorPage', 'CFG Editor Page Enabled'],
+    ['panelFeatures.databasePage', 'Database Page Enabled'],
     ['panelFeatures.serverLogPage', 'Server Log Page Enabled'],
     ['panelFeatures.actionLogPage', 'Action Log Page Enabled'],
     ['panelFeatures.consoleLogPage', 'Console Log Page Enabled'],
@@ -255,6 +256,30 @@ export const systemLogActionDefinitions = [
         category: 'action',
         label: 'Save Status Embed Location',
         description: 'Save the Discord status embed location.',
+    },
+    {
+        id: 'database.query',
+        category: 'action',
+        label: 'Run Database Query',
+        description: 'Run a SQL query that changes data from the Database page.',
+    },
+    {
+        id: 'database.row.delete',
+        category: 'action',
+        label: 'Delete Database Row',
+        description: 'Delete a row from the Database page.',
+    },
+    {
+        id: 'database.row.edit',
+        category: 'action',
+        label: 'Edit Database Row',
+        description: 'Edit a row from the Database page.',
+    },
+    {
+        id: 'database.row.insert',
+        category: 'action',
+        label: 'Insert Database Row',
+        description: 'Insert a row from the Database page.',
     },
     {
         id: 'history.ban_duration.change',
