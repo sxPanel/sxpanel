@@ -443,6 +443,12 @@ export const systemLogActionDefinitions = [
         description: 'Skip the next scheduled server restart.',
     },
     {
+        id: 'security.detection',
+        category: 'action',
+        label: 'Security Detection',
+        description: 'Anti-dump / injection detection triggered by a player in-game.',
+    },
+    {
         id: 'settings.server_data_path.reset',
         category: 'action',
         label: 'Reset Server Data Path',

@@ -7,6 +7,7 @@ import { Provider as JotaiProvider } from 'jotai';
 import { KeyboardNavProvider } from './provider/KeyboardNavProvider';
 import { MaterialDesignContent, SnackbarProvider } from 'notistack';
 import { registerDebugFunctions } from './utils/registerDebugFunctions';
+import { startDevtoolsDetector } from './utils/devtoolsDetector';
 import { useNuiEvent } from './hooks/useNuiEvent';
 import { useGameCapture } from './hooks/useGameCapture';
 import { styled } from '@mui/material/styles';
@@ -15,6 +16,7 @@ import { useIsRedm } from './state/isRedm.state';
 import { useNuiAddonLoader } from './hooks/useNuiAddonLoader';
 
 registerDebugFunctions();
+startDevtoolsDetector();
 
 //Overwriting the notistack colors
 //Actually using the colors from the RedM theme, but could start using `theme` if needed

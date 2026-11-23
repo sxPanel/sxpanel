@@ -4,7 +4,7 @@ import { applyPlayerTagChange } from '@lib/player/playerTags';
 import { emsg } from '@shared/emsg';
 import consoleFactory from '@lib/console';
 import { txEnv } from '@core/globalData';
-import { CommandBridgeSchema, PlayerTagChangeSchema } from './fd3Schemas';
+import { CommandBridgeSchema, PlayerTagChangeSchema, SecurityDetectionSchema } from './fd3Schemas';
 const console = consoleFactory('FXProc:FD3');
 
 //Types
@@ -247,6 +247,41 @@ const handleBridgedCommands = (payload: unknown) => {
 };
 
 /**
+ * Handles anti-dump / injection detections from the security module (resource/sv_security.lua).
+ * Detections are always written to the system log; kick/ban go through the same flow as the
+ * command bridge so they land in the player's history and the ban is enforced on rejoin.
+ */
+const handleSecurityDetection = (payload: unknown) => {
+    const parsed = SecurityDetectionSchema.safeParse(payload);
+    if (!parsed.success) {
+        console.warn(`Security detection received invalid payload.`);
+        return;
+    }
+    const { detection, action, targetNetId, details, duration, author } = parsed.data;
+    const player = txCore.fxPlayerlist.getPlayerById(targetNetId);
+    const playerName = player instanceof ServerPlayer ? player.displayName : `#${targetNetId}`;
+    const detailsSuffix = details ? ` (${details})` : '';
+
+    console.warn(`Security detection "${detection}" on ${playerName} -> ${action}${detailsSuffix}`);
+    txCore.logger.system.write(
+        author,
+        `Security detection "${detection}" on "${playerName}" -> ${action}${detailsSuffix}`,
+        'action',
+        { actionId: 'security.detection' },
+    );
+
+    if (action === 'log') return;
+    handleBridgedCommands({
+        type: 'txAdminCommandBridge',
+        command: action,
+        author,
+        targetNetId,
+        reason: `[Security] ${detection}`,
+        ...(action === 'ban' ? { duration: duration || 'permanent' } : {}),
+    });
+};
+
+/**
  * Processes FD3 Messages
  *
  * Mapped message types:
@@ -337,6 +372,8 @@ const handleFd3Messages = (mutex: string, trace: StructuredTraceType) => {
             txCore.database.actions.ackWarn(tracePayload.actionId);
         } else if (tracePayload.type === 'txAdminPlayerTag') {
             handlePlayerTagChange(tracePayload);
+        } else if (tracePayload.type === 'txAdminSecurityDetection') {
+            handleSecurityDetection(tracePayload);
         }
     }
 };
