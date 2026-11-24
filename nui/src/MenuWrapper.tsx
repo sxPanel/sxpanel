@@ -22,6 +22,7 @@ import { useLocale } from './hooks/useLocale';
 import { TooltipProvider } from './provider/TooltipProvider';
 import { BrowserDevToolbar } from './components/misc/BrowserDevToolbar';
 import { StaffHud } from './components/StaffHud/StaffHud';
+import config from './utils/config.json';
 
 //Mock events for browser development
 debugData<any>(
@@ -44,6 +45,14 @@ debugData<any>(
         {
             action: 'setStaffStatus',
             data: { playerMode: 'noclip', playerIds: true },
+        },
+        {
+            action: 'setServerCtx',
+            data: {
+                ...config.serverCtx,
+                projectName: 'sxPanel Dev Server',
+                oneSync: { type: 'onesync', status: true },
+            },
         },
     ],
     150,

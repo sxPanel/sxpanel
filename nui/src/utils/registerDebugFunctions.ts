@@ -1,6 +1,6 @@
 import { isBrowserEnv } from './miscUtils';
 import { debugData } from './debugData';
-import { PlayerData } from '../hooks/usePlayerListListener';
+import { LuaPlayerData } from '../hooks/usePlayerListListener';
 import { LocaleType } from '@shared/localeMap';
 import { ServerCtx } from '../state/server.state';
 import { SetWarnOpenData } from '../components/WarnPage/WarnPage';
@@ -80,7 +80,7 @@ const MenuObject = {
         playerUpdateInterval = setInterval(() => {
             const mockPlayers = mockPlayerData(200);
 
-            debugData<PlayerData[]>(
+            debugData<LuaPlayerData[]>(
                 [
                     {
                         action: 'setPlayerList',

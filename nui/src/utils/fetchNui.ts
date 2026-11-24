@@ -1,6 +1,8 @@
 import { debugLog } from './debugLog';
 import { isBrowserEnv } from '@nui/src/utils/miscUtils';
 import { NUI_CALLBACK_URL } from '@nui/src/utils/nuiGen';
+import { debugData } from './debugData';
+import { browserNuiReplies } from './browserNuiReplies';
 
 type OptsWithMockData<T> = Partial<RequestInit & { mockResp: T }>;
 
@@ -26,6 +28,13 @@ export async function fetchNui<T = any>(eventName: string, data: unknown = {}, o
     // If we are in browser and mockResp option is defined, we can
     // bail out of having to make failing HTTP reqs, speeding up data dispatching.
     if (isBrowserEnv() && opts?.mockResp) return opts.mockResp;
+
+    // Callbacks that Lua answers with a separate NUI message get a mock reply message instead.
+    const browserReply = isBrowserEnv() ? browserNuiReplies[eventName] : undefined;
+    if (browserReply) {
+        debugData(browserReply(data), 250);
+        return {} as T;
+    }
 
     try {
         const resp = await fetch(`${NUI_CALLBACK_URL}/${eventName}`, options);

@@ -1,39 +1,36 @@
-import { PlayerData, VehicleStatus } from '../hooks/usePlayerListListener';
+import { LuaPlayerData, VehicleStatus } from '../hooks/usePlayerListListener';
 import { arrayRandom } from './miscUtils';
 
+/**
+ * Mock `setPlayerList` payload in the shape Lua sends it (`name`, not `displayName`/`pureName`),
+ * so it goes through the same name cleaning as real data.
+ */
 export function mockPlayerData(players = 500) {
     const randomUsernames = ['Lion', 'Tiger', 'Horse', 'Donkey', 'Dog', 'Cat', 'Pig'];
 
-    const playerData: PlayerData[] = [];
+    const playerData: LuaPlayerData[] = [];
     const statuses: VehicleStatus[] = [
         VehicleStatus.Biking,
         VehicleStatus.Boat,
         VehicleStatus.Unknown,
         VehicleStatus.Flying,
         VehicleStatus.Walking,
+        VehicleStatus.Driving,
     ];
 
     for (let i = 0; i < players; i++) {
-        const randomDist = Math.random() * 5000;
-        const randomUsername = arrayRandom(randomUsernames);
-        const randomStatusIdx = Math.floor(Math.random() * 5);
-        const randomStatus = statuses[randomStatusIdx];
         const isAdmin = Math.floor(Math.random() * 5) === 1;
 
         playerData.push({
             admin: isAdmin,
             id: i + 1,
-            dist: randomDist,
+            dist: Math.random() * 5000,
             health: Math.floor(Math.random() * 100),
-            // health: -1,
-            displayName: randomUsername,
-            pureName: randomUsername.toLowerCase(),
+            name: `${arrayRandom(randomUsernames)}_${i + 1}`,
             tags: isAdmin ? ['staff'] : [],
-            vType: randomStatus,
+            vType: arrayRandom(statuses),
         });
     }
-
-    console.log(playerData);
 
     return playerData;
 }
