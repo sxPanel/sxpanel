@@ -119,6 +119,7 @@
 
 > See the [Configuration docs](https://sxpanel.org/docs/configuration) for environment variables and advanced options.
 > Listen to sxPanel server events in your resources with the [Events API](https://sxpanel.org/docs/events-api).
+> Script error telemetry and anti-dump detection: see [Security & Telemetry](security.md).
 
 ## Contributing
 

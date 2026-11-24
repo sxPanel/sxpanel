@@ -52,6 +52,13 @@ export {
 export { default as cfgEditor_page } from './cfgEditor/get';
 export { default as cfgEditor_save } from './cfgEditor/save';
 export { default as cfgEditor_listFiles } from './cfgEditor/listFiles';
+export {
+    DatabaseStatus as database_status,
+    DatabaseTables as database_tables,
+    DatabaseTableData as database_tableData,
+    DatabaseQuery as database_query,
+    DatabaseRowAction as database_row,
+} from './database';
 
 export { default as deployer_stepper } from './deployer/stepper';
 export { default as deployer_status } from './deployer/status';

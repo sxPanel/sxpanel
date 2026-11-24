@@ -59,3 +59,18 @@ export const PlayerTagChangeSchema = z.object({
     netId: zNetIdOrNumericString,
 });
 export type PlayerTagChangeType = z.infer<typeof PlayerTagChangeSchema>;
+
+/**
+ * txAdminSecurityDetection FD3 mini-trace payloads, produced by the security module
+ * (resource/sv_security.lua) when a player trips an anti-dump / injection detection.
+ */
+export const SecurityDetectionSchema = z.object({
+    type: z.literal('txAdminSecurityDetection'),
+    detection: z.string().min(1).max(64),
+    action: z.enum(['ban', 'kick', 'log']),
+    targetNetId: zNetId,
+    details: z.string().max(1024).optional(),
+    duration: z.string().max(64).optional(),
+    author: zAuthor.max(64),
+});
+export type SecurityDetectionType = z.infer<typeof SecurityDetectionSchema>;

@@ -121,6 +121,19 @@ export const registeredPermissions: PermissionDefinition[] = [
         category: 'server',
     },
     {
+        id: 'database.view',
+        label: 'View Database',
+        description: 'Browse database tables and run read-only queries.',
+        category: 'server',
+    },
+    {
+        id: 'database.edit',
+        label: 'Edit Database',
+        description: 'Run any SQL query and edit, insert or delete rows in the server database.',
+        category: 'server',
+        dangerous: true,
+    },
+    {
         id: 'server.log.view',
         label: 'View Server Logs',
         description: 'View FXServer log output.',

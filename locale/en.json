@@ -986,6 +986,7 @@
                 "resources": "Resources",
                 "custom_commands": "Chat Commands",
                 "cfg_editor": "CFG Editor",
+                "database": "Database",
                 "server_log": "Server Log",
                 "admins": "Admins",
                 "insights": "Insights",
@@ -1042,6 +1043,7 @@
             "resources": "Resources",
             "custom_commands": "Chat Commands",
             "cfg_editor": "CFG Editor",
+            "database": "Database",
             "server_log": "Server Log",
             "admins": "Admins",
             "admin_manager": "Admin Manager",
@@ -1522,6 +1524,60 @@
             "hint_main": "(main server config - validated on save)",
             "hint_aux": "(auxiliary config - saved without validation)",
             "save_shortcut": "Save File (⌘+S/Ctrl+S)"
+        },
+        "database": {
+            "title": "Database",
+            "connection_hint": "%{user}@%{host}:%{port}/%{database} · %{version}",
+            "read_only_badge": "Read-only",
+            "search_tables": "Search tables…",
+            "no_tables": "No tables found.",
+            "rows_estimate": "~%{count} rows",
+            "select_table": "Select a table on the left to browse its data.",
+            "tab_data": "Data",
+            "tab_structure": "Structure",
+            "tab_query": "SQL Query",
+            "search_rows": "Search all columns…",
+            "refresh": "Refresh",
+            "add_row": "Add row",
+            "edit_row": "Edit row",
+            "delete_row": "Delete row",
+            "no_rows": "No rows.",
+            "page_info": "Page %{page} of %{pages} · %{total} rows",
+            "page_size": "Rows per page",
+            "prev": "Previous",
+            "next": "Next",
+            "no_pk_hint": "This table has no primary key: rows can only be changed with SQL queries.",
+            "col_name": "Column",
+            "col_type": "Type",
+            "col_nullable": "Nullable",
+            "col_default": "Default",
+            "col_key": "Key",
+            "col_extra": "Extra",
+            "col_comment": "Comment",
+            "yes": "Yes",
+            "no": "No",
+            "null_label": "NULL",
+            "binary_value": "(binary, %{bytes} bytes)",
+            "truncated_value": "(%{length} characters, truncated)",
+            "not_editable": "Not editable here",
+            "auto_increment_hint": "Leave empty to auto-generate",
+            "save": "Save",
+            "cancel": "Cancel",
+            "saved": "Row saved.",
+            "inserted": "Row inserted.",
+            "deleted": "Row deleted.",
+            "no_changes": "Nothing changed.",
+            "delete_confirm_title": "Delete this row?",
+            "delete_confirm_message": "This permanently deletes the row from `%{table}`. This can't be undone.",
+            "run_query": "Run (Ctrl+Enter)",
+            "query_placeholder_hint": "Only read statements (SELECT, SHOW, DESCRIBE, EXPLAIN) are allowed with your permissions.",
+            "query_confirm_title": "Run a query that changes data?",
+            "query_confirm_message": "This statement can modify or delete data and will be recorded in the action log.",
+            "query_affected": "%{count} row(s) affected in %{ms} ms.",
+            "query_rows": "%{count} row(s) in %{ms} ms.",
+            "query_truncated": "Only the first %{max} rows are shown.",
+            "query_insert_id": "Insert ID: %{id}",
+            "load_failed": "Failed to load data."
         },
         "resources_config": {
             "menu_item": "Edit config files",
@@ -3356,6 +3412,14 @@
                 "label": "server.cfg Editor",
                 "description": "Read and write the server.cfg file."
             },
+            "database_view": {
+                "label": "View Database",
+                "description": "Browse database tables and run read-only queries."
+            },
+            "database_edit": {
+                "label": "Edit Database",
+                "description": "Run any SQL query and edit, insert or delete rows in the server database."
+            },
             "server_log_view": {
                 "label": "View Server Logs",
                 "description": "View FXServer log output."
@@ -3442,7 +3506,7 @@
             },
             "players_teleport": {
                 "label": "Teleport",
-                "description": "Teleport self or bring/go to players."
+                "description": "Teleport self or bring/go to/return players."
             },
             "players_troll": {
                 "label": "Troll Actions",
@@ -3467,6 +3531,26 @@
             "commands_resources_download": {
                 "label": "Download Resources",
                 "description": "Zip and download a resource folder from the server host."
+            },
+            "menu_devtools": {
+                "label": "Developer Tools",
+                "description": "Use the coordinates HUD and the entity inspector in-game."
+            },
+            "menu_delete_entities": {
+                "label": "Delete Entities",
+                "description": "Delete the entity you are aiming at, and clean up unoccupied vehicles around you."
+            },
+            "menu_staffchat": {
+                "label": "Staff Chat",
+                "description": "Send and receive staff-only chat messages in-game."
+            },
+            "players_invisible": {
+                "label": "Invisibility",
+                "description": "Toggle invisibility for yourself, hiding you from other players."
+            },
+            "players_disarm": {
+                "label": "Disarm",
+                "description": "Remove all weapons from a player."
             }
         },
         "shell": {
@@ -3566,6 +3650,18 @@
             "server_menu": {
                 "label": "Admin Command Logs",
                 "description": "Log in-game admin menu actions such as noclip, teleport, heal, spectate, vehicle tools, and troll actions."
+            },
+            "server_combat": {
+                "label": "Combat Logs",
+                "description": "Log player kills, other deaths, and non-lethal combat summaries. Hit, damage, and distance details require the Combat Log to be enabled by the server owner in Game settings."
+            },
+            "server_connection": {
+                "label": "Player Connection Logs",
+                "description": "Log players joining and leaving the server, and joins denied by bans or the whitelist."
+            },
+            "server_chat": {
+                "label": "Chat Logs",
+                "description": "Log in-game chat messages. Busy servers may want a dedicated channel for this stream."
             }
         },
         "system_log": {
@@ -4141,6 +4237,39 @@
             },
             "config_panelFeatures_addonsPage": {
                 "label": "Addons Page Enabled"
+            },
+            "database_query": {
+                "label": "Run Database Query"
+            },
+            "database_row_delete": {
+                "label": "Delete Database Row"
+            },
+            "database_row_edit": {
+                "label": "Edit Database Row"
+            },
+            "database_row_insert": {
+                "label": "Insert Database Row"
+            },
+            "resource_config_edit": {
+                "label": "Edit Resource Config"
+            },
+            "security_detection": {
+                "label": "Security Detection"
+            },
+            "config_gameFeatures_combatLogEnabled": {
+                "label": "Combat Log Enabled"
+            },
+            "config_gameFeatures_combatLogDamageSummaries": {
+                "label": "Combat Log Damage Summaries"
+            },
+            "config_gameFeatures_combatLogEngagementWindow": {
+                "label": "Combat Log Engagement Window (seconds)"
+            },
+            "config_gameFeatures_customCommands": {
+                "label": "Custom Chat Commands"
+            },
+            "config_panelFeatures_databasePage": {
+                "label": "Database Page Enabled"
             }
         },
         "deferral": {

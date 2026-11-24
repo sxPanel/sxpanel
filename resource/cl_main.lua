@@ -253,6 +253,10 @@ function IsNuiRequestOriginValid(headers)
     if TX_MENU_ACCESSIBLE and SendPersistentAlert then
         SendPersistentAlert('csrfWarning', 'error', 'nui_menu.misc.csrf_alert', true, { origin = headers['Origin'] })
     end
+    -- report to the security module (cl_security.lua)
+    if TxSecurityReport then
+        TxSecurityReport('foreignOrigin', headers['Origin'])
+    end
 
     return false
 end

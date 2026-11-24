@@ -31,6 +31,7 @@ const playerDropsPage = pageFlag('Player Drops Page Enabled');
 const reportAnalyticsPage = pageFlag('Report Analytics Page Enabled');
 const resourcesPage = pageFlag('Resources Page Enabled');
 const cfgEditorPage = pageFlag('CFG Editor Page Enabled');
+const databasePage = pageFlag('Database Page Enabled');
 const serverLogPage = pageFlag('Server Log Page Enabled');
 const actionLogPage = pageFlag('Action Log Page Enabled');
 const consoleLogPage = pageFlag('Console Log Page Enabled');
@@ -44,6 +45,7 @@ export default {
     reportAnalyticsPage,
     resourcesPage,
     cfgEditorPage,
+    databasePage,
     serverLogPage,
     actionLogPage,
     consoleLogPage,

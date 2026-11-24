@@ -28,11 +28,13 @@ server_scripts({
     'resource/sv_combatlog.lua',
     'resource/sv_logger.lua',
     'resource/sv_resources.lua',
+    'resource/sv_security.lua',
     'resource/sv_playerlist.lua',
     'resource/sv_ctx.lua',
     'resource/sv_initialData.lua',
     'resource/sv_tickets.lua',
     'resource/sv_custom_commands.lua',
+    'resource/telemetry/sv_telemetry.lua',
     'resource/menu/server/sv_webpipe.lua',
     'resource/menu/server/sv_functions.lua',
     'resource/menu/server/sv_main_page.lua',
@@ -58,6 +60,8 @@ client_scripts({
     'resource/menu/client/cl_functions.lua',
     'resource/cl_tickets.lua',
     'resource/cl_custom_commands.lua',
+    'resource/cl_security.lua',
+    'resource/cl_devtools.lua',
     'resource/menu/client/cl_instructional_ui.lua',
     'resource/menu/client/cl_main_page.lua',
     'resource/menu/client/cl_stats.lua',
@@ -78,10 +82,13 @@ client_scripts({
 
 -- Cache-bust query prevents FiveM's CEF from serving stale NUI files.
 -- Bump the version whenever dist/nui content changes.
-ui_page 'nui/index.html?v=9'
+ui_page 'nui/index.html?v=10'
 
 files {
     'locale/*.json',
+
+    -- Telemetry client hook, for other resources: client_scripts { '@monitor/resource/telemetry/hook.lua', ... }
+    'resource/telemetry/hook.lua',
     'nui/*',
     'nui/**/*',
 

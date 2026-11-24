@@ -22,6 +22,7 @@ import {
     BlocksIcon,
     SparklesIcon,
     SquareTerminalIcon,
+    DatabaseIcon,
 } from 'lucide-react';
 
 export type SidebarNavItemConfig = {
@@ -94,6 +95,13 @@ export const SIDEBAR_SECTIONS: SidebarSectionConfig[] = [
                 labelKey: 'panel.sidebar.item.cfg_editor',
                 permission: 'server.cfg.editor',
                 featureFlag: 'cfgEditorPage',
+            },
+            {
+                href: '/server/database',
+                icon: DatabaseIcon,
+                labelKey: 'panel.sidebar.item.database',
+                permission: 'database.view',
+                featureFlag: 'databasePage',
             },
             {
                 href: '/server/server-log',

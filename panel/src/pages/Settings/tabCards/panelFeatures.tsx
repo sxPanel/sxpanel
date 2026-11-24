@@ -32,6 +32,7 @@ export const pageConfigs = {
     playerDropsPage: getPageConfig('panelFeatures', 'playerDropsPage', undefined, true),
     resourcesPage: getPageConfig('panelFeatures', 'resourcesPage', undefined, true),
     cfgEditorPage: getPageConfig('panelFeatures', 'cfgEditorPage', undefined, true),
+    databasePage: getPageConfig('panelFeatures', 'databasePage', undefined, true),
     serverLogPage: getPageConfig('panelFeatures', 'serverLogPage', undefined, true),
     actionLogPage: getPageConfig('panelFeatures', 'actionLogPage', undefined, true),
     consoleLogPage: getPageConfig('panelFeatures', 'consoleLogPage', undefined, true),
@@ -68,6 +69,7 @@ const GROUPS: { titleKey: string; items: { name: ToggleName; labelKey: string; d
         items: [
             { name: 'resourcesPage', labelKey: 'panel.sidebar.item.resources' },
             { name: 'cfgEditorPage', labelKey: 'panel.sidebar.item.cfg_editor' },
+            { name: 'databasePage', labelKey: 'panel.sidebar.item.database' },
             { name: 'serverLogPage', labelKey: 'panel.sidebar.item.server_log' },
         ],
     },
