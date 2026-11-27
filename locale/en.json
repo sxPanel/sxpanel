@@ -3571,18 +3571,20 @@
                 "players": "Players"
             },
             "warning_bar": {
-                "socket_lost_title": "Socket connection lost.",
-                "socket_lost_desc": "The connection to the sxPanel server has been lost.",
-                "socket_lost_restart": "If you closed FXServer, please restart it.",
-                "postpone": "Postpone",
-                "download": "Download",
-                "tx_outdated_title": "This version of sxPanel is outdated.",
-                "tx_patch_title": "A patch (bug fix) update is available for sxPanel.",
-                "tx_outdated_desc": "Version v%{version} has been released bringing new features, bug fixes and improvements.",
-                "tx_patch_desc": "If you are experiencing any kind of issue, please update to v%{version}.",
-                "fx_outdated_title": "This version of FXServer is outdated.",
-                "fx_update_title": "An update is available for FXServer.",
-                "fx_update_desc": "Please update FXServer to artifact %{version}."
+                "socket_lost_title": "Lost connection to sxPanel",
+                "socket_lost_desc": "Trying to reconnect...",
+                "socket_lost_restart": "If FXServer was closed or is restarting, the panel will be back once it is running again.",
+                "postpone": "Remind me later",
+                "update_now": "Update now",
+                "update_fxserver": "Update FXServer",
+                "release_notes": "Release notes",
+                "tx_outdated_title": "sxPanel v%{version} is available",
+                "tx_patch_title": "sxPanel v%{version} (bug fixes) is available",
+                "tx_outdated_desc": "This release adds new features and fixes. It installs straight into your server, and you choose when to restart.",
+                "tx_patch_desc": "A bug-fix release is ready. Install it in a couple of clicks, then restart now, later, or on a schedule.",
+                "fx_outdated_title": "FXServer is out of date",
+                "fx_update_title": "FXServer update available",
+                "fx_update_desc": "Artifact %{version} is available. You can install it from the Artifacts page."
             },
             "addon_warning": {
                 "title": "Addons need attention",

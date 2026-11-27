@@ -181,6 +181,7 @@ export default () => {
     router.get('/panel/update', apiAuthMw, wrapRoute('SelfUpdateStatus', routes.selfUpdater_status));
     router.post('/panel/update/download', apiAuthMw, wrapRoute('SelfUpdateDownload', routes.selfUpdater_download));
     router.post('/panel/update/apply', apiAuthMw, wrapRoute('SelfUpdateApply', routes.selfUpdater_apply));
+    router.post('/panel/update/cancel', apiAuthMw, wrapRoute('SelfUpdateCancel', routes.selfUpdater_cancel));
 
     //CFG Editor
     router.get('/cfgEditor/data', apiAuthMw, routes.cfgEditor_page);

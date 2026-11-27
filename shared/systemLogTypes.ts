@@ -633,7 +633,14 @@ export const systemLogActionDefinitions = [
         id: 'selfUpdate.apply',
         category: 'command',
         label: 'Apply sxPanel Update',
-        description: 'Apply a downloaded sxPanel (monitor resource) update.',
+        description:
+            'Install a downloaded sxPanel (monitor resource) update: restart now, schedule, or on next restart.',
+    },
+    {
+        id: 'selfUpdate.cancel',
+        category: 'command',
+        label: 'Cancel sxPanel Update Restart',
+        description: 'Cancel a scheduled or pending sxPanel update install.',
     },
     {
         id: 'selfUpdate.download',

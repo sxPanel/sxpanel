@@ -97,6 +97,7 @@ export { default as fxserver_updateApply } from './fxserver/updateApply';
 export { default as selfUpdater_status } from './selfUpdater/updateStatus';
 export { default as selfUpdater_download } from './selfUpdater/updateDownload';
 export { default as selfUpdater_apply } from './selfUpdater/updateApply';
+export { default as selfUpdater_cancel } from './selfUpdater/updateCancel';
 
 export { default as history_stats } from './history/stats';
 export { default as history_search } from './history/search';

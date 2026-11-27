@@ -82,10 +82,31 @@ export type PanelReleaseInfo = {
     shaUrl: string;
 };
 
+/**
+ * How a downloaded sxPanel update gets applied once it's sitting in the staging folder.
+ * - now: stop the server, install into the monitor folder, relaunch FXServer.
+ * - scheduled: same as "now", but at a set time with in-game/Discord countdown warnings.
+ * - manual: a background script installs the files as soon as the admin closes FXServer;
+ *           the admin starts it again themselves.
+ */
+export type PanelUpdateApplyMode = 'now' | 'scheduled' | 'manual';
+
+export type PanelUpdateRestartPlan = { mode: 'scheduled'; scheduledTs: number } | { mode: 'manual' } | undefined;
+
+export type PanelUpdateApplyReq = {
+    mode: PanelUpdateApplyMode;
+    /** Required for mode=scheduled. Minutes from now (1 - 1440). */
+    delayMinutes?: number;
+};
+
 export type PanelUpdateListResp = {
     currentVersion: string;
     latestRelease?: PanelReleaseInfo;
     updateStatus: FxUpdateStatus;
+    /** Version currently sitting in the staging folder, ready to install. */
+    stagedVersion?: string;
+    restartPlan: PanelUpdateRestartPlan;
+    isWindows: boolean;
 };
 
 export type ThemeType = {

@@ -1,11 +1,12 @@
 import { Button } from '@/components/ui/button';
 import useWarningBar from '@/hooks/useWarningBar';
 import { cn } from '@/lib/utils';
-import { BellOffIcon, CloudOffIcon, DownloadCloudIcon } from 'lucide-react';
+import { BellOffIcon, CloudOffIcon, DownloadCloudIcon, ExternalLinkIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { GithubIcon } from '@/components/icons/github-icon';
 import { DiscordIcon } from '@/components/icons/discord-icon';
 import { useLocale } from '@/hooks/locale';
+import { useAdminPerms } from '@/hooks/auth';
+import { navigate } from 'wouter/use-browser-location';
 
 const LOCALSTORAGE_KEY = 'tsUpdateDismissed';
 const MAJOR_DISMISSAL_TIME = 12 * 60 * 60 * 1000;
@@ -28,6 +29,9 @@ const checkPostponeStatus = (isImportant: boolean, tsNow = Date.now()) => {
     return false;
 };
 
+type WarningBarAction =
+    { kind: 'navigate'; label: string; href: string } | { kind: 'external'; label: string; href: string };
+
 type InnerWarningBarProps = {
     titleIcon: React.ReactNode;
     title: React.ReactNode;
@@ -35,6 +39,7 @@ type InnerWarningBarProps = {
     isImportant: boolean;
     canPostpone: boolean;
     canHidePermanently?: boolean;
+    action?: WarningBarAction;
 };
 
 function InnerWarningBar({
@@ -44,6 +49,7 @@ function InnerWarningBar({
     isImportant,
     canPostpone,
     canHidePermanently,
+    action,
 }: InnerWarningBarProps) {
     const { t } = useLocale();
     const [nowMs, setNowMs] = useState(() => Date.now());
@@ -94,11 +100,23 @@ function InnerWarningBar({
                             </Button>
                         )}
 
-                        <Button size="xs" variant="outline" asChild className="border-current hover:bg-white/10">
-                            <a href="https://github.com/Snipzil/sxpanel/releases" target="_blank">
-                                <GithubIcon className="mr-1 inline size-3.5" /> {t('panel.shell.warning_bar.download')}
-                            </a>
-                        </Button>
+                        {action?.kind === 'navigate' && (
+                            <Button
+                                size="xs"
+                                variant="outline"
+                                onClick={() => navigate(action.href)}
+                                className="border-current hover:bg-white/10"
+                            >
+                                <DownloadCloudIcon className="mr-1 h-[0.9rem]" /> {action.label}
+                            </Button>
+                        )}
+                        {action?.kind === 'external' && (
+                            <Button size="xs" variant="outline" asChild className="border-current hover:bg-white/10">
+                                <a href={action.href} target="_blank" rel="noopener noreferrer">
+                                    <ExternalLinkIcon className="mr-1 inline size-3.5" /> {action.label}
+                                </a>
+                            </Button>
+                        )}
 
                         <Button size="xs" variant="outline" asChild className="border-current hover:bg-white/10">
                             <a href="https://discord.gg/hUM3pQeGFc" target="_blank">
@@ -115,6 +133,8 @@ function InnerWarningBar({
 export default function WarningBar() {
     const { t } = useLocale();
     const { offlineWarning, txUpdateData, fxUpdateData } = useWarningBar();
+    const { hasPerm } = useAdminPerms();
+    const canManageUpdates = hasPerm('all_permissions');
 
     if (offlineWarning) {
         return (
@@ -137,8 +157,8 @@ export default function WarningBar() {
                 titleIcon={<DownloadCloudIcon className="-mt-1 mr-1 inline h-[1.2rem]" />}
                 title={
                     txUpdateData.isImportant
-                        ? t('panel.shell.warning_bar.tx_outdated_title')
-                        : t('panel.shell.warning_bar.tx_patch_title')
+                        ? t('panel.shell.warning_bar.tx_outdated_title', { version: txUpdateData.version })
+                        : t('panel.shell.warning_bar.tx_patch_title', { version: txUpdateData.version })
                 }
                 description={
                     txUpdateData.isImportant
@@ -147,6 +167,19 @@ export default function WarningBar() {
                 }
                 isImportant={txUpdateData.isImportant}
                 canPostpone={true}
+                action={
+                    canManageUpdates
+                        ? {
+                              kind: 'navigate',
+                              label: t('panel.shell.warning_bar.update_now'),
+                              href: '/system/panel-update',
+                          }
+                        : {
+                              kind: 'external',
+                              label: t('panel.shell.warning_bar.release_notes'),
+                              href: 'https://github.com/sxPanel/sxpanel/releases',
+                          }
+                }
             />
         );
     } else if (fxUpdateData) {
@@ -162,6 +195,15 @@ export default function WarningBar() {
                 isImportant={fxUpdateData.isImportant}
                 canPostpone={true}
                 canHidePermanently={true}
+                action={
+                    canManageUpdates
+                        ? {
+                              kind: 'navigate',
+                              label: t('panel.shell.warning_bar.update_fxserver'),
+                              href: '/system/artifacts',
+                          }
+                        : undefined
+                }
             />
         );
     } else {

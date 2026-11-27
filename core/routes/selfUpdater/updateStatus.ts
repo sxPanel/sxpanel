@@ -11,12 +11,16 @@ export default async function SelfUpdateStatus(ctx: AuthedCtx) {
         return ctx.utils.error(403, 'Only admins with all permissions can manage sxPanel updates.');
     }
 
-    const latestRelease = await txCore.selfUpdater.checkForUpdate();
+    const forceRefresh = ctx.query?.refresh === 'true';
+    const latestRelease = await txCore.selfUpdater.checkForUpdate(forceRefresh);
 
     const resp: PanelUpdateListResp = {
         currentVersion: txEnv.txaVersion,
         latestRelease,
         updateStatus: txCore.selfUpdater.status,
+        stagedVersion: txCore.selfUpdater.staged,
+        restartPlan: txCore.selfUpdater.plan,
+        isWindows: txEnv.isWindows,
     };
     return ctx.send(resp);
 }

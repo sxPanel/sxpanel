@@ -9,22 +9,20 @@ import { cn } from '@/lib/utils';
 import {
     Loader2Icon,
     DownloadIcon,
-    RotateCcwIcon,
     RotateCwIcon,
     AlertTriangleIcon,
-    CheckCircle2Icon,
     ExternalLinkIcon,
     SparklesIcon,
 } from 'lucide-react';
-import type { PanelUpdateListResp } from '@shared/otherTypes';
+import type { PanelUpdateApplyReq, PanelUpdateListResp } from '@shared/otherTypes';
+import InstallUpdateCard from './InstallUpdateCard';
 import type { ApiToastResp } from '@shared/genericApiTypes';
 import { emsg } from '@shared/emsg';
 
 const PHASE_LABELS: Record<string, string> = {
-    downloading: 'Downloading update',
-    extracting: 'Extracting archive',
-    extracted: 'Ready to apply',
-    applying: 'Applying update',
+    downloading: 'Downloading',
+    extracting: 'Unpacking',
+    applying: 'Installing',
 };
 
 function HeaderBand({
@@ -48,7 +46,7 @@ function HeaderBand({
                     <div className="min-w-0">
                         <h1 className="text-foreground text-lg font-semibold tracking-tight">sxPanel Update</h1>
                         <p className="text-muted-foreground mt-0.5 text-xs">
-                            Check for and apply new sxPanel (monitor resource) releases.
+                            Install new sxPanel releases straight from GitHub, no manual download needed.
                         </p>
                     </div>
                 </div>
@@ -96,33 +94,21 @@ function HeaderBand({
     );
 }
 
-function StatusSection({
-    data,
-    onApply,
-    onReset,
-}: {
-    data: PanelUpdateListResp;
-    onApply: () => void;
-    onReset: () => void;
-}) {
+function StatusSection({ data, onReset }: { data: PanelUpdateListResp; onReset: () => void }) {
     const { updateStatus } = data;
-    if (updateStatus.phase === 'idle') return null;
+    if (updateStatus.phase === 'idle' || updateStatus.phase === 'extracted') return null;
 
     const statusLabel = PHASE_LABELS[updateStatus.phase] || 'Update failed';
 
     return (
         <Card className="border-border/60 bg-background rounded-xl shadow-none">
             <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Update Progress</CardTitle>
+                <CardTitle className="text-lg">Update progress</CardTitle>
                 <CardDescription className="flex items-center gap-2">
                     <span
                         className={cn(
                             'inline-flex size-2 rounded-full',
-                            updateStatus.phase === 'error'
-                                ? 'bg-destructive'
-                                : updateStatus.phase === 'extracted'
-                                  ? 'bg-success'
-                                  : 'bg-primary animate-pulse',
+                            updateStatus.phase === 'error' ? 'bg-destructive' : 'bg-primary animate-pulse',
                         )}
                     />
                     {statusLabel}
@@ -153,32 +139,16 @@ function StatusSection({
                 {updateStatus.phase === 'extracting' && (
                     <div className="text-muted-foreground flex items-center gap-2 text-sm">
                         <Loader2Icon className="size-4 animate-spin" />
-                        Extracting archive…
+                        Unpacking and checking files…
                     </div>
-                )}
-                {updateStatus.phase === 'extracted' && (
-                    <>
-                        <Alert>
-                            <CheckCircle2Icon className="size-4" />
-                            <AlertTitle>Download Complete</AlertTitle>
-                            <AlertDescription>
-                                The update has been downloaded and verified. Click &quot;Apply &amp; Restart&quot; to
-                                install it.
-                            </AlertDescription>
-                        </Alert>
-                        <Button variant="warning" className="w-full sm:w-auto" onClick={onApply}>
-                            <RotateCcwIcon className="mr-2 size-4" />
-                            Apply &amp; Restart
-                        </Button>
-                    </>
                 )}
                 {updateStatus.phase === 'applying' && (
                     <Alert>
                         <Loader2Icon className="size-4 animate-spin" />
-                        <AlertTitle>Applying Update</AlertTitle>
+                        <AlertTitle>Installing update</AlertTitle>
                         <AlertDescription>
-                            The server is being updated and will restart momentarily. This page will become
-                            unresponsive.
+                            FXServer is shutting down to install the update and will start again on its own. The panel
+                            will disconnect for about a minute; refresh the page once it is back.
                         </AlertDescription>
                     </Alert>
                 )}
@@ -186,7 +156,7 @@ function StatusSection({
                     <>
                         <Alert variant="destructive">
                             <AlertTriangleIcon className="size-4" />
-                            <AlertTitle>Error</AlertTitle>
+                            <AlertTitle>Update failed</AlertTitle>
                             <AlertDescription>{updateStatus.message}</AlertDescription>
                         </Alert>
                         <Button variant="outline" className="w-full sm:w-auto" onClick={onReset}>
@@ -214,8 +184,8 @@ function AvailableUpdateCard({
         return (
             <Card className="border-border/60 bg-background rounded-xl shadow-none">
                 <CardHeader>
-                    <CardTitle className="text-lg">Available Update</CardTitle>
-                    <CardDescription>Latest release information from GitHub</CardDescription>
+                    <CardTitle className="text-lg">Latest release</CardTitle>
+                    <CardDescription>Release information from GitHub</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="text-muted-foreground flex flex-col items-center gap-3 py-8">
@@ -235,8 +205,12 @@ function AvailableUpdateCard({
     return (
         <Card className="border-border/60 bg-background rounded-xl shadow-none">
             <CardHeader>
-                <CardTitle className="text-lg">Available Update</CardTitle>
-                <CardDescription>Latest release published on GitHub</CardDescription>
+                <CardTitle className="text-lg">Latest release</CardTitle>
+                <CardDescription>
+                    {latestRelease.isOutdated
+                        ? 'A newer version is available. Download it here and choose when to install.'
+                        : 'You are running the latest version.'}
+                </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
@@ -250,7 +224,7 @@ function AvailableUpdateCard({
                     )}
                     {latestRelease.version === currentVersion ? (
                         <Badge variant="secondary" className="text-xs">
-                            Current
+                            Installed
                         </Badge>
                     ) : latestRelease.isOutdated ? (
                         <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning text-xs">
@@ -261,7 +235,7 @@ function AvailableUpdateCard({
                 <div className="flex flex-wrap items-center gap-2">
                     <Button disabled={isBusy || !latestRelease.isOutdated} onClick={onDownload}>
                         <DownloadIcon className="mr-2 size-4" />
-                        Download &amp; Verify
+                        Download update
                     </Button>
                     <a
                         href={latestRelease.releaseUrl}
@@ -296,24 +270,34 @@ export default function SelfUpdaterPage() {
         method: 'POST',
         path: '/panel/update/apply',
     });
+    const cancelApi = useBackendApi<ApiToastResp>({
+        method: 'POST',
+        path: '/panel/update/cancel',
+    });
 
-    const fetchStatus = useCallback(async () => {
-        try {
-            const resp = await statusApi({ timeout: ApiTimeout.LONG });
-            if (resp) {
-                setData(resp);
-                setFetchError(null);
+    const fetchStatus = useCallback(
+        async (forceRefresh = false) => {
+            try {
+                const resp = await statusApi({
+                    timeout: ApiTimeout.LONG,
+                    queryParams: forceRefresh ? { refresh: 'true' } : undefined,
+                });
+                if (resp) {
+                    setData(resp);
+                    setFetchError(null);
+                }
+            } catch (e) {
+                setFetchError(emsg(e));
+            } finally {
+                setIsLoading(false);
             }
-        } catch (e) {
-            setFetchError(emsg(e));
-        } finally {
-            setIsLoading(false);
-        }
-    }, [statusApi]);
+        },
+        [statusApi],
+    );
 
     const handleManualRefresh = useCallback(async () => {
         setIsRefreshing(true);
-        await fetchStatus();
+        await fetchStatus(true);
         setIsRefreshing(false);
     }, [fetchStatus]);
 
@@ -333,29 +317,47 @@ export default function SelfUpdaterPage() {
             },
             currentPhase === 'downloading' || currentPhase === 'extracting' || currentPhase === 'applying'
                 ? 2000
-                : 30000,
+                : data?.restartPlan
+                  ? 10000
+                  : 30000,
         );
         return () => clearInterval(interval);
-    }, [fetchStatus, data?.updateStatus.phase]);
+    }, [fetchStatus, data?.updateStatus.phase, data?.restartPlan]);
 
     const handleDownload = () => {
         downloadApi({ toastLoadingMessage: 'Starting download…' });
         setData((prev) => (prev ? { ...prev, updateStatus: { phase: 'downloading', percentage: 0 } } : prev));
     };
 
-    const handleApply = () => {
+    const sendApply = async (req: PanelUpdateApplyReq) => {
+        await applyApi({
+            data: req,
+            toastLoadingMessage: req.mode === 'now' ? 'Installing update…' : 'Saving…',
+            timeout: ApiTimeout.REALLY_REALLY_LONG,
+        });
+        fetchStatus();
+    };
+
+    const handleApply = (req: PanelUpdateApplyReq) => {
+        if (req.mode !== 'now') {
+            sendApply(req);
+            return;
+        }
         openConfirmDialog({
-            title: 'Apply sxPanel Update',
+            title: 'Restart and install now?',
             message:
-                'This will stop the game server, replace the sxPanel files, and restart the entire process. Make sure you have warned your players. Continue?',
+                'The game server will stop (players get the usual shutdown notice), the update will be installed, and FXServer will start again automatically. The panel will be offline for about a minute.',
+            actionLabel: 'Restart now',
             confirmBtnVariant: 'warning',
             onConfirm: () => {
-                applyApi({
-                    toastLoadingMessage: 'Applying update…',
-                    timeout: ApiTimeout.REALLY_REALLY_LONG,
-                });
+                sendApply(req);
             },
         });
+    };
+
+    const handleCancelPlan = async () => {
+        await cancelApi({ toastLoadingMessage: 'Cancelling…' });
+        fetchStatus();
     };
 
     const handleReset = () => {
@@ -399,7 +401,11 @@ export default function SelfUpdaterPage() {
                 onRefresh={handleManualRefresh}
             />
 
-            <StatusSection data={data} onApply={handleApply} onReset={handleReset} />
+            <StatusSection data={data} onReset={handleReset} />
+
+            {updateStatus.phase === 'extracted' && (
+                <InstallUpdateCard data={data} onApply={handleApply} onCancelPlan={handleCancelPlan} />
+            )}
 
             <AvailableUpdateCard data={data} isBusy={isBusy} onDownload={handleDownload} />
         </div>

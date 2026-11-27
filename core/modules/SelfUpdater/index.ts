@@ -2,7 +2,7 @@ const modulename = 'SelfUpdater';
 import path from 'node:path';
 import fsp from 'node:fs/promises';
 import fs from 'node:fs';
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import { spawn, execSync } from 'node:child_process';
 import { promisify } from 'node:util';
 import stream from 'node:stream';
@@ -14,13 +14,24 @@ import { txEnv } from '@core/globalData';
 import got from '@lib/got';
 import consoleFactory from '@lib/console';
 import quitProcess from '@lib/quitProcess';
-import type { FxUpdateStatus, PanelReleaseInfo } from '@shared/otherTypes';
+import type {
+    FxUpdateStatus,
+    PanelReleaseInfo,
+    PanelUpdateApplyMode,
+    PanelUpdateRestartPlan,
+} from '@shared/otherTypes';
 const console = consoleFactory(modulename);
 const pipeline = promisify(stream.pipeline);
 
-const GITHUB_REPO = 'Snipzil/sxpanel';
+const GITHUB_REPO = 'sxPanel/sxpanel';
 //Entries that must exist in the zip for the resource to boot at all (mirrors scripts/package-monitor.js)
 const REQUIRED_ENTRIES = ['fxmanifest.lua', 'entrypoint.js', 'core/index.js', 'resource/sv_main.lua'];
+
+//Minutes-left marks at which players get a restart warning (same as the restart scheduler)
+const SCHEDULE_WARNINGS = [30, 15, 10, 5, 4, 3, 2, 1];
+const MAX_SCHEDULE_MINUTES = 24 * 60;
+//The unauthenticated GitHub API allows 60 req/h, so don't hit it on every page poll
+const RELEASE_CACHE_MS = 5 * 60_000;
 
 const releaseSchema = z.object({
     tag_name: z.string().min(1),
@@ -37,19 +48,25 @@ const releaseSchema = z.object({
 const releaseListSchema = z.array(releaseSchema);
 
 /**
- * Module responsible for checking, downloading and applying sxPanel (monitor resource) updates.
- * The flow is: download+verify → extract → stop game server → swap directories → restart process.
- * Unlike FxUpdater (which swaps the FXServer artifact), this swaps the monitor resource directory
- * that the running process itself was loaded from — so the process must fully exit and be
- * relaunched by whatever's starting fxserver.exe (service/wrapper/manual) for the new code to load.
+ * Module responsible for checking, downloading and installing sxPanel (monitor resource) updates.
+ * The flow is: download+verify → extract to staging → (now | scheduled | manual) → swap the
+ * staged files into the monitor folder once FXServer has exited → relaunch (now/scheduled only).
+ * Unlike FxUpdater (which swaps the FXServer artifact), this replaces the monitor resource folder
+ * that the running process itself was loaded from, so FXServer must fully exit for the new code
+ * to load. A detached helper script does the swap after our PID is gone.
  */
 export default class SelfUpdater {
     private _status: FxUpdateStatus = { phase: 'idle' };
     private latestRelease?: PanelReleaseInfo;
+    private restartPlan: PanelUpdateRestartPlan;
+    private scheduleTimer?: NodeJS.Timeout;
+    private stagedVersion?: string;
+    private lastCheckTs = 0;
     private readonly updateDir: string;
     private readonly archivePath: string;
     private readonly stagingDir: string;
     private readonly failureStatusPath: string;
+    private readonly tokenPath: string;
 
     constructor() {
         const parentDir = path.dirname(txEnv.txaPath);
@@ -57,6 +74,7 @@ export default class SelfUpdater {
         this.archivePath = path.join(this.updateDir, 'monitor.zip');
         this.stagingDir = path.join(parentDir, 'sxpanel_update_staging');
         this.failureStatusPath = path.join(parentDir, 'sxpanel_update_failure.txt');
+        this.tokenPath = path.join(parentDir, 'sxpanel_update_token.txt');
         this.loadPersistedFailureStatus();
     }
 
@@ -66,6 +84,14 @@ export default class SelfUpdater {
 
     get availableUpdate(): PanelReleaseInfo | undefined {
         return this.latestRelease;
+    }
+
+    get plan(): PanelUpdateRestartPlan {
+        return this.restartPlan;
+    }
+
+    get staged(): string | undefined {
+        return this._status.phase === 'extracted' || this._status.phase === 'applying' ? this.stagedVersion : undefined;
     }
 
     /**
@@ -92,7 +118,10 @@ export default class SelfUpdater {
      * NOTE: uses the releases list (not /releases/latest) because sxPanel is currently shipping
      * prerelease ("-Beta") tags, which GitHub's "latest" endpoint deliberately excludes.
      */
-    async checkForUpdate(): Promise<PanelReleaseInfo | undefined> {
+    async checkForUpdate(force = false): Promise<PanelReleaseInfo | undefined> {
+        if (!force && this.latestRelease && Date.now() - this.lastCheckTs < RELEASE_CACHE_MS) {
+            return this.latestRelease;
+        }
         try {
             const resp = await got(`https://api.github.com/repos/${GITHUB_REPO}/releases`, {
                 headers: { Accept: 'application/vnd.github+json' },
@@ -123,6 +152,7 @@ export default class SelfUpdater {
                 zipUrl: zipAsset.browser_download_url,
                 shaUrl: shaAsset.browser_download_url,
             };
+            this.lastCheckTs = Date.now();
             return this.latestRelease;
         } catch (error) {
             console.verbose.warn(`Failed to check for sxPanel updates: ${emsg(error)}`);
@@ -138,16 +168,18 @@ export default class SelfUpdater {
             throw new Error('A download is already in progress.');
         }
         if (this._status.phase === 'applying') {
-            throw new Error('An update is currently being applied.');
+            throw new Error('An update is currently being installed.');
+        }
+        if (this.restartPlan) {
+            throw new Error('An update is already scheduled. Cancel it before downloading again.');
         }
 
         this._status = { phase: 'downloading', percentage: 0 };
         try {
             await this.clearPersistedFailureStatus();
 
-            if (!this.latestRelease) {
-                await this.checkForUpdate();
-            }
+            //Always re-check so we never install a release that was superseded since the page loaded
+            await this.checkForUpdate(true);
             if (!this.latestRelease) {
                 throw new Error('No sxPanel release available to download.');
             }
@@ -218,6 +250,7 @@ export default class SelfUpdater {
             //Cleanup the archive
             await fsp.rm(this.updateDir, { recursive: true, force: true });
 
+            this.stagedVersion = release.version;
             this._status = { phase: 'extracted' };
             console.ok(`sxPanel ${release.version} downloaded and extracted successfully.`);
         } catch (error) {
@@ -232,36 +265,170 @@ export default class SelfUpdater {
     }
 
     /**
-     * Applies the downloaded update:
-     * 1. Stop the game server.
-     * 2. Spawn a detached script that waits for our PID to die, swaps the monitor resource
-     *    directory for the staged one, then restarts FXServer with the original command line.
-     * 3. Terminate the host process so the swap script can proceed.
+     * Entry point for installing a downloaded update. See PanelUpdateApplyMode for what each mode does.
      */
-    async apply() {
+    async apply(mode: PanelUpdateApplyMode, delayMinutes?: number) {
         if (this._status.phase !== 'extracted') {
-            throw new Error('No downloaded update ready to apply.');
+            throw new Error('No downloaded update is ready to install.');
+        }
+
+        if (mode === 'now') {
+            this.clearSchedule();
+            await this.applyNow();
+        } else if (mode === 'scheduled') {
+            if (typeof delayMinutes !== 'number' || !Number.isInteger(delayMinutes)) {
+                throw new Error('A restart delay (in minutes) is required to schedule the update.');
+            }
+            if (delayMinutes < 1 || delayMinutes > MAX_SCHEDULE_MINUTES) {
+                throw new Error(
+                    `The restart must be scheduled between 1 minute and ${MAX_SCHEDULE_MINUTES / 60} hours from now.`,
+                );
+            }
+            this.scheduleApply(delayMinutes);
+        } else if (mode === 'manual') {
+            this.clearSchedule();
+            this.armManualInstall();
+        } else {
+            throw new Error('Unknown update install mode.');
+        }
+    }
+
+    /**
+     * Cancels a scheduled restart or a pending "on next restart" install.
+     * The downloaded files stay staged, so the admin can pick another option.
+     */
+    cancelPlan() {
+        if (!this.restartPlan) return false;
+        const wasMode = this.restartPlan.mode;
+        this.clearSchedule();
+        this.revokeSwapToken();
+        this.restartPlan = undefined;
+        console.warn(`sxPanel update ${wasMode === 'scheduled' ? 'scheduled restart' : 'pending install'} cancelled.`);
+        return true;
+    }
+
+    /**
+     * Schedules applyNow() for `delayMinutes` from now, warning players (in-game and Discord)
+     * on the same countdown the restart scheduler uses.
+     */
+    private scheduleApply(delayMinutes: number) {
+        this.clearSchedule();
+        this.revokeSwapToken(); //in case it was previously set to manual
+        const scheduledTs = Date.now() + delayMinutes * 60_000;
+        this.restartPlan = { mode: 'scheduled', scheduledTs };
+        let lastWarnedMinute: number | undefined;
+
+        const tick = () => {
+            if (this.restartPlan?.mode !== 'scheduled') return this.clearSchedule();
+            const msLeft = this.restartPlan.scheduledTs - Date.now();
+            if (msLeft <= 0) {
+                this.clearSchedule();
+                this.restartPlan = undefined;
+                this.applyNow().catch(() => {
+                    //error already stored in status
+                });
+                return;
+            }
+
+            const minsLeft = Math.ceil(msLeft / 60_000);
+            if (minsLeft !== lastWarnedMinute && SCHEDULE_WARNINGS.includes(minsLeft)) {
+                lastWarnedMinute = minsLeft;
+                this.sendRestartWarning(minsLeft);
+            }
+        };
+        this.scheduleTimer = setInterval(tick, 5_000);
+        tick();
+
+        const timeStr = new Date(scheduledTs).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+        console.warn(`sxPanel update scheduled: FXServer will restart in ${delayMinutes} minute(s) (at ${timeStr}).`);
+    }
+
+    private clearSchedule() {
+        if (this.scheduleTimer) {
+            clearInterval(this.scheduleTimer);
+            this.scheduleTimer = undefined;
+        }
+        if (this.restartPlan?.mode === 'scheduled') {
+            this.restartPlan = undefined;
+        }
+    }
+
+    private sendRestartWarning(minsLeft: number) {
+        try {
+            if (txCore.fxRunner.isIdle) return;
+            const tOptions = {
+                smart_count: minsLeft,
+                servername: txConfig.general.serverName,
+            };
+            txCore.discordBot.sendAnnouncement({
+                type: 'warning',
+                description: {
+                    key: 'restarter.schedule_warn_discord',
+                    data: tOptions,
+                },
+            });
+            txCore.fxRunner.sendEvent('scheduledRestart', {
+                secondsRemaining: minsLeft * 60,
+                translatedMessage: txCore.translator.t('restarter.schedule_warn', tOptions),
+            });
+        } catch (error) {
+            console.verbose.warn(`Failed to send update restart warning: ${emsg(error)}`);
+        }
+    }
+
+    /**
+     * "Restart manually" mode: spawns a detached script that sits idle until this FXServer
+     * process exits (however that happens), then installs the staged files into the monitor
+     * folder. It does NOT relaunch FXServer — the admin starts it again themselves.
+     */
+    private armManualInstall() {
+        const parentDir = path.dirname(txEnv.txaPath);
+        const token = this.issueSwapToken();
+        if (txEnv.isWindows) {
+            this.spawnWindowsSwapScript(parentDir, token, 'manual');
+        } else {
+            this.spawnLinuxSwapScript(parentDir, token, 'manual');
+        }
+        this.restartPlan = { mode: 'manual' };
+        console.warn(
+            'sxPanel update will be installed the next time FXServer is closed. Start it again afterwards to finish.',
+        );
+    }
+
+    /**
+     * Installs the update right now:
+     * 1. Stop the game server (players get the usual shutdown notice).
+     * 2. Spawn a detached script that waits for our PID to die, installs the staged files into
+     *    the monitor folder, then relaunches FXServer with the original command line.
+     * 3. Terminate the host process so the script can proceed.
+     */
+    private async applyNow() {
+        if (this._status.phase !== 'extracted') {
+            throw new Error('No downloaded update is ready to install.');
         }
 
         this._status = { phase: 'applying' };
+        this.restartPlan = undefined;
         const parentDir = path.dirname(txEnv.txaPath);
 
         try {
             await this.clearPersistedFailureStatus();
 
-            //Stop the game server if running (skip notice delay — we're about to kill the whole process anyway)
+            //Stop the game server if running
             if (!txCore.fxRunner.isIdle) {
-                console.warn('Stopping game server for sxPanel update...');
-                const killError = await txCore.fxRunner.killServer('sxPanel update', 'sxPanel', false, true);
+                console.warn('Stopping game server to install the sxPanel update...');
+                const killError = await txCore.fxRunner.killServer('installing sxPanel update', 'sxPanel', true);
                 if (killError) {
                     throw new Error(`Failed to stop game server: ${killError}`);
                 }
             }
 
+            //A fresh token also cancels any "install on next restart" watcher that may be waiting
+            const token = this.issueSwapToken();
             if (txEnv.isWindows) {
-                this.spawnWindowsSwapScript(parentDir);
+                this.spawnWindowsSwapScript(parentDir, token, 'now');
             } else {
-                this.spawnLinuxSwapScript(parentDir);
+                this.spawnLinuxSwapScript(parentDir, token, 'now');
             }
 
             //Terminate the FXServer host process. process.exit() alone only exits the
@@ -290,8 +457,8 @@ export default class SelfUpdater {
                 }, 5000);
             }, 1500);
         } catch (error) {
-            const msg = emsg(error) ?? 'Unknown apply error';
-            console.error(`sxPanel update apply failed: ${msg}`);
+            const msg = emsg(error) ?? 'Unknown install error';
+            console.error(`sxPanel update install failed: ${msg}`);
             this._status = { phase: 'error', message: msg };
             await fsp.writeFile(this.failureStatusPath, msg).catch(() => {});
             throw error;
@@ -299,10 +466,29 @@ export default class SelfUpdater {
     }
 
     /**
-     * Windows swap: batch script waits for our PID to die, deletes the old monitor/ dir,
-     * moves staging into place, then restarts FXServer using the captured command line.
+     * Each swap script is bound to a random token stored on disk. A script only touches files
+     * if the token still matches when it wakes up, so issuing a new token (or deleting the file)
+     * cleanly cancels any script that's still waiting.
      */
-    private spawnWindowsSwapScript(parentDir: string) {
+    private issueSwapToken() {
+        const token = randomBytes(12).toString('hex');
+        fs.writeFileSync(this.tokenPath, token);
+        return token;
+    }
+
+    private revokeSwapToken() {
+        try {
+            fs.rmSync(this.tokenPath, { force: true });
+        } catch {
+            /* nothing to revoke */
+        }
+    }
+
+    /**
+     * Windows: batch script waits for our PID to exit, replaces the monitor folder with the
+     * staged files, then (mode=now) relaunches FXServer using the captured command line.
+     */
+    private spawnWindowsSwapScript(parentDir: string, token: string, mode: 'now' | 'manual') {
         const toWin = (p: string) => p.replace(/\//g, '\\').replace(/\\+$/, '');
         const escapeBatchPath = (p: string) => {
             return toWin(p)
@@ -312,53 +498,93 @@ export default class SelfUpdater {
         const winTxaPath = escapeBatchPath(txEnv.txaPath);
         const winStagingDir = escapeBatchPath(this.stagingDir);
         const winParentDir = escapeBatchPath(parentDir);
-        const scriptPath = path.join(parentDir, 'sxpanel_update_swap.bat');
+        const scriptPath = path.join(parentDir, `sxpanel_update_${mode}.bat`);
         const winScriptPath = escapeBatchPath(scriptPath);
         const winFailureStatusPath = escapeBatchPath(this.failureStatusPath);
+        const winTokenPath = escapeBatchPath(this.tokenPath);
         const pid = process.pid;
 
         let restartCmd = '';
-        try {
-            const psOut = execSync(
-                `powershell -NoProfile -Command "(Get-CimInstance Win32_Process -Filter 'ProcessId=${pid}').CommandLine"`,
-                { encoding: 'utf8', timeout: 2000 },
-            );
-            restartCmd = psOut.trim();
-        } catch {
-            console.warn('Could not capture command line for auto-restart.');
-        }
-        if (!restartCmd.length) {
+        if (mode === 'now') {
             try {
-                const quoteArg = (arg: string) => `"${arg.replace(/"/g, '""')}"`;
-                restartCmd = process.argv.map(quoteArg).join(' ');
-                console.warn('Using process.argv fallback for auto-restart command.');
+                const psOut = execSync(
+                    `powershell -NoProfile -Command "(Get-CimInstance Win32_Process -Filter 'ProcessId=${pid}').CommandLine"`,
+                    { encoding: 'utf8', timeout: 2000 },
+                );
+                restartCmd = psOut.trim();
             } catch {
-                // no fallback available
+                console.warn('Could not capture command line for auto-restart.');
+            }
+            if (!restartCmd.length) {
+                try {
+                    const quoteArg = (arg: string) => `"${arg.replace(/"/g, '""')}"`;
+                    restartCmd = process.argv.map(quoteArg).join(' ');
+                    console.warn('Using process.argv fallback for auto-restart command.');
+                } catch {
+                    // no fallback available
+                }
             }
         }
         const winCwd = escapeBatchPath(process.cwd());
+
+        //Re-reads the token file and bails out if this script was superseded/cancelled
+        const tokenCheck = [
+            'set "CURTOKEN="',
+            'if exist "%TOKENFILE%" set /p CURTOKEN=<"%TOKENFILE%"',
+            'if not "%CURTOKEN%"=="%MYTOKEN%" goto cancelled',
+        ];
 
         const batLines = [
             '@echo off',
             'title sxPanel Update',
             `set "FAILFILE=${winFailureStatusPath}"`,
+            `set "TOKENFILE=${winTokenPath}"`,
+            `set "MYTOKEN=${token}"`,
+            'echo ============================================',
+            'echo   sxPanel Update',
+            'echo ============================================',
+            'echo.',
+        ];
+
+        if (mode === 'manual') {
+            batLines.push(
+                'echo The update is downloaded and ready to install.',
+                'echo It will be installed as soon as FXServer is closed.',
+                'echo Leave this window open.',
+                'echo.',
+                ':waitpidloop',
+                ...tokenCheck,
+                `tasklist /FI "PID eq ${pid}" 2>NUL | find /I "${pid}" >NUL`,
+                'if errorlevel 1 goto waitpiddone',
+                'timeout /t 3 /nobreak >nul',
+                'goto waitpidloop',
+                ':waitpiddone',
+                'echo FXServer closed. Installing update - please wait before starting it again...',
+            );
+        } else {
+            batLines.push(
+                `echo Waiting for FXServer (PID ${pid}) to shut down...`,
+                'set waitretries=0',
+                ':waitpidloop',
+                `tasklist /FI "PID eq ${pid}" 2>NUL | find /I "${pid}" >NUL`,
+                'if errorlevel 1 goto waitpiddone',
+                'set /a waitretries+=1',
+                'if %waitretries% GEQ 20 (',
+                `    set "FAIL_REASON=Could not stop FXServer process ${pid} in time."`,
+                '    goto updatefailed',
+                ')',
+                `echo Process ${pid} still alive, forcing shutdown... attempt %waitretries%`,
+                `taskkill /F /PID ${pid} >NUL 2>&1`,
+                'timeout /t 1 /nobreak >nul',
+                'goto waitpidloop',
+                ':waitpiddone',
+                'echo FXServer stopped.',
+            );
+        }
+
+        batLines.push(
+            ...tokenCheck,
             'if exist "%FAILFILE%" del /f /q "%FAILFILE%" >NUL 2>&1',
-            `echo Waiting for FXServer (PID ${pid}) to shut down...`,
-            'set waitretries=0',
-            ':waitpidloop',
-            `tasklist /FI "PID eq ${pid}" 2>NUL | find /I "${pid}" >NUL`,
-            'if errorlevel 1 goto waitpiddone',
-            'set /a waitretries+=1',
-            'if %waitretries% GEQ 20 (',
-            `    set "FAIL_REASON=Could not stop FXServer process ${pid} in time."`,
-            '    goto updatefailed',
-            ')',
-            `echo Process ${pid} still alive, forcing shutdown... attempt %waitretries%`,
-            `taskkill /F /PID ${pid} >NUL 2>&1`,
-            'timeout /t 1 /nobreak >nul',
-            'goto waitpidloop',
-            ':waitpiddone',
-            'echo FXServer process stopped.',
             'echo.',
             'echo Removing old sxPanel files...',
             'set retries=0',
@@ -367,37 +593,37 @@ export default class SelfUpdater {
             `if exist "${winTxaPath}" (`,
             '    set /a retries+=1',
             '    if %retries% GEQ 15 (',
-            '        echo WARNING: Could not fully delete old sxPanel directory. Falling back to in-place copy.',
+            '        echo WARNING: Could not fully delete the old sxPanel folder. Copying over it instead.',
             '        goto inplacecopy',
             '    )',
-            '    echo Waiting for directory to be released... attempt %retries%',
+            '    echo Waiting for the folder to be released... attempt %retries%',
             '    timeout /t 2 /nobreak >nul',
             '    goto deleteloop',
             ')',
-            'echo Old sxPanel files removed.',
-            'echo Moving new files into place...',
-            `move "${winStagingDir}" "${winTxaPath}"`,
+            'echo Installing new files...',
+            `move "${winStagingDir}" "${winTxaPath}" >NUL`,
             'if not errorlevel 1 goto updatesuccess',
-            'echo WARNING: Failed to move staging directory. Falling back to in-place copy...',
+            'echo WARNING: Could not move the new files into place. Copying them instead...',
             ':inplacecopy',
             `robocopy "${winStagingDir}" "${winTxaPath}" /E /MOVE /R:5 /W:2 /NFL /NDL /NJH /NJS /NP >NUL`,
             'if %ERRORLEVEL% GEQ 8 (',
-            '    set "FAIL_REASON=Failed to copy staging directory into place."',
+            '    set "FAIL_REASON=Failed to copy the new sxPanel files into the monitor folder."',
             '    goto updatefailed',
             ')',
             `if exist "${winStagingDir}" rmdir /s /q "${winStagingDir}"`,
-            `if exist "${winStagingDir}" echo WARNING: Could not fully remove staging directory.`,
             ':updatesuccess',
             'echo.',
-            'echo sxPanel update applied successfully!',
+            'echo sxPanel update installed successfully!',
             'if exist "%FAILFILE%" del /f /q "%FAILFILE%" >NUL 2>&1',
+            'if exist "%TOKENFILE%" del /f /q "%TOKENFILE%" >NUL 2>&1',
             'goto restartfx',
             ':updatefailed',
             'echo.',
             'echo ERROR: %FAIL_REASON%',
             '> "%FAILFILE%" echo %FAIL_REASON%',
-            'echo Update failed; attempting to restart FXServer with current files...',
-        ];
+            'if exist "%TOKENFILE%" del /f /q "%TOKENFILE%" >NUL 2>&1',
+            'echo Starting FXServer with the current files...',
+        );
 
         if (restartCmd) {
             const restartScriptPath = path.join(parentDir, 'sxpanel_restart_cmd.cmd');
@@ -410,50 +636,60 @@ export default class SelfUpdater {
                 `start "FXServer" cmd.exe /c "${winRestartScript}"`,
                 'timeout /t 3 /nobreak >nul',
                 `del "${winRestartScript}"`,
+                'goto done',
             );
+        } else if (mode === 'manual') {
+            batLines.push(':restartfx', 'echo You can now start FXServer again.', 'timeout /t 15', 'goto done');
         } else {
             batLines.push(
                 ':restartfx',
-                'echo Could not determine restart command automatically.',
-                'echo Please restart FXServer manually.',
+                'echo Could not determine the FXServer start command automatically.',
+                'echo Please start FXServer again manually.',
+                'pause',
+                'goto done',
             );
         }
-        batLines.push('del "%~f0"');
+        batLines.push(':cancelled', ':done', 'del "%~f0"');
 
         fs.writeFileSync(scriptPath, batLines.join('\r\n'));
 
-        const child = spawn('cmd.exe', ['/c', `start "sxPanel Update" cmd.exe /c "${winScriptPath}"`], {
+        //The manual watcher can sit around for hours, so keep its window minimized
+        const startFlags = mode === 'manual' ? '/min ' : '';
+        const child = spawn('cmd.exe', ['/c', `start "sxPanel Update" ${startFlags}cmd.exe /c "${winScriptPath}"`], {
             detached: true,
             stdio: 'ignore',
             cwd: winParentDir,
             shell: true,
         });
         child.unref();
-        console.ok('Swap script spawned. Exiting process for update...');
+        console.ok(mode === 'now' ? 'Update script started. Restarting FXServer...' : 'Update script armed.');
     }
 
     /**
-     * Linux swap: detached bash script waits for our PID to die, then moves the staging
-     * directory into place of the old monitor/ dir, and restarts FXServer.
+     * Linux: detached bash script waits for our PID to exit, moves the staged files into place
+     * of the monitor folder, then (mode=now) relaunches FXServer.
      */
-    private spawnLinuxSwapScript(parentDir: string) {
+    private spawnLinuxSwapScript(parentDir: string, token: string, mode: 'now' | 'manual') {
         const pid = process.pid;
         const escapeSh = (s: string) => `'${s.replace(/'/g, "'\\''")}'`;
 
         let restartCmd = '';
-        try {
-            const cmdlineRaw = fs.readFileSync(`/proc/${pid}/cmdline`, 'utf8');
-            const cmdArgs = cmdlineRaw.split('\0').filter(Boolean);
-            restartCmd = cmdArgs.map((a) => escapeSh(a)).join(' ');
-        } catch {
-            console.warn('Could not capture command line for auto-restart.');
+        if (mode === 'now') {
+            try {
+                const cmdlineRaw = fs.readFileSync(`/proc/${pid}/cmdline`, 'utf8');
+                const cmdArgs = cmdlineRaw.split('\0').filter(Boolean);
+                restartCmd = cmdArgs.map((a) => escapeSh(a)).join(' ');
+            } catch {
+                console.warn('Could not capture command line for auto-restart.');
+            }
         }
 
-        const scriptPath = path.join(parentDir, 'sxpanel_update_swap.sh');
-        const logPath = path.join(parentDir, 'sxpanel_update_swap.log');
+        const scriptPath = path.join(parentDir, `sxpanel_update_${mode}.sh`);
+        const logPath = path.join(parentDir, 'sxpanel_update.log');
         const shTxaPath = escapeSh(txEnv.txaPath);
         const shStagingDir = escapeSh(this.stagingDir);
         const shTxaPathBak = escapeSh(txEnv.txaPath + '.bak');
+        const shFailurePath = escapeSh(this.failureStatusPath);
 
         const shLines = [
             '#!/bin/bash',
@@ -462,27 +698,36 @@ export default class SelfUpdater {
             'trap "" HUP',
             '',
             `LOGFILE=${escapeSh(logPath)}`,
-            `> "$LOGFILE"`,
-            'log() { echo "$@" | tee -a "$LOGFILE"; }',
+            `TOKENFILE=${escapeSh(this.tokenPath)}`,
+            `MYTOKEN=${escapeSh(token)}`,
+            'log() { echo "[sxPanel Update] $*" | tee -a "$LOGFILE"; }',
+            'token_ok() { [ "$(cat "$TOKENFILE" 2>/dev/null)" = "$MYTOKEN" ]; }',
+            'fail() { log "ERROR: $*"; echo "$*" > ' + shFailurePath + '; rm -f "$TOKENFILE"; }',
             '',
-            `log "Waiting for FXServer (PID ${pid}) to shut down..."`,
-            `while kill -0 ${pid} 2>/dev/null; do sleep 0.5; done`,
-            `log "FXServer stopped."`,
+            mode === 'manual'
+                ? 'log "Update ready. It will be installed as soon as FXServer is closed."'
+                : `log "Waiting for FXServer (PID ${pid}) to shut down..."`,
+            `while kill -0 ${pid} 2>/dev/null; do`,
+            '    token_ok || exit 0',
+            '    sleep 1',
+            'done',
+            'token_ok || exit 0',
+            'log "FXServer stopped. Installing sxPanel update..."',
             '',
-            'log "Swapping sxPanel files..."',
             `if [ -d ${shTxaPath} ]; then`,
-            `    mv ${shTxaPath} ${shTxaPathBak} || { log "ERROR: Failed to back up current sxPanel files."; exit 1; }`,
+            `    rm -rf ${shTxaPathBak} 2>/dev/null`,
+            `    mv ${shTxaPath} ${shTxaPathBak} || { fail "Failed to back up the current sxPanel files."; exit 1; }`,
             'fi',
             `if mv ${shStagingDir} ${shTxaPath}; then`,
             `    rm -rf ${shTxaPathBak} 2>/dev/null || true`,
-            '    log "sxPanel update applied successfully!"',
+            `    rm -f ${shFailurePath} "$TOKENFILE"`,
+            '    log "sxPanel update installed successfully!"',
             'else',
-            '    log "ERROR: Failed to move staging directory into place."',
+            '    fail "Failed to move the new sxPanel files into the monitor folder."',
             `    if [ -d ${shTxaPathBak} ]; then`,
             `        mv ${shTxaPathBak} ${shTxaPath}`,
-            '        log "Rolled back to previous sxPanel files."',
+            '        log "Rolled back to the previous sxPanel files."',
             '    fi',
-            '    exit 1',
             'fi',
         ];
 
@@ -491,12 +736,14 @@ export default class SelfUpdater {
             shLines.push(
                 '',
                 'log "Restarting FXServer..."',
-                `rm -f ${escapeSh(scriptPath)} ${escapeSh(logPath)}`,
+                `rm -f ${escapeSh(scriptPath)}`,
                 `cd ${escapeSh(cwd)}`,
                 `exec ${restartCmd}`,
             );
+        } else if (mode === 'manual') {
+            shLines.push('', 'log "You can now start FXServer again."', `rm -f ${escapeSh(scriptPath)}`);
         } else {
-            shLines.push('', 'log "Could not determine restart command. Please restart FXServer manually."');
+            shLines.push('', 'log "Could not determine the FXServer start command. Please start it again manually."');
         }
 
         fs.writeFileSync(scriptPath, shLines.join('\n') + '\n', { mode: 0o755 });
@@ -512,17 +759,22 @@ export default class SelfUpdater {
         }
         const child = spawn(spawnCmd, spawnArgs, {
             detached: true,
-            stdio: ['ignore', 'inherit', 'inherit'],
+            //the manual watcher may outlive our console, so don't tie it to our stdio
+            stdio: mode === 'now' ? ['ignore', 'inherit', 'inherit'] : 'ignore',
             cwd: parentDir,
         });
         child.unref();
-        console.ok('Update swap script spawned. Exiting process for update...');
+        console.ok(mode === 'now' ? 'Update script started. Restarting FXServer...' : 'Update script armed.');
     }
 
     /**
      * Resets the updater state (e.g. after an error).
      */
     async reset() {
+        this.clearSchedule();
+        this.revokeSwapToken();
+        this.restartPlan = undefined;
+        this.stagedVersion = undefined;
         await fsp.rm(this.updateDir, { recursive: true, force: true }).catch(() => {});
         await fsp.rm(this.stagingDir, { recursive: true, force: true }).catch(() => {});
         await this.clearPersistedFailureStatus();
